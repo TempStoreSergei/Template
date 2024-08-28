@@ -4,7 +4,7 @@
       <h1 class="title">
         Hello from  <a class="link" target="_blank" href="https://github.com/yunglocokid">@yunglocokid</a>
       </h1>
-      <button class="button" @click="increment">Count is: {{count}}</button>
+          <button class="button" @click="increment">Count is: {{count}}</button>
 		</div>
 	</div>
 </template>
