@@ -6,7 +6,6 @@ export default defineNuxtConfig({
     "@vite-pwa/nuxt",
     "@pinia/nuxt",
     "@ant-design-vue/nuxt",
-    "@ant-design-vue/nuxt",
   ],
 
   css: ["@/app/normalize.min.css", "@/app/global.css"],
