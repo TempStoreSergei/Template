@@ -1,7 +1,7 @@
 import { get, isEmpty } from 'lodash-es';
 import { columnKeyFlags } from '../types';
 import { useTableContext } from './useTableContext';
-import { exportJson2Excel } from '@/shared/utils/Export2Excel';
+import { exportJson2Excel } from '~/shared/utils/Export2Excel';
 
 export type ExportData2Excel = ReturnType<typeof useExportData2Excel>;
 

@@ -1,14 +1,18 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { resolve } from "path";
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
   modules: [
     "@vite-pwa/nuxt",
     "@pinia/nuxt",
+    "@vueuse/nuxt",
     "@ant-design-vue/nuxt",
+    "@nuxtjs/i18n",
   ],
+  css: ["~/app/normalize.min.css", "~/app/global.css"],
 
-  css: ["@/app/normalize.min.css", "@/app/global.css"],
+  ssr: false,
 
   imports: {
     dirs: ["shared/composables", "shared/utils"],
@@ -473,7 +477,7 @@ export default defineNuxtConfig({
       ],
     },
     workbox: {
-      navigateFallback: "/",
+      navigateFallback: "/admin",
     },
     devOptions: {
       enabled: true,
@@ -483,6 +487,10 @@ export default defineNuxtConfig({
 
   dir: {
     pages: "routes",
+  },
+
+  alias: {
+    "@": resolve(__dirname, "./src"),
   },
 
   components: {

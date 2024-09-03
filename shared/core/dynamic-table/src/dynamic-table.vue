@@ -74,7 +74,7 @@
   import { ToolBar } from './components';
   import { dynamicTableProps, dynamicTableEmits } from './dynamic-table';
   import type { DynamicTableType } from './types';
-  import { SchemaForm } from '@/shared/core/schema-form';
+  import { SchemaForm } from '~/shared/core/schema-form';
 
   defineOptions({
     name: 'DynamicTable',

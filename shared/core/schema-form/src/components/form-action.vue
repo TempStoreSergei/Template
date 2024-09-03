@@ -44,9 +44,9 @@
   import { Form, Col } from 'ant-design-vue';
   import { useFormContext } from '../hooks/useFormContext';
   import type { ColEx } from '../types/component';
-  import type { ButtonProps } from '@/shared/basic/button';
-  import { BasicArrow } from '@/shared/basic/basic-arrow';
-  import { useI18n } from '@/hooks/useI18n';
+  import type { ButtonProps } from '~/shared/basic/button';
+  import { BasicArrow } from '~/shared/basic/basic-arrow';
+  import { useI18n } from '~/hooks/useI18n';
 
   type ButtonOptions = Partial<ButtonProps> & { text: string };
 

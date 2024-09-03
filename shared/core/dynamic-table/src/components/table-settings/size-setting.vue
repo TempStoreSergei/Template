@@ -29,7 +29,7 @@
   import { useTableContext } from '../../hooks/useTableContext';
   import type { TableProps } from 'ant-design-vue/es/table/Table';
   import type { MenuInfo } from 'ant-design-vue/es/menu/src/interface';
-  import { useI18n } from '@/hooks/useI18n';
+  import { useI18n } from '~/hooks/useI18n';
 
   type SizeType = NonNullable<TableProps['size']>;
 

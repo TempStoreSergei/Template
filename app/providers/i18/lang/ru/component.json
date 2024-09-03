@@ -1,0 +1,28 @@
+{
+  "excel": {
+    "exportModalTitle": "Экспорт данных",
+    "fileType": "Тип файла",
+    "fileName": "Имя файла"
+  },
+  "form": {
+    "putAway": "Свернуть",
+    "unfold": "Развернуть",
+    "maxTip": "Количество символов должно быть меньше {0}",
+    "apiSelectNotFound": "Ожидайте завершения загрузки данных..."
+  },
+  "table": {
+    "settingDens": "Плотность",
+    "settingDensDefault": "По умолчанию",
+    "settingDensMiddle": "Средняя",
+    "settingDensSmall": "Компактная",
+    "settingColumn": "Настройки столбцов",
+    "settingColumnShow": "Отображение столбцов",
+    "settingIndexColumnShow": "Индексный столбец",
+    "settingFixedLeft": "Закрепить слева",
+    "settingFixedRight": "Закрепить справа",
+    "settingFullScreen": "Полноэкранный режим",
+    "settingBordered": "С границами",
+    "index": "Индекс",
+    "total": "всего {total}"
+  }
+}

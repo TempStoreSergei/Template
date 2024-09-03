@@ -1,3 +1,3 @@
-import HomePage from "./HomePage.vue"
+import AdminPage from "./AdminPage.vue"
 
-export { HomePage }
+export { AdminPage }

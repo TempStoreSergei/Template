@@ -1,7 +1,7 @@
 import type { ColumnsType } from 'ant-design-vue/es/table';
-import type { FormSchema, GetFieldKeys } from '@/shared/core/schema-form';
+import type { FormSchema, GetFieldKeys } from '~/shared/core/schema-form';
 import type { ActionItem } from './tableAction';
-import type { TableActionType } from '@/shared/core/dynamic-table/src/types';
+import type { TableActionType } from '~/shared/core/dynamic-table/src/types';
 import type { DataIndex } from 'ant-design-vue/es/vc-table/interface';
 
 // Type for individual column definitions in the table

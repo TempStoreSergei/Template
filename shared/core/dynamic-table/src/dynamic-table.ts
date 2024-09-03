@@ -3,9 +3,9 @@ import tableConfig from './dynamic-table.config';
 import type { PropType, ExtractPublicPropTypes } from 'vue';
 import type { BookType } from 'xlsx';
 import type { TableColumn, OnChangeCallbackParams, EditableType, OnSave, OnCancel } from './types/';
-import type { SchemaFormProps } from '@/shared/core/schema-form';
+import type { SchemaFormProps } from '~/shared/core/schema-form';
 import type { GetRowKey } from 'ant-design-vue/es/table/interface';
-import { isBoolean } from '@/shared/utils/is';
+import { isBoolean } from '~/shared/utils/is';
 
 export const dynamicTableProps = {
   ...tableProps(),

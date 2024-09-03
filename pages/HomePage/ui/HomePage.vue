@@ -10,7 +10,7 @@ const increment = () => {
 };
 </script>
 
-<style>
+<style lang="scss">
 body {
   cursor: url("https://vsthemes.org/uploads/cursors/24897/ec9c27ec4afcbc9e321f3114ee514696.webp"),
     auto;

@@ -1,4 +1,4 @@
-import type { TableActionType } from '@/shared/core/dynamic-table';
+import type { TableActionType } from '~/shared/core/dynamic-table';
 import type { UnwrapFormSchema } from './types';
 
 export const schemaFormItemProps = {

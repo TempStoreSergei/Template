@@ -26,9 +26,9 @@
   import { selectProps } from 'ant-design-vue/es/select';
   import { Select } from 'ant-design-vue';
   import type { PropType } from 'vue';
-  import { isFunction } from '@/shared/utils/is';
-  import { useI18n } from '@/hooks/useI18n';
-  import { propTypes } from '@/shared/utils/propTypes';
+  import { isFunction } from '~/shared/utils/is';
+  import { useI18n } from '~/hooks/useI18n';
+  import { propTypes } from '~/shared/utils/propTypes';
 
   type OptionsItem = { label: string; value: string; disabled?: boolean };
 

@@ -1,8 +1,8 @@
 import { computed, unref, watch } from 'vue';
 import { useFormContext } from './useFormContext';
 import type { ColEx } from '../types/component';
-import { isBoolean, isFunction, isNumber, isObject } from '@/shared/utils/is';
-import { useBreakpoint } from '@/hooks/event/useBreakpoint';
+import { isBoolean, isFunction, isNumber, isObject } from '~/shared/utils/is';
+import { useBreakpoint } from '~/hooks/event/useBreakpoint';
 
 const BASIC_COL_LEN = 24;
 

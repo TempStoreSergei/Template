@@ -79,11 +79,11 @@
   import { Tooltip, Popover, Divider } from 'ant-design-vue';
   import { useTableContext } from '../../hooks/useTableContext';
   import type { TableColumn } from '../../types/column';
-  import Checkbox from '@/shared/basic/check-box/index.vue';
-  import { useSortable } from '@/hooks/useSortable';
-  import { isNil } from '@/shared/utils/is';
-  import { useI18n } from '@/hooks/useI18n';
-  import AButton from '@/shared/basic/button';
+  import Checkbox from '~/shared/basic/check-box/index.vue';
+  import { useSortable } from '~/hooks/useSortable';
+  import { isNil } from '~/shared/utils/is';
+  import { useI18n } from '~/hooks/useI18n';
+  import AButton from '~/shared/basic/button';
 
   const { t } = useI18n();
   const table = useTableContext();

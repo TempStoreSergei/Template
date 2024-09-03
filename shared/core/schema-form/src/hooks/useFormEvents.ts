@@ -1,6 +1,6 @@
 import { unref } from 'vue';
 import { useFormContext } from './useFormContext';
-import { isFunction } from '@/shared/utils/is';
+import { isFunction } from '~/shared/utils/is';
 
 export type FormEvents = ReturnType<typeof useFormEvents>;
 

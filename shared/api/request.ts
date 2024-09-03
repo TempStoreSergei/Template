@@ -1,7 +1,7 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { isString } from "lodash-es";
 import { message as $message, Modal } from "ant-design-vue";
-import { ResultEnum } from "@/enums/httpEnum.ts";
+import { ResultEnum } from "~/enums/httpEnum.ts";
 
 // Define request options with improved typing
 export interface RequestOptions extends AxiosRequestConfig {

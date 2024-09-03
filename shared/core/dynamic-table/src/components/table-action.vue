@@ -24,9 +24,9 @@
   import { Popconfirm, Tooltip, type TooltipProps } from 'ant-design-vue';
   import type { ActionItem } from '../types/tableAction';
   import type { CustomRenderParams } from '../types/column';
-  import AButton from '@/shared/basic/button';
-  import { Icon } from '@/shared/basic/icon';
-  import { isPromise } from '@/shared/utils/is';
+  import AButton from '~/shared/basic/button';
+  import { Icon } from '~/shared/basic/icon';
+  import { isPromise } from '~/shared/utils/is';
 
   // Functional component to handle action item rendering with popConfirm and tooltip
   const ActionItemRender: FunctionalComponent<ActionItem> = (action, { slots }) => {

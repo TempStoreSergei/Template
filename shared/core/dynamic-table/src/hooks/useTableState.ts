@@ -4,8 +4,8 @@ import tableConfig from '../dynamic-table.config';
 import { useScroll } from './useScroll';
 import type { DynamicTableProps } from '../dynamic-table';
 import type { TableProps, Table } from 'ant-design-vue';
-import type { SchemaForm } from '@/shared/core/schema-form';
-import { useI18n } from '@/hooks/useI18n';
+import type { SchemaForm } from '~/shared/core/schema-form';
+import { useI18n } from '~/hooks/useI18n';
 
 export type Pagination = TableProps['pagination'];
 

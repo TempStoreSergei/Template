@@ -38,9 +38,9 @@
   import { EditOutlined, CloseOutlined, CheckOutlined } from '@ant-design/icons-vue';
   import { useTableContext } from '../../hooks';
   import type { PropType } from 'vue';
-  import type { CustomRenderParams, EditableType } from '@/shared/core/dynamic-table/src/types';
-  import { schemaFormItemProps, SchemaFormItem } from '@/shared/core/schema-form';
-  import { isPromise } from '@/shared/utils/is';
+  import type { CustomRenderParams, EditableType } from '~/shared/core/dynamic-table/src/types';
+  import { schemaFormItemProps, SchemaFormItem } from '~/shared/core/schema-form';
+  import { isPromise } from '~/shared/utils/is';
 
   const props = defineProps({
     ...schemaFormItemProps,

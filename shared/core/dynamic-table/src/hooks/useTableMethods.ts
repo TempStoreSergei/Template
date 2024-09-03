@@ -9,8 +9,8 @@ import type { DynamicTableProps } from '../dynamic-table';
 import type { OnChangeCallbackParams, TableColumn } from '../types/';
 import type { Pagination } from './useTableState';
 import type { FormProps } from 'ant-design-vue';
-import { warn } from '@/shared/utils/log';
-import { isObject } from '@/shared/utils/is';
+import { warn } from '~/shared/utils/log';
+import { isObject } from '~/shared/utils/is';
 
 export type UseInfiniteScrollParams = Parameters<typeof useInfiniteScroll>;
 

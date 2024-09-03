@@ -2,10 +2,10 @@ import type { RowProps } from 'ant-design-vue';
 import type { RuleObject } from 'ant-design-vue/es/form/interface';
 import type { FormItemProps } from 'ant-design-vue/es/form/FormItem';
 import type { Component, ComputedRef, UnwrapRef, VNode } from 'vue';
-import type { ButtonProps as AntdButtonProps } from '@/shared/basic/button';
+import type { ButtonProps as AntdButtonProps } from '~/shared/basic/button';
 import type { ColEx, ComponentType, ComponentProps } from './component';
 import type { SchemaFormType } from '../hooks';
-import type { TableActionType } from '@/shared/core/dynamic-table';
+import type { TableActionType } from '~/shared/core/dynamic-table';
 
 export type { RowProps };
 

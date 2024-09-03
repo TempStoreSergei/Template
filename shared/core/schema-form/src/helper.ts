@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 import type { RuleObject } from 'ant-design-vue/es/form/';
 import type { ComponentType } from './types/component';
-import { isNumber } from '@/shared/utils/is';
-import { useI18n } from '@/hooks/useI18n';
+import { isNumber } from '~/shared/utils/is';
+import { useI18n } from '~/hooks/useI18n';
 
 /**
  * @description: 生成placeholder

@@ -5,10 +5,10 @@ import { EditableCell } from '../components';
 import { ColumnKeyFlag, columnKeyFlags, type CustomRenderParams } from '../types/column';
 import tableConfig from '../dynamic-table.config';
 import { useTableContext } from './useTableContext';
-import type { TableColumn } from '@/shared/core/dynamic-table';
-import type { FormSchema } from '@/shared/core/schema-form';
-import { isBoolean } from '@/shared/utils/is';
-import { TableAction } from '@/shared/core/dynamic-table/src/components';
+import type { TableColumn } from '~/shared/core/dynamic-table';
+import type { FormSchema } from '~/shared/core/schema-form';
+import { isBoolean } from '~/shared/utils/is';
+import { TableAction } from '~/shared/core/dynamic-table/src/components';
 
 export const useColumns = () => {
   const tableContext = useTableContext();

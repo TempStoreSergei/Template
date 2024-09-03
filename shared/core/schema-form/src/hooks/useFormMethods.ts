@@ -6,9 +6,9 @@ import { useFormContext } from './useFormContext';
 import type { SchemaFormProps } from '../schema-form';
 import type { UnwrapFormSchema } from '../types/form';
 import type { NamePath } from 'ant-design-vue/lib/form/interface';
-import { deepMerge } from '@/shared/utils/';
-import { isFunction, isObject, isArray, isString } from '@/shared/utils/is';
-import { dateUtil } from '@/shared/utils/dateUtil';
+import { deepMerge } from '~/shared/utils/';
+import { isFunction, isObject, isArray, isString } from '~/shared/utils/is';
+import { dateUtil } from '~/shared/utils/dateUtil';
 
 type FormSchema = UnwrapFormSchema;
 

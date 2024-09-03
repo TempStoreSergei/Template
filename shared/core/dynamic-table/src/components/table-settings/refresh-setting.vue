@@ -10,7 +10,7 @@
   import { RedoOutlined } from '@ant-design/icons-vue';
   import { Tooltip } from 'ant-design-vue';
   import { useTableContext } from '../../hooks/useTableContext';
-  import { useI18n } from '@/hooks/useI18n';
+  import { useI18n } from '~/hooks/useI18n';
 
   const { t } = useI18n();
   const table = useTableContext();

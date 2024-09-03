@@ -1,0 +1,111 @@
+{
+  "footer": {
+    "onlinePreview": "Предпросмотр",
+    "onlineDocument": "Документ"
+  },
+  "header": {
+    "dropdownItemDoc": "Документ",
+    "dropdownItemLoginOut": "Выйти",
+
+    "tooltipErrorLog": "Журнал ошибок",
+    "tooltipLock": "Блокировка экрана",
+    "tooltipNotify": "Уведомления",
+
+    "tooltipEntryFull": "Полноэкранный режим",
+    "tooltipExitFull": "Выйти из полноэкранного режима",
+
+    "lockScreenPassword": "Пароль для блокировки экрана",
+    "lockScreen": "Блокировка экрана",
+    "lockScreenBtn": "Заблокировать",
+
+    "home": "Главная"
+  },
+  "multipleTab": {
+    "reload": "Обновить текущую",
+    "close": "Закрыть текущую",
+    "closeLeft": "Закрыть слева",
+    "closeRight": "Закрыть справа",
+    "closeOther": "Закрыть другие",
+    "closeAll": "Закрыть все"
+  },
+  "setting": {
+    "contentModeFull": "Полный",
+    "contentModeFixed": "Фиксированная ширина",
+    "topMenuAlignLeft": "Слева",
+    "topMenuAlignRight": "Справа",
+    "topMenuAlignCenter": "Центр",
+    "menuTriggerNone": "Не показывать",
+    "menuTriggerBottom": "Снизу",
+    "menuTriggerTop": "Сверху",
+    "menuTypeSidebar": "Режим бокового меню",
+    "menuTypeMixSidebar": "Смешанный режим бокового меню",
+    "menuTypeMix": "Смешанный режим верхнего меню",
+    "menuTypeTopMenu": "Режим верхнего меню",
+
+    "on": "Включено",
+    "off": "Выключено",
+    "minute": "Минута",
+
+    "operatingTitle": "Успешно!",
+    "operatingContent": "Копирование успешно, пожалуйста, перейдите в src/settings/projectSetting.ts для изменения конфигурации!",
+    "resetSuccess": "Успешно сброшено!",
+
+    "copyBtn": "Копировать",
+    "clearBtn": "Очистить кеш и перейти на страницу входа",
+
+    "drawerTitle": "Конфигурация",
+
+    "darkMode": "Тёмный режим",
+    "navMode": "Режим навигации",
+    "interfaceFunction": "Функция интерфейса",
+    "interfaceDisplay": "Отображение интерфейса",
+    "animation": "Анимация",
+    "splitMenu": "Разделённое меню",
+    "closeMixSidebarOnChange": "При смене страницы закрывать меню",
+
+    "sysTheme": "Системная тема",
+    "headerTheme": "Тема заголовка",
+    "sidebarTheme": "Тема меню",
+
+    "menuDrag": "Перетаскивание бокового меню",
+    "menuSearch": "Поиск в меню",
+    "menuAccordion": "Аккордеон меню",
+    "menuCollapse": "Скрытие меню",
+    "collapseMenuDisplayName": "Имя при скрытии меню",
+    "topMenuLayout": "Макет верхнего меню",
+    "menuCollapseButton": "Кнопка скрытия меню",
+    "contentMode": "Ширина области контента",
+    "expandedMenuWidth": "Ширина расширенного меню",
+
+    "breadcrumb": "Хлебные крошки",
+    "breadcrumbIcon": "Иконка хлебных крошек",
+    "tabs": "Вкладки",
+    "tabDetail": "Детали вкладки",
+    "tabsQuickBtn": "Кнопка быстрого доступа к вкладкам",
+    "tabsRedoBtn": "Кнопка повтора вкладок",
+    "tabsFoldBtn": "Кнопка сворачивания вкладок",
+    "sidebar": "Боковая панель",
+    "header": "Заголовок",
+    "footer": "Подвал",
+    "fullContent": "Полный контент",
+    "grayMode": "Серый режим",
+    "colorWeak": "Режим слабого цвета",
+
+    "progress": "Прогресс",
+    "switchLoading": "Переключение загрузки",
+    "switchAnimation": "Переключение анимации",
+    "animationType": "Тип анимации",
+
+    "autoScreenLock": "Автоматическая блокировка экрана",
+    "notAutoScreenLock": "Не автоматическая блокировка",
+
+    "fixedHeader": "Фиксированный заголовок",
+    "fixedSideBar": "Фиксированная боковая панель",
+
+    "mixSidebarTrigger": "Смешанный триггер бокового меню",
+    "triggerHover": "Наведение",
+    "triggerClick": "Щелчок",
+
+    "mixSidebarFixed": "Фиксированное расширенное меню"
+  }
+}

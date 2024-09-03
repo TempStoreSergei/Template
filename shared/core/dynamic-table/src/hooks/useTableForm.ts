@@ -2,7 +2,7 @@ import { unref, computed, watchEffect } from 'vue';
 import { ColumnKeyFlag } from '../types/column';
 import { useTableContext } from './useTableContext';
 import type { ComputedRef } from 'vue';
-import type { FormSchema, SchemaFormProps } from '@/shared/core/schema-form';
+import type { FormSchema, SchemaFormProps } from '~/shared/core/schema-form';
 
 export type TableForm = ReturnType<typeof useTableForm>;
 

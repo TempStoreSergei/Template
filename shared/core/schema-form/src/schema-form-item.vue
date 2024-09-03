@@ -65,9 +65,9 @@
   import type { ComponentType } from './componentMap';
   import type { CustomRenderFn, FormSchema, RenderCallbackParams, ComponentProps } from './types/';
   import type { RuleObject } from 'ant-design-vue/es/form/';
-  import { isBoolean, isNull, isObject, isString, isFunction, isArray } from '@/shared/utils/is';
-  import BasicHelp from '@/shared/basic/basic-help/index.vue';
-  import { useI18n } from '@/hooks/useI18n';
+  import { isBoolean, isNull, isObject, isString, isFunction, isArray } from '~/shared/utils/is';
+  import BasicHelp from '~/shared/basic/basic-help/index.vue';
+  import { useI18n } from '~/hooks/useI18n';
 
   defineOptions({
     name: 'SchemaFormItem',

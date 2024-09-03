@@ -3,7 +3,7 @@ import type { CustomRenderParams } from './column';
 import type { PopconfirmProps } from 'ant-design-vue/es/popconfirm';
 import type { ButtonProps, TooltipProps } from 'ant-design-vue/es/components';
 import type { TableMethods, UseEditableType } from '../hooks/';
-import type { ButtonType } from '@/shared/basic/button';
+import type { ButtonType } from '~/shared/basic/button';
 
 // Define the structure for an action item, which is used to represent buttons with various properties.
 export type ActionItem = Omit<ButtonProps, 'onClick' | 'loading' | 'type'> & {
