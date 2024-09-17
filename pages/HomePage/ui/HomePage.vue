@@ -1,68 +1,131 @@
 <template>
-  <NuxtWelcome />
+  <section>
+    <swiper
+      direction="vertical"
+      :slides-per-view="1"
+      :space-between="30"
+      :mousewheel="mouseWheelSetting"
+      :modules="[Mousewheel, Pagination]"
+      class="page"
+      @swiper="onSwiperInit"
+      @slideChange="onSlideChange"
+    >
+      <swiper-slide v-for="category in categories" :key="category.categoryId">
+        <article class="collage">
+          <div class="image-container">
+            <div class="image">
+              <img
+                :src="getDataFromServer(category.categoryIMG)"
+                alt="category-image"
+              />
+              <div class="image-hero">
+                <h1 class="image-title">{{ category.categoryName }}</h1>
+              </div>
+            </div>
+            <swiper
+              :effect="'coverflow'"
+              :grabCursor="true"
+              :centeredSlides="true"
+              slideActiveClass="active-goods"
+              :slidesPerView="'auto'"
+              :coverflowEffect="{
+                rotate: 20,
+                stretch: 25,
+                depth: 250,
+                modifier: 1,
+                slideShadows: false,
+              }"
+              :pagination="false"
+              :modules="[EffectCoverflow]"
+              class="horizontal-scroll"
+            >
+              <swiper-slide
+                v-for="good in category.goods"
+                :key="good.goodId"
+                style="width: max-content; height: 100%"
+              >
+                <Product
+                  :image="getDataFromServer(good.mainImg)"
+                  :price="good.goodPrice"
+                  :title="good.goodName"
+                  :goodId="good.goodId"
+                />
+              </swiper-slide>
+            </swiper>
+          </div>
+        </article>
+      </swiper-slide>
+    </swiper>
+  </section>
 </template>
 
 <script setup lang="ts">
-const count = ref(1);
+import { computed, onMounted, ref, watch } from "vue";
+import { Mousewheel, Pagination, EffectCoverflow } from "swiper/modules";
+import type { AxiosRequestConfig } from "axios";
+import { useTabsStore } from "~/entities/navigation/modal/tabs";
+import { getDataFromServer } from "~/shared/utils/urlUtils";
 
-const increment = () => {
-  count.value += 1;
+import { request } from "~/shared/api/request";
+
+import Product from "~/entities/products";
+import { useGoodStore } from "~/entities/description/modal/good";
+
+const getInfo = (options?: AxiosRequestConfig) => {
+  return request({
+    url: "/system/get_data",
+    method: "GET",
+    ...options,
+  });
 };
+
+const tabs = useTabsStore();
+const goodStore = useGoodStore();
+
+const swiperInstance = ref(null);
+const activeIndex = ref(0);
+
+// Reactive state for left offset
+const categories = ref([]);
+
+const mouseWheelSetting = computed(() => ({
+  enabled: true,
+  forceToAxis: true,
+}));
+
+const onSlideChange = (swiper) => {
+  activeIndex.value = swiper.activeIndex;
+  tabs.setActiveIndex(swiper.activeIndex);
+};
+
+const goToSlide = (index) => {
+  if (swiperInstance.value) {
+    swiperInstance.value.slideTo(index); // Use the stored Swiper instance to navigate to the slide
+  }
+};
+
+const onSwiperInit = (swiper) => {
+  swiperInstance.value = swiper; // Store the Swiper instance when initialized
+};
+
+// Watch for activeTab changes and trigger slide navigation
+watch(
+  () => tabs.getActiveTab(),
+  (newIndex) => {
+    goToSlide(newIndex);
+  },
+);
+
+onMounted(async () => {
+  categories.value = await getInfo();
+  const elements = categories.value.map((category, index) => ({
+    value: index,
+    title: category.categoryName,
+  }));
+  tabs.saveTabs(elements);
+});
 </script>
 
 <style lang="scss">
-body {
-  cursor: url("https://vsthemes.org/uploads/cursors/24897/ec9c27ec4afcbc9e321f3114ee514696.webp"),
-    auto;
-}
-@keyframes cursor-blink {
-  0% {
-    opacity: 0;
-  }
-}
-.container {
-  color: aliceblue;
-  box-sizing: border-box;
-  flex-flow: column wrap;
-  display: flex;
-  gap: 4px;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-.link {
-  background: linear-gradient(45deg, #9c20aa 33%, #fb3570);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: #0b2349;
-}
-.link::after {
-  content: "";
-  width: 5px;
-  height: 25px;
-  background: #ec7fff;
-  display: inline-block;
-  animation: cursor-blink 1.5s steps(2) infinite;
-}
-.title a {
-  text-decoration: none;
-  color: blueviolet;
-}
-.wrapper {
-  background: black;
-  font-family: "Dubai Medium";
-}
-
-.button {
-  cursor: pointer;
-  background:
-    linear-gradient(#000 0 0) padding-box,
-    /*this is your grey background*/ linear-gradient(to right, #9c20aa, #fb3570)
-      border-box;
-  color: aliceblue;
-  padding: 10px;
-  border: 5px solid transparent;
-  border-radius: 15px;
-  display: inline-block;
-}
+@import "styles.module";
 </style>

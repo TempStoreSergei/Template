@@ -1,13 +1,13 @@
-import { computed, reactive, ref, unref, watch, type Slots } from 'vue';
-import { omit } from 'lodash-es';
-import tableConfig from '../dynamic-table.config';
-import { useScroll } from './useScroll';
-import type { DynamicTableProps } from '../dynamic-table';
-import type { TableProps, Table } from 'ant-design-vue';
-import type { SchemaForm } from '~/shared/core/schema-form';
-import { useI18n } from '~/hooks/useI18n';
+import { computed, reactive, ref, unref, watch, type Slots } from "vue";
+import { omit } from "lodash-es";
+import tableConfig from "../dynamic-table.config";
+import { useScroll } from "./useScroll";
+import type { DynamicTableProps } from "../dynamic-table";
+import type { TableProps, Table } from "ant-design-vue";
+import type { SchemaForm } from "~/shared/core/schema-form";
+import { useI18n } from "~/hooks/useI18n";
 
-export type Pagination = TableProps['pagination'];
+export type Pagination = TableProps["pagination"];
 
 export type TableState = ReturnType<typeof useTableState>;
 
@@ -65,7 +65,7 @@ export const useTableState = ({ props, slots }: UseTableStateParams) => {
       pageSizeOptions: [...tableConfig.pageSizeOptions],
       showQuickJumper: true,
       showSizeChanger: true, // Show option to change page size
-      showTotal: (total) => t('component.table.total', { total }), // Show total count
+      showTotal: (total) => t("component.table.total", { total }), // Show total count
       ...props.pagination,
     };
   }
@@ -81,15 +81,15 @@ export const useTableState = ({ props, slots }: UseTableStateParams) => {
       ...props,
       scroll: { ...unref(scroll), ...props.scroll },
       pagination: props.pagination ?? unref(paginationRef),
-      rowKey: props.rowKey ?? 'id',
+      rowKey: props.rowKey ?? "id",
       loading: props.loading ?? unref(loadingRef),
-      tableLayout: props.tableLayout ?? 'fixed',
+      tableLayout: props.tableLayout ?? "fixed",
     };
     if (slots.expandedRowRender) {
-      propsData = omit(propsData, 'scroll');
+      propsData = omit(propsData, "scroll");
     }
 
-    propsData = omit(propsData, ['class', 'onChange', 'columns']);
+    propsData = omit(propsData, ["class", "onChange", "columns"]);
     return propsData;
   });
 

@@ -120,7 +120,8 @@ defineExpose({
       <DownOutlined :style="{ fontSize: '20px' }" />
     </a>
     <div v-else style="display: inline-block">
-      <TitleI18n :title="tabItem.meta?.title" />
+      {{ tabItem.name }}
+      <!-- <TitleI18n :title="tabItem.meta?.title" /> -->
     </div>
     <template #overlay>
       <a-menu style="user-select: none">

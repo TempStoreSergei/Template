@@ -1,21 +1,23 @@
-import { utils, writeFile } from 'xlsx';
-import type { WorkBook } from 'xlsx';
-import type { JsonToSheet, AoAToSheet } from './typing';
+import { utils, writeFile } from "xlsx";
+import type { WorkBook } from "xlsx";
+import type { JsonToSheet, AoAToSheet } from "./typing";
 
-const DEF_FILE_NAME = 'excel-list.xlsx';
+const DEF_FILE_NAME = "excel-list.xlsx";
 
 export function jsonToSheetXlsx<T = any>({
   data,
   header,
   filename = DEF_FILE_NAME,
   json2sheetOpts = {},
-  write2excelOpts = { bookType: 'xlsx' },
+  write2excelOpts = { bookType: "xlsx" },
 }: JsonToSheet<T>) {
   let arrData = [...data];
   if (header) {
     arrData.unshift(header);
     const filterKeys = Object.keys(header);
-    arrData = arrData.map((item) => filterKeys.reduce<any>((p, k) => ((p[k] = item[k]), p), {}));
+    arrData = arrData.map((item) =>
+      filterKeys.reduce<any>((p, k) => ((p[k] = item[k]), p), {}),
+    );
     json2sheetOpts.skipHeader = true;
   }
 
@@ -37,7 +39,7 @@ export function aoaToSheetXlsx<T = any>({
   data,
   header,
   filename = DEF_FILE_NAME,
-  write2excelOpts = { bookType: 'xlsx' },
+  write2excelOpts = { bookType: "xlsx" },
 }: AoAToSheet<T>) {
   const arrData = [...data];
   if (header) {

@@ -9,8 +9,9 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     "@ant-design-vue/nuxt",
     "@nuxtjs/i18n",
+    "nuxt-swiper"
   ],
-  css: ["~/app/normalize.min.css", "~/app/global.css"],
+  css: ["~/app/styles/index.scss"],
 
   ssr: false,
 

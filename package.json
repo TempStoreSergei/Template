@@ -18,14 +18,19 @@
 		"@vite-pwa/nuxt": "^0.10.1",
 		"@vueuse/core": "^11.0.3",
 		"@vueuse/nuxt": "^11.0.3",
+		"axios": "^1.7.7",
 		"crypto-js": "^4.2.0",
+		"file-saver": "^2.0.5",
 		"lodash-es": "^4.17.21",
 		"nuxt": "^3.11.1",
+		"nuxt-swiper": "^1.2.2",
 		"pinia": "^2.2.2",
 		"pinia-plugin-persistedstate": "^3.2.3",
+		"sortablejs": "^1.15.3",
 		"vue": "^3.4.21",
 		"vue-router": "^4.3.0",
-		"vue-virtual-scroller": "^2.0.0-beta.8"
+		"vue-virtual-scroller": "^2.0.0-beta.8",
+		"xlsx": "^0.18.5"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.9.1",

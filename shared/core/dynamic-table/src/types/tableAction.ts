@@ -1,12 +1,12 @@
-import type { Ref } from 'vue';
-import type { CustomRenderParams } from './column';
-import type { PopconfirmProps } from 'ant-design-vue/es/popconfirm';
-import type { ButtonProps, TooltipProps } from 'ant-design-vue/es/components';
-import type { TableMethods, UseEditableType } from '../hooks/';
-import type { ButtonType } from '~/shared/basic/button';
+import type { Ref } from "vue";
+import type { CustomRenderParams } from "./column";
+import type { PopconfirmProps } from "ant-design-vue/es/popconfirm";
+import type { ButtonProps, TooltipProps } from "ant-design-vue/es/components";
+import type { TableMethods, UseEditableType } from "../hooks/";
+import type { ButtonType } from "~/shared/basic/button";
 
 // Define the structure for an action item, which is used to represent buttons with various properties.
-export type ActionItem = Omit<ButtonProps, 'onClick' | 'loading' | 'type'> & {
+export type ActionItem = Omit<ButtonProps, "onClick" | "loading" | "type"> & {
   // Function to be called when the button is clicked, with parameters for custom rendering.
   onClick?: Fn<CustomRenderParams, any>;
 
@@ -20,7 +20,7 @@ export type ActionItem = Omit<ButtonProps, 'onClick' | 'loading' | 'type'> & {
   type?: ButtonType;
 
   // Loading state of the button, can be reactive.
-  loading?: Ref<ButtonProps['loading']> | ButtonProps['loading'];
+  loading?: Ref<ButtonProps["loading"]> | ButtonProps["loading"];
 
   // Icon to be displayed on the button.
   icon?: string;
@@ -68,43 +68,43 @@ export type PopConfirm = PopconfirmProps & {
 
   // Placement of the pop-up confirmation relative to the button.
   placement?:
-    | 'top'
-    | 'left'
-    | 'right'
-    | 'bottom'
-    | 'topLeft'
-    | 'topRight'
-    | 'leftTop'
-    | 'leftBottom'
-    | 'rightTop'
-    | 'rightBottom'
-    | 'bottomLeft'
-    | 'bottomRight';
+    | "top"
+    | "left"
+    | "right"
+    | "bottom"
+    | "topLeft"
+    | "topRight"
+    | "leftTop"
+    | "leftBottom"
+    | "rightTop"
+    | "rightBottom"
+    | "bottomLeft"
+    | "bottomRight";
 };
 
 // Define the structure for the table actions, including various methods related to table operations.
 export type TableActionType = {
   /** Reload the table and reset the page number, excluding the search form. */
-  reload: TableMethods['reload'];
+  reload: TableMethods["reload"];
 
   /** Set dynamic properties of the table. */
-  setProps: TableMethods['setProps'];
+  setProps: TableMethods["setProps"];
 
   /** Fetch remote data for the table. */
-  fetchData: TableMethods['fetchData'];
+  fetchData: TableMethods["fetchData"];
 
   /** Enter the editable state for a row. */
-  startEditable: UseEditableType['startEditable'];
+  startEditable: UseEditableType["startEditable"];
 
   /** Cancel the editable state for a row. */
-  cancelEditable: UseEditableType['cancelEditable'];
+  cancelEditable: UseEditableType["cancelEditable"];
 
   /** Get the form model values after editing. */
-  getEditFormModel: UseEditableType['getEditFormModel'];
+  getEditFormModel: UseEditableType["getEditFormModel"];
 
   /** Check if the current row is in an editable state. */
-  isEditable: UseEditableType['isEditable'];
+  isEditable: UseEditableType["isEditable"];
 
   /** Validate the row's editable form. */
-  validateRow: UseEditableType['validateRow'];
+  validateRow: UseEditableType["validateRow"];
 };

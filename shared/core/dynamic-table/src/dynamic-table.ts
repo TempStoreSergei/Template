@@ -1,17 +1,23 @@
-import { tableProps } from 'ant-design-vue/es/table';
-import tableConfig from './dynamic-table.config';
-import type { PropType, ExtractPublicPropTypes } from 'vue';
-import type { BookType } from 'xlsx';
-import type { TableColumn, OnChangeCallbackParams, EditableType, OnSave, OnCancel } from './types/';
-import type { SchemaFormProps } from '~/shared/core/schema-form';
-import type { GetRowKey } from 'ant-design-vue/es/table/interface';
-import { isBoolean } from '~/shared/utils/is';
+import { tableProps } from "ant-design-vue/es/table";
+import tableConfig from "./dynamic-table.config";
+import type { PropType, ExtractPublicPropTypes } from "vue";
+import type { BookType } from "xlsx";
+import type {
+  TableColumn,
+  OnChangeCallbackParams,
+  EditableType,
+  OnSave,
+  OnCancel,
+} from "./types/";
+import type { SchemaFormProps } from "~/shared/core/schema-form";
+import type { GetRowKey } from "ant-design-vue/es/table/interface";
+import { isBoolean } from "~/shared/utils/is";
 
 export const dynamicTableProps = {
   ...tableProps(),
   rowKey: {
     type: [String, Function] as PropType<string | GetRowKey<any>>,
-    default: 'id',
+    default: "id",
   },
   /** Whether to show the search form */
   search: {
@@ -45,7 +51,9 @@ export const dynamicTableProps = {
   /** Function to request table data */
   dataRequest: {
     // Function to fetch list data from API
-    type: Function as PropType<(params: Recordable) => Promise<API.TableListResult | any[]>>,
+    type: Function as PropType<
+      (params: Recordable) => Promise<API.TableListResult | any[]>
+    >,
   },
   /** Whether to make an immediate request */
   immediate: { type: Boolean as PropType<boolean>, default: true },
@@ -87,7 +95,7 @@ export const dynamicTableProps = {
   /** XLSX book type */
   exportBookType: {
     type: String as PropType<BookType>,
-    default: 'xlsx',
+    default: "xlsx",
   },
   /** Auto width for export */
   exportAutoWidth: {
@@ -97,7 +105,10 @@ export const dynamicTableProps = {
   /** Custom data export format function */
   exportFormatter: {
     type: Function as PropType<
-      (columns: TableColumn[], tableData: any[]) => { header: string[]; data: any[] }
+      (
+        columns: TableColumn[],
+        tableData: any[],
+      ) => { header: string[]; data: any[] }
     >,
     default: null,
   },
@@ -109,7 +120,7 @@ export const dynamicTableProps = {
    */
   editableType: {
     type: String as PropType<EditableType>,
-    default: 'single',
+    default: "single",
   },
   /** Callback for saving cell edits */
   onSave: {
@@ -123,17 +134,19 @@ export const dynamicTableProps = {
   onlyOneLineEditorAlertMessage: String,
 } as const;
 
-export type DynamicTableProps = ExtractPublicPropTypes<typeof dynamicTableProps> &
+export type DynamicTableProps = ExtractPublicPropTypes<
+  typeof dynamicTableProps
+> &
   EmitsToProps<DynamicTableEmits>;
 
 export const dynamicTableEmits = {
   change: (...rest: OnChangeCallbackParams) => rest.length === 4,
-  'toggle-advanced': (isAdvanced: boolean) => isBoolean(isAdvanced),
-  'fetch-error': (error) => error,
+  "toggle-advanced": (isAdvanced: boolean) => isBoolean(isAdvanced),
+  "fetch-error": (error) => error,
   search: (params) => params,
   reload: () => true,
-  'update:expandedRowKeys': (keys: Key[]) => keys,
-  'expanded-rows-change': (keyValues: string[]) => Array.isArray(keyValues),
+  "update:expandedRowKeys": (keys: Key[]) => keys,
+  "expanded-rows-change": (keyValues: string[]) => Array.isArray(keyValues),
 };
 
 export type DynamicTableEmits = typeof dynamicTableEmits;

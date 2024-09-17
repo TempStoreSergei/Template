@@ -1,3 +1,5 @@
+import { serverIp } from "~/shared/api/request";
+
 /**
  * Appends query parameters from an object to a base URL.
  * @param baseUrl - The base URL to which parameters will be appended.
@@ -11,17 +13,23 @@
  * // => www.baidu.com?a=3&b=4
  * ```
  */
-export const setObjToUrlParams = (baseUrl: string, obj: Record<string, any>): string => {
+export const setObjToUrlParams = (
+  baseUrl: string,
+  obj: Record<string, any>,
+): string => {
   // Convert the parameters object to a query string
   const parameters = Object.entries(obj)
-    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-    .join('&');
+    .map(
+      ([key, value]) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+    )
+    .join("&");
 
   // Check if baseUrl already has a query string or needs to be appended
-  if (baseUrl.includes('?')) {
+  if (baseUrl.includes("?")) {
     return `${baseUrl}${parameters}`;
   } else {
-    return `${baseUrl}${baseUrl.endsWith('/') ? '' : '/'}?${parameters}`;
+    return `${baseUrl}${baseUrl.endsWith("/") ? "" : "/"}?${parameters}`;
   }
 };
 
@@ -39,5 +47,9 @@ export const setObjToUrlParams = (baseUrl: string, obj: Record<string, any>): st
  * ```
  */
 export const uniqueSlash = (path: string): string => {
-  return path.replace(/(https?:\/\/)(\/)+/g, '$1').replace(/\/{2,}/g, '/');
+  return path.replace(/(https?:\/\/)(\/)+/g, "$1").replace(/\/{2,}/g, "/");
+};
+
+export const getDataFromServer = (path: string): string => {
+  return serverIp + path;
 };

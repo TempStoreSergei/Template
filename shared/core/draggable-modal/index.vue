@@ -45,6 +45,7 @@
   import { CloseOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons-vue';
   import { throttle, omit } from 'lodash-es';
   import { Modal, Space } from 'ant-design-vue';
+  import ProConfigProvider from "~/shared/basic/pro-config-provider/index.vue";
 
   const props = defineProps({
     ...modalProps(),

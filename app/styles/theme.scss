@@ -1,0 +1,49 @@
+$white: #fff;
+$black: #000;
+
+html:not(.dark) {
+  $component-background: $white;
+}
+
+@mixin setStyle($className, $propName) {
+  html {
+    &.dark {
+      .#{$className} {
+        #{$propName}: $black;
+      }
+    }
+
+    &:not(.dark) {
+      .#{$className} {
+        #{$propName}: $white;
+      }
+    }
+  }
+}
+
+@mixin themeColor($classNames, $i: 1) {
+  @if $i <= length($classNames) {
+    $className: nth($classNames, $i);
+
+    @include setStyle($className, background-color);
+    @include setStyle($className, color);
+
+    @include themeColor($classNames, $i + 1);
+  }
+}
+
+@mixin themeTextColor($classNames, $i: 1) {
+  @if $i <= length($classNames) {
+    $className: nth($classNames, $i);
+    @include setStyle($className, color);
+    @include themeTextColor($classNames, $i + 1);
+  }
+}
+
+@mixin themeBgColor($classNames, $i: 1) {
+  @if $i <= length($classNames) {
+    $className: nth($classNames, $i);
+    @include setStyle($className, background-color);
+    @include themeBgColor($classNames, $i + 1);
+  }
+}

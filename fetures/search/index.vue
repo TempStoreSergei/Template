@@ -4,7 +4,12 @@
     placement="bottom"
     :mouse-enter-delay="0.5"
   >
-    <slot><SearchOutlined @click="visible = true" /></slot>
+    <div @click="visible = true">
+      <slot name="icon">
+        <SearchOutlined />
+      </slot>
+    </div>
+
     <DraggableModal
       v-model:open="visible"
       title="Search Menu"
@@ -19,10 +24,10 @@
         @change="handleSearch"
       >
         <template #prefix>
-          <SearchOutlined class="text-15px text-[#c2c2c2]" />
+          <SearchOutlined class="search-menu__icon" />
         </template>
       </a-input>
-      <div class="mt-20px">
+      <div class="search-menu__results">
         <Empty
           v-if="resultOptions.length === 0"
           description="No search results"
@@ -154,4 +159,15 @@ onKeyStroke("ArrowUp", handleUp);
 onKeyStroke("ArrowDown", handleDown);
 </script>
 
-<style lang="less"></style>
+<style lang="scss">
+.search-menu {
+  &__icon {
+    font-size: 15px;
+    color: #c2c2c2;
+  }
+
+  &__results {
+    margin-top: 20px;
+  }
+}
+</style>

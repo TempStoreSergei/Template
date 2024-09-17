@@ -11,18 +11,12 @@ const props = {
   styles: { type: Object as PropType<CSSProperties> },
   showIcon: { type: Boolean, default: true },
   axis: {
-    // The position of the right mouse button click
     type: Object as PropType<Axis>,
-    default() {
-      return { x: 0, y: 0 };
-    },
+    default: () => ({ x: 0, y: 0 }),
   },
   items: {
-    // The most important list, if not, will not be displayed
     type: Array as PropType<ContextMenuItem[]>,
-    default() {
-      return [];
-    },
+    default: () => [],
   },
 };
 
@@ -30,12 +24,11 @@ const ItemContent: FunctionalComponent<ItemContentProps> = (props) => {
   const { item } = props;
   return (
     <span
-      style="display: inline-block; width: 100%; "
-      class="px-4"
+      class="context-menu__item-content px-4"
       onClick={props.handler.bind(null, item)}
     >
       {props.showIcon && item.icon && (
-        <IconFont class="mr-2" type={item.icon} />
+        <IconFont class="context-menu__item-icon mr-2" type={item.icon} />
       )}
       <span>{item.label}</span>
     </span>
@@ -57,6 +50,7 @@ export default defineComponent({
 
       const left = body.clientWidth < x + menuWidth ? x - menuWidth : x;
       const top = body.clientHeight < y + menuHeight ? y - menuHeight : y;
+
       return {
         position: "absolute",
         width: `${width}px`,
@@ -70,18 +64,17 @@ export default defineComponent({
       open.value = false;
     };
 
-    function handleAction(item: ContextMenuItem, e: MouseEvent) {
+    const handleAction = (item: ContextMenuItem, e: MouseEvent) => {
       const { handler, disabled } = item;
-      if (disabled) {
-        return;
-      }
-      e?.stopPropagation();
-      e?.preventDefault();
+      if (disabled) return;
+
+      e.stopPropagation();
+      e.preventDefault();
       handler?.();
       close();
-    }
+    };
 
-    function renderMenuItem(items: ContextMenuItem[]) {
+    const renderMenuItem = (items: ContextMenuItem[]) => {
       const visibleItems = items.filter((item) => !item.hidden);
       return visibleItems.map((item) => {
         const { disabled, label, children, divider = false } = item;
@@ -98,7 +91,7 @@ export default defineComponent({
               <Menu.Item disabled={disabled} key={label}>
                 <ItemContent {...contentProps} />
               </Menu.Item>
-              {divider ? <Menu.Divider key={`d-${label}`} /> : null}
+              {divider && <Menu.Divider key={`d-${label}`} />}
             </>
           );
         }
@@ -112,11 +105,9 @@ export default defineComponent({
           </Menu.SubMenu>
         );
       });
-    }
+    };
 
-    expose({
-      close,
-    });
+    expose({ close });
 
     return () => {
       const { items } = props;

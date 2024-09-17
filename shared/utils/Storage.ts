@@ -4,7 +4,10 @@
  * @param {Storage} [storage=localStorage] - Optional storage object (sessionStorage or localStorage).
  * @returns {Storage} An instance of the Storage class with methods for managing cache and cookies.
  */
-export const createStorage = ({ prefixKey = '', storage = localStorage } = {}) => {
+export const createStorage = ({
+  prefixKey = "",
+  storage = localStorage,
+} = {}) => {
   /**
    * Local storage class for managing cache and cookies.
    */
@@ -58,7 +61,7 @@ export const createStorage = ({ prefixKey = '', storage = localStorage } = {}) =
      * @param {string} key - Cache key.
      */
     remove(key: string): void {
-      console.log('Removing:', key);
+      console.log("Removing:", key);
       this.storage.removeItem(this.getKey(key));
     }
 
@@ -85,14 +88,14 @@ export const createStorage = ({ prefixKey = '', storage = localStorage } = {}) =
      * @returns {string} - The cookie value.
      */
     getCookie(name: string): string {
-      const cookieArr = document.cookie.split('; ');
+      const cookieArr = document.cookie.split("; ");
       for (const cookie of cookieArr) {
-        const [key, value] = cookie.split('=');
+        const [key, value] = cookie.split("=");
         if (key === this.getKey(name)) {
           return value;
         }
       }
-      return '';
+      return "";
     }
 
     /**
@@ -100,7 +103,7 @@ export const createStorage = ({ prefixKey = '', storage = localStorage } = {}) =
      * @param {string} key - Cookie name.
      */
     removeCookie(key: string): void {
-      this.setCookie(key, '', -1);
+      this.setCookie(key, "", -1);
     }
 
     /**

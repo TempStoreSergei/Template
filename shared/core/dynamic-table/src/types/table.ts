@@ -1,14 +1,14 @@
-import type { TableProps } from 'ant-design-vue';
-import type { TablePaginationConfig } from 'ant-design-vue/es/table';
-import type { DynamicTableProps, DynamicTableEmitFn } from '../dynamic-table';
+import type { TableProps } from "ant-design-vue";
+import type { TablePaginationConfig } from "ant-design-vue/es/table";
+import type { DynamicTableProps, DynamicTableEmitFn } from "../dynamic-table";
 import type {
   ExportData2Excel,
   TableForm,
   TableMethods,
   TableState,
   UseEditableType,
-} from '../hooks';
-import type { Slots } from 'vue';
+} from "../hooks";
+import type { Slots } from "vue";
 
 /**
  * Parameters for loading table data.
@@ -21,13 +21,15 @@ export type LoadDataParams = TablePaginationConfig & {
 };
 
 /** Parameters for the table's onChange event callback. */
-export type OnChangeCallbackParams = Parameters<NonNullable<TableProps['onChange']>>;
+export type OnChangeCallbackParams = Parameters<
+  NonNullable<TableProps["onChange"]>
+>;
 
 /** onChange event callback function for the table. */
-export type OnChangeCallback = TableProps['onChange'];
+export type OnChangeCallback = TableProps["onChange"];
 
 /** Type for editable rows. */
-export type EditableType = 'single' | 'multiple' | 'cell';
+export type EditableType = "single" | "multiple" | "cell";
 
 /** Callback for saving a cell. */
 export type OnSave<T = any> = (

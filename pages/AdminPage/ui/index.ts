@@ -1,3 +1,3 @@
-import AdminPage from "./AdminPage.vue"
+import AdminPage from "./AdminPage.vue";
 
-export { AdminPage }
+export { AdminPage };

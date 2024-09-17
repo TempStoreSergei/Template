@@ -1,22 +1,26 @@
 <template>
-  <div class="flex justify-between p-16px">
-    <div class="flex">
+  <div class="toolbar">
+    <div class="toolbar__header">
       <slot name="headerTitle">
-        <div class="title">
+        <div class="toolbar__title">
           {{ title }}
-          <BasicHelp v-if="titleTooltip" class="ml-6px pt-3px" :text="titleTooltip" />
+          <BasicHelp
+            v-if="titleTooltip"
+            class="toolbar__help-icon"
+            :text="titleTooltip"
+          />
         </div>
       </slot>
 
       <slot name="afterHeaderTitle" />
     </div>
 
-    <div>
+    <div class="toolbar__actions">
       <Space>
         <slot name="toolbar" />
         <span v-if="exportFileName" @click="exportData2Excel">
           <slot name="export-button">
-            <a-button type="primary">导出</a-button>
+            <a-button type="primary">Export</a-button>
           </slot>
         </span>
       </Space>
@@ -28,43 +32,62 @@
 </template>
 
 <script lang="ts" setup>
-  import { Divider, Space } from 'ant-design-vue';
-  import TableSetting from '../table-settings/index.vue';
-  import BasicHelp from '~/shared/basic/basic-help/index.vue';
-  import { useTableContext } from '~/shared/core/dynamic-table/src/hooks';
+import { Divider, Space } from "ant-design-vue";
+import TableSetting from "../table-settings/index.vue";
+import BasicHelp from "~/shared/basic/basic-help/index.vue";
+import { useTableContext } from "~/shared/core/dynamic-table/src/hooks";
 
-  defineOptions({
-    name: 'ToolBar',
-  });
+defineOptions({
+  name: "ToolBar",
+});
 
-  defineProps({
-    title: {
-      type: String,
-      default: '',
-    },
-    exportFileName: {
-      type: String,
-      default: '',
-    },
-    titleTooltip: {
-      type: String,
-      default: '',
-    },
-    showTableSetting: {
-      type: Boolean,
-      default: true,
-    },
-  });
+defineProps({
+  title: {
+    type: String,
+    default: "",
+  },
+  exportFileName: {
+    type: String,
+    default: "",
+  },
+  titleTooltip: {
+    type: String,
+    default: "",
+  },
+  showTableSetting: {
+    type: Boolean,
+    default: true,
+  },
+});
 
-  const { exportData2Excel } = useTableContext();
+const { exportData2Excel } = useTableContext();
 </script>
 
-<style lang="less" scoped>
-  .title {
+<style lang="scss">
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+
+  &__header {
+    display: flex;
+  }
+
+  &__title {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
     font-size: 16px;
     font-weight: 500;
   }
+
+  &__help-icon {
+    margin-left: 6px;
+    padding-top: 3px;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+  }
+}
 </style>

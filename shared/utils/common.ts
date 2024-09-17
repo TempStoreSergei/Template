@@ -1,5 +1,5 @@
-import dayjs from 'dayjs';
-import type { DataNode } from 'ant-design-vue/es/vc-tree-select/interface';
+import dayjs from "dayjs";
+import type { DataNode } from "ant-design-vue/es/vc-tree-select/interface";
 
 /**
  * @description 处理首字母大写 abc => Abc
@@ -14,17 +14,21 @@ export const changeStr = (str: string) => {
  * @param {string} type
  * @return {string}
  */
-export const randomColor = (type: 'rgb' | 'hex' | 'hsl'): string => {
+export const randomColor = (type: "rgb" | "hex" | "hsl"): string => {
   switch (type) {
-    case 'rgb':
+    case "rgb":
       return window.crypto.getRandomValues(new Uint8Array(3)).toString();
-    case 'hex':
+    case "hex":
       return `#${Math.floor(Math.random() * 0xffffff)
         .toString(16)
         .padStart(6, `${Math.random() * 10}`)}`;
-    case 'hsl':
+    case "hsl":
       // 在25-95%范围内具有饱和度，在85-95%范围内具有亮度
-      return [360 * Math.random(), `${100 * Math.random()}%`, `${100 * Math.random()}%`].toString();
+      return [
+        360 * Math.random(),
+        `${100 * Math.random()}%`,
+        `${100 * Math.random()}%`,
+      ].toString();
   }
 };
 
@@ -33,11 +37,11 @@ export const randomColor = (type: 'rgb' | 'hex' | 'hsl'): string => {
  * @param text
  */
 export const copyText = (text: string) => {
-  const copyInput = document.createElement('input'); //创建一个input框获取需要复制的文本内容
+  const copyInput = document.createElement("input"); //创建一个input框获取需要复制的文本内容
   copyInput.value = text;
   document.body.appendChild(copyInput);
   copyInput.select();
-  document.execCommand('copy');
+  document.execCommand("copy");
   copyInput.remove();
 };
 
@@ -46,7 +50,7 @@ export const copyText = (text: string) => {
  * @param {string} str
  */
 export const isBase64 = (str: string): boolean => {
-  if (str === '' || str.trim() === '') {
+  if (str === "" || str.trim() === "") {
     return false;
   }
   try {
@@ -59,11 +63,11 @@ export const isBase64 = (str: string): boolean => {
 export const toJSON = (obj) => {
   return JSON.stringify(obj, (_, value) => {
     switch (true) {
-      case typeof value === 'undefined':
-        return 'undefined';
-      case typeof value === 'symbol':
+      case typeof value === "undefined":
+        return "undefined";
+      case typeof value === "symbol":
         return value.toString();
-      case typeof value === 'function':
+      case typeof value === "function":
         return value.toString();
       default:
         break;
@@ -82,7 +86,7 @@ export const IS_DEV = import.meta.env.DEV;
  * @description 格式化日期
  * @param time
  */
-export const formatDate = (time) => dayjs(time).format('YYYY-MM-DD HH:mm:ss');
+export const formatDate = (time) => dayjs(time).format("YYYY-MM-DD HH:mm:ss");
 
 /**
  *  @description 将一维数组转成树形结构数据
@@ -90,12 +94,12 @@ export const formatDate = (time) => dayjs(time).format('YYYY-MM-DD HH:mm:ss');
  * @param id
  * @param link
  */
-export const generateTree = (items, id = 0, link = 'parent') => {
+export const generateTree = (items, id = 0, link = "parent") => {
   return items
     .filter((item) => item[link] == id)
     .map((item) => ({
       ...item,
-      slots: { title: 'name' },
+      slots: { title: "name" },
       children: generateTree(items, item.departmentid),
     }));
 };
@@ -109,7 +113,7 @@ export const toHump = (name) => {
     .replace(/[-/_](\w)/g, (_, letter) => {
       return letter.toUpperCase();
     })
-    .replace('views', '');
+    .replace("views", "");
 };
 
 /** 模拟异步请求，实用性不高，主要用于demo模拟请求 */
@@ -124,7 +128,7 @@ export const waitTime = <T>(time = 100, data: any = true): Promise<T> => {
 export function findPath<T extends Key>(
   tree: Recordable[],
   targetId: T,
-  field = 'id',
+  field = "id",
   currentPath: T[] = [],
 ): T[] | null {
   // 遍历树中的每个节点
@@ -150,9 +154,13 @@ export function findPath<T extends Key>(
   return null;
 }
 
-export const str2tree = (str: string, treeData: DataNode[] = [], separator = ':') => {
+export const str2tree = (
+  str: string,
+  treeData: DataNode[] = [],
+  separator = ":",
+) => {
   return str.split(separator).reduce((prev, curr, currentIndex, arr) => {
-    const path = arr.slice(0, currentIndex + 1).join(':');
+    const path = arr.slice(0, currentIndex + 1).join(":");
     const index = prev.findIndex((item) => item?.path === path);
     if (index !== -1) {
       return prev[index].children;

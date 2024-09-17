@@ -1,14 +1,18 @@
-import { computed, unref, h } from 'vue';
-import { cloneDeep, isFunction, mergeWith } from 'lodash-es';
-import { Input } from 'ant-design-vue';
-import { EditableCell } from '../components';
-import { ColumnKeyFlag, columnKeyFlags, type CustomRenderParams } from '../types/column';
-import tableConfig from '../dynamic-table.config';
-import { useTableContext } from './useTableContext';
-import type { TableColumn } from '~/shared/core/dynamic-table';
-import type { FormSchema } from '~/shared/core/schema-form';
-import { isBoolean } from '~/shared/utils/is';
-import { TableAction } from '~/shared/core/dynamic-table/src/components';
+import { computed, unref, h } from "vue";
+import { cloneDeep, isFunction, mergeWith } from "lodash-es";
+import { Input } from "ant-design-vue";
+import { EditableCell } from "../components";
+import {
+  ColumnKeyFlag,
+  columnKeyFlags,
+  type CustomRenderParams,
+} from "../types/column";
+import tableConfig from "../dynamic-table.config";
+import { useTableContext } from "./useTableContext";
+import type { TableColumn } from "~/shared/core/dynamic-table";
+import type { FormSchema } from "~/shared/core/schema-form";
+import { isBoolean } from "~/shared/utils/is";
+import { TableAction } from "~/shared/core/dynamic-table/src/components";
 
 export const useColumns = () => {
   const tableContext = useTableContext();
@@ -16,16 +20,18 @@ export const useColumns = () => {
 
   const innerColumns = computed(() => {
     const innerProps = unref(getProps);
-    const columns = cloneDeep(innerProps.columns?.filter((n) => !n.hideInTable) || []);
+    const columns = cloneDeep(
+      innerProps.columns?.filter((n) => !n.hideInTable) || [],
+    );
 
     // Add an index column if required
     if (innerProps?.showIndex) {
       columns.unshift({
         dataIndex: ColumnKeyFlag.INDEX,
-        title: 'Index',
+        title: "Index",
         width: 60,
-        align: 'center',
-        fixed: 'left',
+        align: "center",
+        fixed: "left",
         ...innerProps.indexColumnProps,
         customRender: ({ index }) => {
           const pagination = unref(paginationRef);
@@ -46,11 +52,13 @@ export const useColumns = () => {
       column.align ||= tableConfig.defaultAlign;
 
       column.customRender = (options) => {
-        const { record, index, text } = options as CustomRenderParams<Record<string, any>>;
+        const { record, index, text } = options as CustomRenderParams<
+          Record<string, any>
+        >;
         /** Check if the current row is in editable mode */
         const isEditableRow = tableContext.isEditable(record[rowKey]);
         /** Check if cell editing mode is enabled */
-        const isEditableCell = innerProps.editableType === 'cell';
+        const isEditableCell = innerProps.editableType === "cell";
         /** Check if the current cell is editable */
         const isCellEditable = isBoolean(column.editable)
           ? column.editable
@@ -97,7 +105,7 @@ export const useColumns = () => {
 
   const mergeCustomizer = (objValue, srcValue, key) => {
     /** Handle merging when `componentProps` is a function */
-    if (key === 'componentProps') {
+    if (key === "componentProps") {
       return (...args) => ({
         ...(isFunction(objValue) ? objValue(...args) : objValue),
         ...(isFunction(srcValue) ? srcValue(...args) : srcValue),
@@ -106,7 +114,10 @@ export const useColumns = () => {
   };
 
   /** Retrieve the form schema for the current row */
-  const getColumnFormSchema = (column: TableColumn, record: Record<string, any>): FormSchema => {
+  const getColumnFormSchema = (
+    column: TableColumn,
+    record: Record<string, any>,
+  ): FormSchema => {
     const key = tableContext.getColumnKey(column) as string;
     /** Determine if search form properties should be inherited */
     const isExtendSearchFormProps = !Object.is(
@@ -119,13 +130,17 @@ export const useColumns = () => {
       component: () => Input,
       defaultValue: record[key],
       colProps: {
-        span: unref(getProps).editableType === 'cell' ? 20 : 24,
+        span: unref(getProps).editableType === "cell" ? 20 : 24,
       },
       formItemProps: {
-        help: '',
+        help: "",
       },
       ...(isExtendSearchFormProps
-        ? mergeWith(cloneDeep(column.formItemProps), column.editFormItemProps, mergeCustomizer)
+        ? mergeWith(
+            cloneDeep(column.formItemProps),
+            column.editFormItemProps,
+            mergeCustomizer,
+          )
         : column.editFormItemProps),
     };
   };

@@ -1,16 +1,16 @@
-import { unref, nextTick, getCurrentInstance, watch } from 'vue';
-import { isFunction, isBoolean, get, debounce } from 'lodash-es';
-import { useInfiniteScroll } from '@vueuse/core';
-import tableConfig from '../dynamic-table.config';
-import { useEditable } from './useEditable';
-import { useTableExpand } from './useTableExpand';
-import { useTableContext } from './useTableContext';
-import type { DynamicTableProps } from '../dynamic-table';
-import type { OnChangeCallbackParams, TableColumn } from '../types/';
-import type { Pagination } from './useTableState';
-import type { FormProps } from 'ant-design-vue';
-import { warn } from '~/shared/utils/log';
-import { isObject } from '~/shared/utils/is';
+import { unref, nextTick, getCurrentInstance, watch } from "vue";
+import { isFunction, isBoolean, get, debounce } from "lodash-es";
+import { useInfiniteScroll } from "@vueuse/core";
+import tableConfig from "../dynamic-table.config";
+import { useEditable } from "./useEditable";
+import { useTableExpand } from "./useTableExpand";
+import { useTableContext } from "./useTableContext";
+import type { DynamicTableProps } from "../dynamic-table";
+import type { OnChangeCallbackParams, TableColumn } from "../types/";
+import type { Pagination } from "./useTableState";
+import type { FormProps } from "ant-design-vue";
+import { warn } from "~/shared/utils/log";
+import { isObject } from "~/shared/utils/is";
 
 export type UseInfiniteScrollParams = Parameters<typeof useInfiniteScroll>;
 
@@ -82,11 +82,16 @@ export const useTableMethods = () => {
       const res = await dataRequest(queryParams);
 
       const isArrayResult = Array.isArray(res);
-      const resultItems: Recordable[] = isArrayResult ? res : get(res, listField);
-      const resultTotal: number = isArrayResult ? res.length : Number(get(res, totalField));
+      const resultItems: Recordable[] = isArrayResult
+        ? res
+        : get(res, listField);
+      const resultTotal: number = isArrayResult
+        ? res.length
+        : Number(get(res, totalField));
 
       if (enablePagination && resultTotal) {
-        const { current = 1, pageSize = tableConfig.defaultPageSize } = pagination;
+        const { current = 1, pageSize = tableConfig.defaultPageSize } =
+          pagination;
         const currentTotalPage = Math.ceil(resultTotal / pageSize);
         if (current > currentTotalPage) {
           updatePagination({ current: currentTotalPage });
@@ -103,7 +108,7 @@ export const useTableMethods = () => {
       return tableData;
     } catch (error) {
       warn(`Error fetching table data: ${error}`);
-      emit('fetch-error', error);
+      emit("fetch-error", error);
       tableData.value = [];
       updatePagination({ total: 0 });
     } finally {
@@ -132,7 +137,7 @@ export const useTableMethods = () => {
   const handleSubmit = (params, page = 1) => {
     updatePagination({ current: page });
     fetchData(params);
-    emit('search', params);
+    emit("search", params);
   };
 
   /**
@@ -143,7 +148,7 @@ export const useTableMethods = () => {
     if (resetPageIndex && isObject(pagination)) {
       pagination.current = 1;
     }
-    emit('reload');
+    emit("reload");
     return fetchData();
   };
 
@@ -174,7 +179,7 @@ export const useTableMethods = () => {
     }
 
     await fetchData({});
-    emit('change', ...rest);
+    emit("change", ...rest);
   };
 
   /**
@@ -185,8 +190,12 @@ export const useTableMethods = () => {
   };
 
   /** Callback for form validation errors */
-  const handleEditFormValidate: FormProps['onValidate'] = (name, status, errorMsgs) => {
-    const key = Array.isArray(name) ? name.join('.') : name;
+  const handleEditFormValidate: FormProps["onValidate"] = (
+    name,
+    status,
+    errorMsgs,
+  ) => {
+    const key = Array.isArray(name) ? name.join(".") : name;
     if (status) {
       editFormErrorMsgs.value.delete(key);
     } else {
@@ -211,7 +220,8 @@ export const useTableMethods = () => {
     callback: UseInfiniteScrollParams[1],
     options?: UseInfiniteScrollParams[2],
   ) => {
-    const el = getCurrentInstance()?.proxy?.$el.querySelector('.ant-table-body');
+    const el =
+      getCurrentInstance()?.proxy?.$el.querySelector(".ant-table-body");
     useInfiniteScroll(el, callback, options);
   };
 

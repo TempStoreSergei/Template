@@ -1,13 +1,14 @@
-import { unref, computed, watchEffect } from 'vue';
-import { ColumnKeyFlag } from '../types/column';
-import { useTableContext } from './useTableContext';
-import type { ComputedRef } from 'vue';
-import type { FormSchema, SchemaFormProps } from '~/shared/core/schema-form';
+import { unref, computed, watchEffect } from "vue";
+import { ColumnKeyFlag } from "../types/column";
+import { useTableContext } from "./useTableContext";
+import type { ComputedRef } from "vue";
+import type { FormSchema, SchemaFormProps } from "~/shared/core/schema-form";
 
 export type TableForm = ReturnType<typeof useTableForm>;
 
 export function useTableForm() {
-  const { slots, getProps, loadingRef, getColumnKey, getSearchFormRef } = useTableContext();
+  const { slots, getProps, loadingRef, getColumnKey, getSearchFormRef } =
+    useTableContext();
 
   // Computed property for generating the form props based on table context
   const getFormProps = computed<SchemaFormProps>(() => {
@@ -17,11 +18,14 @@ export function useTableForm() {
 
     return {
       showAdvancedButton: true,
-      layout: 'horizontal',
+      layout: "horizontal",
       labelWidth: 100,
       schemas: unref(formSchemas),
       ...formProps,
-      submitButtonOptions: { loading: unref(loadingRef), ...submitButtonOptions },
+      submitButtonOptions: {
+        loading: unref(loadingRef),
+        ...submitButtonOptions,
+      },
       compact: true,
     };
   });
@@ -33,11 +37,15 @@ export function useTableForm() {
     return unref(getProps)
       .columns.filter((column) => {
         const field = getColumnKey(column);
-        return !column.hideInSearch && !!field && !columnKeyFlags.includes(field as string);
+        return (
+          !column.hideInSearch &&
+          !!field &&
+          !columnKeyFlags.includes(field as string)
+        );
       })
       .map((column) => ({
-        field: column.searchField ?? [getColumnKey(column)].join('.'),
-        component: 'Input',
+        field: column.searchField ?? [getColumnKey(column)].join("."),
+        component: "Input",
         label: column.title as string,
         colProps: {
           span: 8,
@@ -55,17 +63,17 @@ export function useTableForm() {
         searchFormRef.setSchemaFormProps(unref(getFormProps));
       }
     },
-    { flush: 'post' },
+    { flush: "post" },
   );
 
   // Computed property to get slot keys that start with "form-"
   const getFormSlotKeys: ComputedRef<string[]> = computed(() => {
-    return Object.keys(slots).filter((key) => key.startsWith('form-'));
+    return Object.keys(slots).filter((key) => key.startsWith("form-"));
   });
 
   // Helper function to replace "form-" prefix in slot keys
   const replaceFormSlotKey = (key: string): string => {
-    return key?.replace(/^form-/, '') || '';
+    return key?.replace(/^form-/, "") || "";
   };
 
   return {

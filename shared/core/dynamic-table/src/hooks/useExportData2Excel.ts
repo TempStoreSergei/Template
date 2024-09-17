@@ -1,7 +1,7 @@
-import { get, isEmpty } from 'lodash-es';
-import { columnKeyFlags } from '../types';
-import { useTableContext } from './useTableContext';
-import { exportJson2Excel } from '~/shared/utils/Export2Excel';
+import { get, isEmpty } from "lodash-es";
+import { columnKeyFlags } from "../types";
+import { useTableContext } from "./useTableContext";
+import { exportJson2Excel } from "~/shared/utils/Export2Excel";
 
 export type ExportData2Excel = ReturnType<typeof useExportData2Excel>;
 
@@ -11,8 +11,13 @@ export type ExportData2Excel = ReturnType<typeof useExportData2Excel>;
 export const useExportData2Excel = () => {
   const exportData2Excel = () => {
     const tableContext = useTableContext();
-    const { columns, exportFormatter, exportFileName, exportBookType, exportAutoWidth } =
-      tableContext.props;
+    const {
+      columns,
+      exportFormatter,
+      exportFileName,
+      exportBookType,
+      exportAutoWidth,
+    } = tableContext.props;
     const { tableData } = tableContext;
 
     const theaders = columns.filter((n) => {

@@ -9,7 +9,7 @@
       collapsible
       @click="clickMenuItem"
     >
-      <template v-for="item in menus" :key="item.name">
+      <template v-for="item in menus" :key="item.route">
         <SubMenuItem :item="item" />
       </template>
     </Menu>
@@ -20,6 +20,7 @@
 import { ref, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Menu, type MenuProps } from "ant-design-vue";
+import { getMenu } from "./api/index";
 import SubMenuItem from "./components/sub-menu-item.vue";
 import { useLayoutSettingStore } from "~/entities/store/modules/layoutSetting";
 import { LOGIN_NAME } from "~/constants";
@@ -36,10 +37,19 @@ const router = useRouter();
 const openKeys = ref<string[]>([]);
 const selectedKeys = ref<string[]>([currentRoute.name as string]);
 
-const menus = computed(() => []);
+const menus = ref([]);
 const isSideMenu = computed(
   () => layoutSettingStore.layoutSetting.layout === "sidemenu",
 );
+
+const fetchMenus = async () => {
+  try {
+    const data = await getMenu();
+    menus.value = data;
+  } catch (error) {
+    console.error("Failed to fetch menus:", error);
+  }
+};
 
 /**
  * Retrieves the route by its name.
@@ -54,8 +64,9 @@ const getRouteByName = (name: string) =>
  * @returns {string[]} - The keys of the opened sub-menus.
  */
 const getOpenKeys = () => {
+  console.log(currentRoute);
   return (
-    currentRoute.meta?.namePath ??
+    currentRoute.meta?.name ??
     (currentRoute.matched.slice(1).map((n) => n.name) as string[])
   );
 };
@@ -86,6 +97,10 @@ watch(
   },
 );
 
+onMounted(() => {
+  fetchMenus();
+});
+
 /**
  * Handles menu item clicks.
  * @param {MenuProps['onClick']} param0 - The click event object.
@@ -94,8 +109,8 @@ const clickMenuItem: MenuProps["onClick"] = ({ key }) => {
   if (key === currentRoute.name) return;
   const preSelectedKeys = selectedKeys.value;
   const targetRoute = getRouteByName(key as string);
-  const { isExt, extOpenMode } = targetRoute?.meta || {};
-  if (targetRoute && isExt && extOpenMode === 1) {
+  const { isExt } = targetRoute?.meta || {};
+  if (targetRoute && isExt) {
     queueMicrotask(() => {
       selectedKeys.value = preSelectedKeys;
     });

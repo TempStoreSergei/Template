@@ -1,8 +1,8 @@
-import { nextTick, watch } from 'vue';
-import { cloneDeep } from 'lodash-es';
-import { message } from 'ant-design-vue';
-import { useTableContext } from './useTableContext';
-import type { TableColumn } from '../types/column';
+import { nextTick, watch } from "vue";
+import { cloneDeep } from "lodash-es";
+import { message } from "ant-design-vue";
+import { useTableContext } from "./useTableContext";
+import type { TableColumn } from "../types/column";
 
 export type UseEditableType = ReturnType<typeof useEditable>;
 
@@ -20,7 +20,7 @@ export const useEditable = () => {
   watch(
     () => props.editableType,
     (type) => {
-      if (type === 'cell') {
+      if (type === "cell") {
         editableRowKeys.value.clear();
       } else {
         editableCellKeys.value.clear();
@@ -44,7 +44,8 @@ export const useEditable = () => {
   ) => {
     // 克隆当前行数据作为临时编辑的表单数据，避免直接修改原数据
     const editValue = cloneDeep(
-      currentRow ?? tableData.value.find((n) => n[String(props.rowKey)] === recordKey),
+      currentRow ??
+        tableData.value.find((n) => n[String(props.rowKey)] === recordKey),
     );
     // 用户设置的默认值优先
     columns?.forEach((item) => {
@@ -59,11 +60,11 @@ export const useEditable = () => {
       if (
         !Object.is(editFormItemProps?.extendSearchFormProps, false) &&
         formItemProps &&
-        Reflect.has(formItemProps, 'defaultValue')
+        Reflect.has(formItemProps, "defaultValue")
       ) {
         editValue[field] = formItemProps.defaultValue;
       }
-      if (editFormItemProps && Reflect.has(editFormItemProps, 'defaultValue')) {
+      if (editFormItemProps && Reflect.has(editFormItemProps, "defaultValue")) {
         editValue[field] = editFormItemProps.defaultValue;
       }
     });
@@ -78,10 +79,10 @@ export const useEditable = () => {
    */
   const startEditable = (recordKey: Key, currentRow?: Recordable) => {
     editableCellKeys.value.clear();
-    console.log('startEditable editFormModel', editFormModel);
+    console.log("startEditable editFormModel", editFormModel);
     // 如果是单行的话，不允许多行编辑
-    if (editableRowKeys.value.size > 0 && props.editableType === 'single') {
-      message.warn(props.onlyOneLineEditorAlertMessage || '只能同时编辑一行');
+    if (editableRowKeys.value.size > 0 && props.editableType === "single") {
+      message.warn(props.onlyOneLineEditorAlertMessage || "只能同时编辑一行");
       return false;
     }
     const editValue = getEditValue(recordKey, currentRow, props.columns);
@@ -91,7 +92,11 @@ export const useEditable = () => {
   };
 
   /** 进入编辑单元格状态 */
-  const startCellEditable = (recordKey: Key, dataIndex: Key, currentRow?: Recordable) => {
+  const startCellEditable = (
+    recordKey: Key,
+    dataIndex: Key,
+    currentRow?: Recordable,
+  ) => {
     editableRowKeys.value.clear();
     const targetColumn = props.columns.filter((n) => n.dataIndex === dataIndex);
     const editValue = getEditValue(recordKey, currentRow, targetColumn);
@@ -107,7 +112,9 @@ export const useEditable = () => {
   const cancelCellEditable = (recordKey: Key, dataIndex: Key) => {
     editableCellKeys.value.delete(`${recordKey}.${dataIndex}`);
     const editFormModel = getEditFormModel(recordKey);
-    const record = tableData.value.find((n) => n[String(props.rowKey)] === recordKey);
+    const record = tableData.value.find(
+      (n) => n[String(props.rowKey)] === recordKey,
+    );
     if (record) {
       // 取消编辑，还原默认值
       Reflect.set(editFormModel, dataIndex, record[dataIndex]);
@@ -140,11 +147,15 @@ export const useEditable = () => {
   const isEditable = (recordKey: Key) => editableRowKeys.value.has(recordKey);
 
   /** 获取表单编辑后的值 */
-  const getEditFormModel = (recordKey: Key) => Reflect.get(editFormModel.value, recordKey);
+  const getEditFormModel = (recordKey: Key) =>
+    Reflect.get(editFormModel.value, recordKey);
 
   /** 行编辑表单是否校验通过 */
   const validateRow = async (recordKey: Key) => {
-    const nameList = Object.keys(getEditFormModel(recordKey)).map((n) => [String(recordKey), n]);
+    const nameList = Object.keys(getEditFormModel(recordKey)).map((n) => [
+      String(recordKey),
+      n,
+    ]);
     const result = await editTableFormRef.value?.validateFields(nameList);
     return result?.[recordKey] ?? result;
   };
@@ -155,7 +166,9 @@ export const useEditable = () => {
    * @param dataIndex 当前单元格字段名, eg: `column.dataIndex`
    *  */
   const validateCell = async (recordKey: Key, dataIndex: Key) => {
-    const result = await editTableFormRef.value?.validateFields([[String(recordKey), dataIndex]]);
+    const result = await editTableFormRef.value?.validateFields([
+      [String(recordKey), dataIndex],
+    ]);
     return result?.[recordKey] ?? result;
   };
 

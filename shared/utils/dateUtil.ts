@@ -1,16 +1,22 @@
 /**
  * Independent time operation tool to facilitate subsequent switch to dayjs
  */
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
-const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm';
-const DATE_FORMAT = 'YYYY-MM-DD';
+const DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm";
+const DATE_FORMAT = "YYYY-MM-DD";
 
-export const formatToDateTime = (date?: dayjs.ConfigType, format = DATE_TIME_FORMAT): string => {
+export const formatToDateTime = (
+  date?: dayjs.ConfigType,
+  format = DATE_TIME_FORMAT,
+): string => {
   return dayjs(date).format(format);
 };
 
-export const formatToDate = (date?: dayjs.ConfigType, format = DATE_FORMAT): string => {
+export const formatToDate = (
+  date?: dayjs.ConfigType,
+  format = DATE_FORMAT,
+): string => {
   return dayjs(date).format(format);
 };
 
@@ -21,7 +27,10 @@ export const createDateTimeFromParts = (
   hours: string,
   mins: string,
 ): string => {
-  const data = dayjs(`${year}-${month}-${day} ${hours}:${mins}`, DATE_TIME_FORMAT);
+  const data = dayjs(
+    `${year}-${month}-${day} ${hours}:${mins}`,
+    DATE_TIME_FORMAT,
+  );
   return data.toString();
 };
 

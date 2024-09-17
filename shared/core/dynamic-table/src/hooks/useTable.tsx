@@ -1,8 +1,8 @@
-import { nextTick, ref, unref, watch } from 'vue';
-import { isEmpty } from 'lodash-es';
-import DynamicTable from '../dynamic-table.vue';
-import type { FunctionalComponent } from 'vue';
-import type { DynamicTableProps } from '../dynamic-table';
+import { nextTick, ref, unref, watch } from "vue";
+import { isEmpty } from "lodash-es";
+import DynamicTable from "../dynamic-table.vue";
+import type { FunctionalComponent } from "vue";
+import type { DynamicTableProps } from "../dynamic-table";
 
 type DynamicTableInstance = InstanceType<typeof DynamicTable>;
 
@@ -13,7 +13,7 @@ export const useTable = (props?: Partial<DynamicTableProps>) => {
     await nextTick();
     const table = unref(dynamicTableRef);
     if (isEmpty(table)) {
-      console.error('Failed to retrieve the table instance!');
+      console.error("Failed to retrieve the table instance!");
       return null;
     }
     return table;
@@ -30,7 +30,7 @@ export const useTable = (props?: Partial<DynamicTableProps>) => {
     },
     {
       deep: true,
-      flush: 'post',
+      flush: "post",
     },
   );
 
@@ -52,7 +52,11 @@ export const useTable = (props?: Partial<DynamicTableProps>) => {
     compProps,
     { attrs, slots },
   ) => (
-    <DynamicTable ref={dynamicTableRef} {...{ ...attrs, ...props, ...compProps }} v-slots={slots} />
+    <DynamicTable
+      ref={dynamicTableRef}
+      {...{ ...attrs, ...props, ...compProps }}
+      v-slots={slots}
+    />
   );
 
   return [DynamicTableRender, methods] as const;

@@ -1,4 +1,4 @@
-import type { DropdownProps } from 'ant-design-vue/es/dropdown';
+import type { DropdownProps } from "ant-design-vue/es/dropdown";
 
 export interface Axis {
   x: number;

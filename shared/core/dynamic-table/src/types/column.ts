@@ -1,16 +1,16 @@
-import type { ColumnsType } from 'ant-design-vue/es/table';
-import type { FormSchema, GetFieldKeys } from '~/shared/core/schema-form';
-import type { ActionItem } from './tableAction';
-import type { TableActionType } from '~/shared/core/dynamic-table/src/types';
-import type { DataIndex } from 'ant-design-vue/es/vc-table/interface';
+import type { ColumnsType } from "ant-design-vue/es/table";
+import type { FormSchema, GetFieldKeys } from "~/shared/core/schema-form";
+import type { ActionItem } from "./tableAction";
+import type { TableActionType } from "~/shared/core/dynamic-table/src/types";
+import type { DataIndex } from "ant-design-vue/es/vc-table/interface";
 
 // Type for individual column definitions in the table
 export type ColumnType<T> = ColumnsType<T>[number];
 
 // Parameters for custom render functions in columns
 export type CustomRenderParams<T extends object = Recordable> = Omit<
-  Parameters<NonNullable<ColumnType<T>['customRender']>>[number],
-  'column'
+  Parameters<NonNullable<ColumnType<T>["customRender"]>>[number],
+  "column"
 > & { column: TableColumn<T> };
 
 // Definition for table columns with extended features
@@ -37,7 +37,10 @@ export type TableColumn<T extends object = Recordable> = ColumnType<T> & {
     extendSearchFormProps?: boolean;
   };
   /** Actions for the column, usually for operations on a row */
-  actions?: (params: CustomRenderParams<T>, action: TableActionType) => ActionItem[];
+  actions?: (
+    params: CustomRenderParams<T>,
+    action: TableActionType,
+  ) => ActionItem[];
   /** Whether the cell in this column is editable */
   editable?: boolean | ((params: CustomRenderParams<T>) => boolean);
   /** Default edit state for cells, only relevant if `editableType` is `cell` */
@@ -46,8 +49,8 @@ export type TableColumn<T extends object = Recordable> = ColumnType<T> & {
 
 // Flags used to categorize columns
 export enum ColumnKeyFlag {
-  ACTION = 'ACTION',
-  INDEX = 'INDEX',
+  ACTION = "ACTION",
+  INDEX = "INDEX",
 }
 
 // Array of column key flags

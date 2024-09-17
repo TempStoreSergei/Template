@@ -5,7 +5,7 @@
         <SchemaForm
           v-if="getProps.search"
           ref="searchFormRef"
-          class="bg-white dark:bg-black mb-16px !pt-24px pr-24px"
+          class="dynamic-table__search-form"
           submit-on-reset
           v-bind="getFormProps"
           :table-instance="dynamicTableContext"
@@ -17,7 +17,7 @@
           </template>
         </SchemaForm>
 
-        <div class="bg-white dark:bg-black">
+        <div class="dynamic-table__content">
           <ToolBar
             v-if="showToolBar"
             :export-file-name="exportFileName"
@@ -45,7 +45,11 @@
               :data-source="tableData"
               @change="handleTableChange"
             >
-              <template v-for="(_, slotName) in $slots" :key="slotName" #slotName="slotData">
+              <template
+                v-for="(_, slotName) in $slots"
+                :key="slotName"
+                #slotName="slotData"
+              >
                 <slot :name="slotName" v-bind="slotData" />
               </template>
               <template #bodyCell="slotData">
@@ -59,107 +63,132 @@
   </div>
 </template>
 
-<script lang="tsx" setup>
-  import { useSlots, computed, onBeforeMount } from 'vue';
-  import { Table } from 'ant-design-vue';
-  import {
-    useTableMethods,
-    createTableContext,
-    useExportData2Excel,
-    useTableForm,
-    useTableState,
-    useColumns,
-    useEditable,
-  } from './hooks';
-  import { ToolBar } from './components';
-  import { dynamicTableProps, dynamicTableEmits } from './dynamic-table';
-  import type { DynamicTableType } from './types';
-  import { SchemaForm } from '~/shared/core/schema-form';
+<script lang="ts" setup>
+import { useSlots, computed, onBeforeMount } from "vue";
+import { Table } from "ant-design-vue";
+import {
+  useTableMethods,
+  createTableContext,
+  useExportData2Excel,
+  useTableForm,
+  useTableState,
+  useColumns,
+  useEditable,
+} from "./hooks";
+import { ToolBar } from "./components";
+import { dynamicTableProps, dynamicTableEmits } from "./dynamic-table";
+import type { DynamicTableType } from "./types";
+import { SchemaForm } from "~/shared/core/schema-form";
 
-  defineOptions({
-    name: 'DynamicTable',
-    inheritAttrs: false,
-  });
+defineOptions({
+  name: "DynamicTable",
+  inheritAttrs: false,
+});
 
-  const props = defineProps(dynamicTableProps);
-  const emit = defineEmits(dynamicTableEmits);
-  const slots = useSlots();
+const props = defineProps(dynamicTableProps);
+const emit = defineEmits(dynamicTableEmits);
+const slots = useSlots();
 
-  const tableState = useTableState({ props, slots });
-  const {
-    tableRef,
-    tableData,
-    isFullscreen,
-    containerElRef,
-    searchFormRef,
-    editTableFormRef,
-    getProps,
-    getBindValues,
-    editFormModel,
-  } = tableState;
+const tableState = useTableState({ props, slots });
+const {
+  tableRef,
+  tableData,
+  isFullscreen,
+  containerElRef,
+  searchFormRef,
+  editTableFormRef,
+  getProps,
+  getBindValues,
+  editFormModel,
+} = tableState;
 
-  const dynamicTableContext = { props, emit, slots, ...tableState } as DynamicTableType;
-  createTableContext(dynamicTableContext);
+const dynamicTableContext = {
+  props,
+  emit,
+  slots,
+  ...tableState,
+} as DynamicTableType;
+createTableContext(dynamicTableContext);
 
-  const tableMethods = useTableMethods();
-  Object.assign(dynamicTableContext, tableMethods);
-  const { fetchData, handleSubmit, handleTableChange, handleEditFormValidate } = tableMethods;
+const tableMethods = useTableMethods();
+Object.assign(dynamicTableContext, tableMethods);
+const { fetchData, handleSubmit, handleTableChange, handleEditFormValidate } =
+  tableMethods;
 
-  const editableHooks = useEditable();
-  Object.assign(dynamicTableContext, editableHooks);
+const editableHooks = useEditable();
+Object.assign(dynamicTableContext, editableHooks);
 
-  const { innerColumns } = useColumns();
+const { innerColumns } = useColumns();
 
-  const tableForm = useTableForm();
-  const { getFormProps, replaceFormSlotKey, getFormSlotKeys } = tableForm;
+const tableForm = useTableForm();
+const { getFormProps, getFormSlotKeys } = tableForm;
 
-  const exportData2ExcelHooks = useExportData2Excel();
+const exportData2ExcelHooks = useExportData2Excel();
 
-  Object.assign(dynamicTableContext, {
-    innerColumns,
-    ...props,
-    ...tableState,
-    ...tableForm,
-    ...tableMethods,
-    ...editableHooks,
-    ...exportData2ExcelHooks,
-    emit,
-  });
+Object.assign(dynamicTableContext, {
+  innerColumns,
+  ...props,
+  ...tableState,
+  ...tableForm,
+  ...tableMethods,
+  ...editableHooks,
+  ...exportData2ExcelHooks,
+  emit,
+});
 
-  defineExpose(dynamicTableContext);
+defineExpose(dynamicTableContext);
 
-  const tableProps = computed(() => ({
-    ...getBindValues.value,
-    ...tableMethods.getExpandOption.value,
-  }));
+const tableProps = computed(() => ({
+  ...getBindValues.value,
+  ...tableMethods.getExpandOption.value,
+}));
 
-  onBeforeMount(() => {
-    if (props.immediate) {
-      fetchData();
-    }
-  });
+onBeforeMount(() => {
+  if (props.immediate) {
+    fetchData();
+  }
+});
 
-  const handleToggleAdvanced = (e: Event) => {
-    emit('toggle-advanced', e);
-  };
+const handleToggleAdvanced = (e: Event) => {
+  emit("toggle-advanced", e);
+};
 </script>
 
-<style lang="less" scoped>
-  .ant-table-wrapper {
-    padding: 0 6px 6px;
+<style lang="scss" scoped>
+.dynamic-table__search-form {
+  background-color: white;
+  padding-top: 24px;
+  padding-right: 24px;
+  margin-bottom: 16px;
 
-    .ant-table {
-      .ant-table-title {
-        display: flex;
-      }
+  &.dark {
+    background-color: black;
+  }
+}
 
-      .ant-image:hover {
-        cursor: zoom-in;
-      }
+.dynamic-table__content {
+  background-color: white;
+
+  &.dark {
+    background-color: black;
+  }
+}
+
+.ant-table-wrapper {
+  padding: 0 6px 6px;
+
+  .ant-table {
+    .ant-table-title {
+      display: flex;
+    }
+
+    .ant-image:hover {
+      cursor: zoom-in;
     }
   }
+}
 
-  .actions > * {
-    margin-right: 10px;
-  }
+.actions > * {
+  margin-right: 10px;
+}
 </style>

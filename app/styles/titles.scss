@@ -1,0 +1,110 @@
+// Mixin for title styles
+@mixin title-style($size, $weight, $line-height, $style: normal) {
+  font-size: $size;
+  font-weight: $weight;
+  line-height: $line-height;
+  font-style: $style;
+}
+
+// Large title
+.large-title {
+  @include title-style(34px, bold, 120%);
+}
+
+// Title 1
+.title1-bold {
+  @include title-style(28px, bold, 120%);
+}
+
+.title1-regular {
+  @include title-style(28px, regular, 120%);
+}
+
+// Title 2
+.title2-bold {
+  @include title-style(22px, bold, 120%);
+}
+
+.title2-regular {
+  @include title-style(22px, regular, 120%);
+}
+
+// Title 3
+.title3-bold {
+  @include title-style(20px, bold, 120%);
+}
+
+.title3-regular {
+  @include title-style(20px, regular, 120%);
+}
+
+// Headline
+.headline-bold {
+  @include title-style(17px, semibold, 120%);
+}
+
+.headline-italic {
+  @include title-style(17px, semibold, 120%, italic);
+}
+
+// Body
+.body-regular {
+  @include title-style(17px, regular, 120%);
+}
+
+.body-italic {
+  @include title-style(17px, regular, 120%, italic);
+}
+
+// Callout
+.callout-bold {
+  @include title-style(16px, semibold, 120%);
+}
+
+.callout-italic {
+  @include title-style(16px, semibold, 120%, italic);
+}
+
+.callout-regular {
+  @include title-style(16px, regular, 120%);
+}
+
+.callout-italic-regular {
+  @include title-style(16px, regular, 120%, italic);
+}
+
+// Subheadline
+.subheadline-bold {
+  @include title-style(15px, semibold, 120%);
+}
+
+.subheadline-italic {
+  @include title-style(15px, semibold, 120%, italic);
+}
+
+// Footnote
+.footnote-bold {
+  @include title-style(13px, semibold, 120%);
+}
+
+.footnote-italic {
+  @include title-style(13px, semibold, 120%, italic);
+}
+
+// Caption 1
+.caption1-bold {
+  @include title-style(12px, semibold, 120%);
+}
+
+.caption1-italic {
+  @include title-style(12px, semibold, 120%, italic);
+}
+
+// Caption 2
+.caption2-bold {
+  @include title-style(11px, semibold, 120%);
+}
+
+.caption2-italic {
+  @include title-style(11px, semibold, 120%, italic);
+}

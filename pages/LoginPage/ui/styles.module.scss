@@ -1,0 +1,13 @@
+.admin-panel {
+  padding: 20px;
+  &__cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  &__card {
+    width: 300px;
+    text-align: center;
+  }
+}

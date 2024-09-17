@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-
-import {HomePage} from "~/pages/HomePage";
+import { WelcomePage } from "~/pages/WelcomePage";
 </script>
 
 <template>
-	<HomePage></HomePage>
+  <WelcomePage />
 </template>

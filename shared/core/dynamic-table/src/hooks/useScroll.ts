@@ -1,7 +1,7 @@
-import { computed, ref, type Ref } from 'vue';
-import { debounce } from 'lodash-es';
-import { useMutationObserver, useResizeObserver } from '@vueuse/core';
-import type { DynamicTableProps } from '../dynamic-table';
+import { computed, ref, type Ref } from "vue";
+import { debounce } from "lodash-es";
+import { useMutationObserver, useResizeObserver } from "@vueuse/core";
+import type { DynamicTableProps } from "../dynamic-table";
 
 type UseScrollParams = {
   props: DynamicTableProps;
@@ -34,20 +34,23 @@ export const useScroll = ({ props, containerElRef }: UseScrollParams) => {
   const getScrollY = debounce(() => {
     if (!props.autoHeight || !containerElRef.value) return;
     let paginationHeight = 0;
-    const paginationEl = containerElRef.value.querySelector<HTMLDivElement>('.ant-pagination');
+    const paginationEl =
+      containerElRef.value.querySelector<HTMLDivElement>(".ant-pagination");
     if (paginationEl) {
       const { offsetHeight } = paginationEl;
       const { marginTop, marginBottom } = getComputedStyle(paginationEl);
-      paginationHeight = offsetHeight + parseInt(marginTop) + parseInt(marginBottom);
+      paginationHeight =
+        offsetHeight + parseInt(marginTop) + parseInt(marginBottom);
     }
     const bodyEl =
-      containerElRef.value.querySelector<HTMLDivElement>('.ant-table-body') ||
-      containerElRef.value.querySelector<HTMLDivElement>('.ant-table-tbody');
+      containerElRef.value.querySelector<HTMLDivElement>(".ant-table-body") ||
+      containerElRef.value.querySelector<HTMLDivElement>(".ant-table-tbody");
     if (bodyEl) {
       const rootElHeight = document.documentElement.offsetHeight;
       const posTopHeight = getPositionTop(bodyEl as HTMLDivElement);
       const scrollbarHeight = bodyEl.offsetHeight - bodyEl.clientHeight;
-      const y = rootElHeight - posTopHeight - scrollbarHeight - paginationHeight - 8;
+      const y =
+        rootElHeight - posTopHeight - scrollbarHeight - paginationHeight - 8;
       scrollY.value = y;
       // console.log('innerScroll.value', rootElHeight, posTopHeight, paginationHeight, y);
     }
