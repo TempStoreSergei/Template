@@ -4,7 +4,7 @@ import MD5 from "crypto-js/md5";
 import { useIdle } from "@vueuse/core";
 import { useRoute } from "vue-router";
 import { store } from "~/app/providers/store";
-import { LOGIN_NAME } from "~/constants";
+import { LOGIN_NAME } from "~/constants/router";
 
 // Default idle time before locking the screen (in milliseconds)
 const DEFAULT_IDLE_TIME = 60 * 60 * 1000; // 60 minutes

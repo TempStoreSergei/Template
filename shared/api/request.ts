@@ -1,7 +1,7 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { isString } from "lodash-es";
 import { message as $message, Modal } from "ant-design-vue";
-import { ResultEnum } from "~/enums/httpEnum.ts";
+import { ResultEnum } from "~/enums/httpEnum";
 
 // Define request options with improved typing
 export interface RequestOptions extends AxiosRequestConfig {
@@ -21,7 +21,7 @@ interface BaseResponse<T = any> {
 }
 
 const UNKNOWN_ERROR = "Unknown error. Please retry.";
-export const serverIp = "http://192.168.0.120:1928/";
+export const serverIp = "http://localhost:6543/";
 export const baseApiUrl = `${serverIp}api/`;
 
 // Abort controller for request cancellation
@@ -34,56 +34,75 @@ export const service = axios.create({
   signal: controller.signal,
 });
 
-
-// Error handling function
-const handleError = (error: any): Promise<never> => {
-  if (error.response?.data?.message) {
-    $message.error(error.response.data.message);
-  } else {
-    $message.error(UNKNOWN_ERROR);
-  }
-  return Promise.reject(error);
-};
-
-// Request interceptor for attaching token to headers
 service.interceptors.request.use(
   (config) => {
-    const token =  localStorage.getItem("token");
+    const token = localStorage.getItem("token");
     if (token && config.headers) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => handleError(error),
+  (error) => {
+    Promise.reject(error);
+  },
 );
 
-// Response interceptor for handling responses and errors
 service.interceptors.response.use(
   (response: AxiosResponse<BaseResponse>) => {
     const res = response.data;
+    const router = useRouter();
 
+    // if the custom code is not 200, it is judged as an error.
     if (res.code !== ResultEnum.SUCCESS) {
       $message.error(res.message || UNKNOWN_ERROR);
-
-      if (res.code === 401) {
+      // Illegal token
+      if ([401].includes(res.code)) {
         Modal.confirm({
-          title: "Warning",
-          content: res.message || "Your session has expired. Please re-login.",
-          okText: "Re-login",
-          cancelText: "Cancel",
+          title: "Внимание",
+          content:
+            res.message ||
+            "Ваша сессия закончиласть. Пожалуйста зайдити еще раз.",
+          okText: "Перезайти",
+          cancelText: "Отмена",
           onOk: () => {
-            localstore.value = "";
-            window.location.reload();
+            localStorage.removeItem("token");
+            window.location.replace("/login");
+          },
+          onCancel: () => {
+            window.location.replace("/");
           },
         });
       }
 
-      return Promise.reject(new Error(res.message || UNKNOWN_ERROR));
-    }
+      console.log(res.code);
 
-    return response;
+      if (res.code === 403) {
+        showError({ message: "Not allow", statusCode: 403 });
+        throw createError({
+          statusCode: 403,
+          statusMessage: "Not allow",
+          fatal: true,
+        });
+      }
+      // throw other
+      const error = new Error(res.message || UNKNOWN_ERROR) as Error & {
+        code: any;
+      };
+      error.code = res.code;
+      return Promise.reject(error);
+    } else {
+      return response;
+    }
   },
-  (error) => handleError(error),
+  (error) => {
+    console.log(error);
+    if (!(error instanceof CanceledError)) {
+      const errMsg = error?.response?.data?.message ?? UNKNOWN_ERROR;
+      $message.error({ content: errMsg, key: errMsg });
+      error.message = errMsg;
+    }
+    return Promise.reject(error);
+  },
 );
 
 /**
@@ -107,7 +126,7 @@ export async function request<T = any>(
       headers: {
         ...rest.headers,
         ...(requestType === "form"
-           ? { "Content-Type": "multipart/form-data" }
+          ? { "Content-Type": "multipart/form-data" }
           : {}),
       },
     });
@@ -129,6 +148,6 @@ export async function request<T = any>(
 
     return isReturnResult ? data.data : data;
   } catch (error: any) {
-    return handleError(error);
+    return Promise.reject(error);
   }
 }

@@ -1,4 +1,5 @@
 <template>
+  <!-- Main form component -->
   <Form
     ref="schemaFormRef"
     v-bind="pick(getFormProps, aFormPropKeys)"
@@ -6,41 +7,51 @@
     @keypress.enter="handleEnterPress"
   >
     <Row v-bind="getRowConfig">
+      <!-- Optional form header slot -->
       <slot name="formHeader" />
+
+      <!-- Main content slot and form schema rendering -->
       <slot>
+        <!-- Loop through schema items and render each SchemaFormItem -->
         <template v-for="schemaItem in formSchemasRef" :key="schemaItem.field">
           <SchemaFormItem
             v-model:form-model="formModel"
             :schema="schemaItem"
             :table-instance="tableInstance"
           >
+            <!-- Loop through available slots and render them dynamically -->
             <template
-              v-for="item in Object.keys($slots)"
-              #[item]="data"
-              :key="item"
+              v-for="slotName in Object.keys($slots)"
+              #[slotName]="slotData"
+              :key="slotName"
             >
-              <slot :name="item" v-bind="data || {}" />
+              <slot :name="slotName" v-bind="slotData || {}" />
             </template>
           </SchemaFormItem>
         </template>
+
+        <!-- Form action buttons (e.g., reset, submit) -->
         <FormAction
           v-if="showActionButtonGroup"
           v-bind="getFormActionBindProps"
           @toggle-advanced="handleToggleAdvanced"
         >
+          <!-- Additional action slots for custom buttons or actions -->
           <template
-            v-for="item in [
+            v-for="actionSlot in [
               'resetBefore',
               'submitBefore',
               'advanceBefore',
               'advanceAfter',
             ]"
-            #[item]="data"
+            #[actionSlot]="actionData"
           >
-            <slot :name="item" v-bind="data || {}" />
+            <slot :name="actionSlot" v-bind="actionData || {}" />
           </template>
         </FormAction>
       </slot>
+
+      <!-- Optional form footer slot -->
       <slot name="formFooter" />
     </Row>
   </Form>
@@ -62,15 +73,15 @@ import {
 } from "./hooks/";
 import { schemaFormProps, schemaFormEmits, aFormPropKeys } from "./schema-form";
 
-defineOptions({
-  name: "SchemaForm",
-});
+// Define component name and expose options
+defineOptions({ name: "SchemaForm" });
 
+// Define properties and events
 const props = defineProps(schemaFormProps);
 const emit = defineEmits(schemaFormEmits);
 const attrs = useAttrs();
 
-// 表单内部状态
+// Form internal state management
 const formState = useFormState({ props, attrs });
 const {
   formModel,
@@ -81,33 +92,36 @@ const {
   formSchemasRef,
 } = formState;
 
-// 创建表单上下文
+// Create the form context
 const schemaFormContext: SchemaFormType = {
   ...formState,
   emit,
 } as SchemaFormType;
 createFormContext(schemaFormContext);
 
-// 表单内部方法
+// Form internal methods
 const formMethods = useFormMethods();
 const { handleEnterPress, setDefaultValue } = formMethods;
 
-// a-form表单事件二次封装和扩展
+// Handle form events (submit, reset, etc.)
 const formEvents = useFormEvents();
-// 搜索表单 展开/收起 表单项hooks
+
+// Search form expand/collapse logic
 const { handleToggleAdvanced } = useAdvanced();
 
-// 当前组件所有的状态和方法
+// Merge all form states, events, and methods into the form context
 Object.assign(schemaFormContext, {
   ...formState,
   ...formEvents,
   ...formMethods,
 });
 
+// Emit the "register" event to pass the form context to parent
 emit("register", schemaFormContext);
 
+// Expose the form context to the parent component
 defineExpose(schemaFormContext);
 
-// 初始化表单默认值
+// Initialize default form values based on schemas
 setDefaultValue(formSchemasRef.value);
 </script>

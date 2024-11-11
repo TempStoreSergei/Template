@@ -1,51 +1,94 @@
 <template>
-  <SettingOutlined @click="showDrawer" />
-  <Drawer v-model:open="visible" placement="right" :closable="false" />
+  <a-dropdown>
+    <template #overlay>
+      <a-menu @click="handleMenuClick">
+        <a-menu-item key="shutdown">
+          <span>Выключить</span>
+        </a-menu-item>
+        <a-menu-item key="restart">
+          <span>Перезагрузить</span>
+        </a-menu-item>
+        <a-menu-item key="close">
+          <span>Закрыть приложение</span>
+        </a-menu-item>
+      </a-menu>
+    </template>
+    <a-button type="dashed">
+      Действия
+      <DownOutlined />
+    </a-button>
+  </a-dropdown>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { SettingOutlined } from "@ant-design/icons-vue";
-import { Drawer } from "ant-design-vue";
+import { DownOutlined } from "@ant-design/icons-vue";
+import { Modal } from "ant-design-vue";
+import { restartSystem, shutDownSystem, closeApp, logOut } from "./api";
+const keySelect = ref();
 
-defineOptions({
-  name: "TariffPage",
-});
-const visible = ref(false);
+const handleMenuClick = ({ key }: { key: string }) => {
+  keySelect.value = key;
+  switch (key) {
+    case "shutdown":
+      confirmAction("выключить систему");
+      break;
+    case "restart":
+      confirmAction("перезагрузить систему");
+      break;
+    case "close":
+      confirmAction("закрыть приложение");
+      break;
+  }
+};
 
-const showDrawer = () => {
-  visible.value = true;
+const confirmAction = (actionText: string) => {
+  Modal.confirm({
+    title: `Вы уверены, что хотите ${actionText}?`,
+    okText: "Да",
+    cancelText: "Нет",
+    onOk() {
+      switch (keySelect.value) {
+        case "shutdown":
+          shutDownSystem();
+          break;
+        case "restart":
+          restartSystem();
+          break;
+        case "close":
+          closeApp();
+          break;
+      }
+    },
+  });
 };
 </script>
 
 <style lang="less" scoped>
-.style-checbox-item {
-  position: relative;
-  cursor: pointer;
+/* MacOS-like minimalistic dropdown */
+a-dropdown {
+  .ant-btn {
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    color: #000;
+  }
 
-  &.active::after {
-    content: "✔";
-    position: absolute;
-    right: 12px;
-    bottom: 10px;
-    color: var(--app-primary-color);
+  .ant-menu-item {
+    padding: 10px 20px;
+    font-size: 14px;
   }
 }
 
-input[type="color"] {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border: 0;
-  outline: none;
-  appearance: none;
+a-menu {
+  background-color: #f5f5f7;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
 
-  &::-webkit-color-swatch-wrapper {
-    background: var(--custom-color);
-  }
+.ant-btn:hover {
+  color: #007aff;
+}
 
-  &::-webkit-color-swatch {
-    display: none;
-  }
+.ant-menu-item:hover {
+  background-color: #e9e9e9;
 }
 </style>

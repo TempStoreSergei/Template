@@ -84,7 +84,7 @@ import { Avatar, message } from "ant-design-vue";
 import { useTime } from "~/hooks/useTime";
 import { useBattery } from "~/hooks/useBattery";
 import { useLockscreenStore } from "~/entities/lockscreen/modal/lockscreen";
-import { LOGIN_NAME } from "~/constants";
+import { LOGIN_NAME } from "~/constants/router";
 import { Icon } from "~/shared/basic/icon";
 
 const lockscreenStore = useLockscreenStore();

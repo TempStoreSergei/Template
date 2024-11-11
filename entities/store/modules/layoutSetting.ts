@@ -16,7 +16,6 @@ import { themeColor, type ThemeColor } from "~/fetures/setting/constant.ts";
  */
 
 export type LayoutSetting = {
-  navTheme: ThemeColor; // theme for nav menu
   colorPrimary: string; // '#F5222D', // primary color of ant design
   layout: "sidemenu" | "topmenu"; // nav menu position: `sidemenu` or `topmenu`
   contentWidth: "Fluid" | "Fixed"; // layout of content: `Fluid` or `Fixed`, only works when layout is topmenu

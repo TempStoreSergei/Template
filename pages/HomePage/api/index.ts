@@ -1,10 +1,15 @@
-import type { AxiosRequestConfig } from "axios";
 import { request } from "~/shared/api/request";
 
-export const getInfo = (options?: AxiosRequestConfig) => {
+export const getCreatedUser = () => {
   return request({
-    url: "/system/get_data",
+    url: "user/get_all_users/",
     method: "GET",
-    ...options,
+  });
+};
+
+export const getUserCookes = (id) => {
+  return request({
+    url: `user/login_user/${id}`,
+    method: "POST",
   });
 };

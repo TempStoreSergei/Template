@@ -1,8 +1,8 @@
 <template>
-  <template v-if="item?.img">
-    <Icon :icon="item.img" />
+  <template v-if="item?.module_icon">
+    <Icon :icon="item.module_icon" :size="28" style="flex-shrink: 0;"/>
   </template>
-  <TitleI18n :title="item?.title" />
+  <TitleI18n :title="item?.module_name" />
 </template>
 
 <script lang="ts" setup>

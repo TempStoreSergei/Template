@@ -19,65 +19,27 @@
       <slot name="menu" />
     </div>
     <div class="layout-header__right">
-      <Space :size="20">
-        <Search />
-        <Tooltip :title="$t('layout.header.tooltipLock')" placement="bottom">
-          <LockOutlined @click="lockscreenStore.setLock(true)" />
-        </Tooltip>
-        <FullScreen />
-        <LocalePicker />
-        <Dropdown placement="bottomRight">
-          <template #overlay>
-            <Menu>
-              <Menu.Item @click="$router.push({ name: 'account-settings' })">
-                {{ $t("routes.account.settings") }}
-              </Menu.Item>
-              <Menu.Divider />
-              <Menu.Item>
-                <div @click.prevent="doLogout">
-                  <PoweroffOutlined />
-                  {{ $t("layout.header.dropdownItemLoginOut") }}
-                </div>
-              </Menu.Item>
-            </Menu>
-          </template>
-          <Avatar alt="test"> test </Avatar>
-        </Dropdown>
-        <ProjectSetting />
-      </Space>
+      <a-button
+        type="dashed"
+        style="margin-right: 24px"
+        danger
+        @click="doLogout"
+      >
+        Выход
+      </a-button>
+      <ProjectSetting />
     </div>
   </Layout.Header>
 </template>
 
 <script lang="ts" setup>
 import { computed, type CSSProperties } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  PoweroffOutlined,
-  LockOutlined,
-} from "@ant-design/icons-vue";
-import {
-  Layout,
-  Modal,
-  Dropdown,
-  Menu,
-  Space,
-  Avatar,
-  Tooltip,
-  type MenuTheme,
-} from "ant-design-vue";
-import {
-  Search,
-  FullScreen,
-  ProjectSetting,
-  LayoutBreadcrumb,
-} from "../components";
-import { LocalePicker } from "~/shared/basic/locale-picker/index";
+import { useRouter } from "vue-router";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons-vue";
+import { Layout, Modal, Space, type MenuTheme } from "ant-design-vue";
+import { ProjectSetting, LayoutBreadcrumb } from "../components";
+import { logOut } from "../api";
 import { useKeepAliveStore } from "~/entities/store/modules/keepAlive";
-import { useLockscreenStore } from "~/entities/lockscreen/modal/lockscreen";
-import { LOGIN_NAME } from "~/constants";
 import { useLayoutSettingStore } from "~/entities/store/modules/layoutSetting";
 
 defineProps({
@@ -91,11 +53,9 @@ defineProps({
 
 const emit = defineEmits(["update:collapsed"]);
 const layoutSettingStore = useLayoutSettingStore();
-const lockscreenStore = useLockscreenStore();
 const keepAliveStore = useKeepAliveStore();
 
 const router = useRouter();
-const route = useRoute();
 const headerStyle = computed<CSSProperties>(() => {
   const { navTheme, layout } = layoutSettingStore.layoutSetting;
   const isDark = navTheme === "dark" && layout === "topmenu";
@@ -110,15 +70,14 @@ const doLogout = () => {
   Modal.confirm({
     title: "Вы уверены, что хотите выйти из системы?",
     centered: true,
+    okText: "Да",
+    cancelText: "Отмена",
     onOk: async () => {
-      // await userStore.logout();
+      await logOut();
       keepAliveStore.clear();
       localStorage.clear();
-      await router.replace({
-        name: LOGIN_NAME,
-        query: {
-          redirect: route.fullPath,
-        },
+      await router.push({
+        name: "UserLogin",
       });
     },
   });

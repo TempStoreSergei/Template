@@ -1,7 +1,7 @@
 <template>
   <Tooltip placement="top">
     <template #title>
-      <span>{{ t("component.table.settingColumn") }}</span>
+      <span>Настройки столбцов</span>
     </template>
     <Popover
       placement="bottomLeft"
@@ -12,22 +12,22 @@
       <template #title>
         <div class="popover__title">
           <Checkbox v-model:checked="checkAll" :indeterminate="indeterminate">
-            {{ t("component.table.settingColumnShow") }}
+            Отображение столбцов
           </Checkbox>
           <Checkbox
             v-model:checked="checkIndex"
             @change="handleIndexCheckChange"
           >
-            {{ t("component.table.settingIndexColumnShow") }}
+            Индексный столбец
           </Checkbox>
           <Checkbox
             v-model:checked="checkBordered"
             @change="handleBorderedCheckChange"
           >
-            {{ t("component.table.settingBordered") }}
+            С границами
           </Checkbox>
           <a-button size="small" type="link" @click="reset">
-            {{ t("common.resetText") }}
+            Сбросить
           </a-button>
         </div>
       </template>

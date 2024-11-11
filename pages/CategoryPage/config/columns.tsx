@@ -11,18 +11,19 @@ export type TableColumnItem = TableColumn<TableListItem>;
 // Configuration for table columns
 export const baseColumns: TableColumnItem[] = [
   {
-    title: "Position",
-    dataIndex: "title_pos",
-    width: 150,
+    title: "Группа заготовок",
+    dataIndex: "category_name",
+    width: 60,
+    align: "left",
   },
+];
+
+export const searchFormSchema = [
   {
-    title: "Title",
-    dataIndex: "title",
-    width: 150,
-  },
-  {
-    title: "description",
-    dataIndex: "description",
-    width: 150,
+    field: "category_name",
+    label: "Группа заготовок",
+    component: "Input",
+    colProps: { span: 24 },
+    outerWidth: 300,
   },
 ];

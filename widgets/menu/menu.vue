@@ -9,7 +9,7 @@
       collapsible
       @click="clickMenuItem"
     >
-      <template v-for="item in menus" :key="item.route">
+      <template v-for="item in menus" :key="item.module_route">
         <SubMenuItem :item="item" />
       </template>
     </Menu>
@@ -23,7 +23,7 @@ import { Menu, type MenuProps } from "ant-design-vue";
 import { getMenu } from "./api/index";
 import SubMenuItem from "./components/sub-menu-item.vue";
 import { useLayoutSettingStore } from "~/entities/store/modules/layoutSetting";
-import { LOGIN_NAME } from "~/constants";
+import { LOGIN_NAME } from "~/constants/router";
 
 const props = defineProps({
   collapsed: {
@@ -64,7 +64,6 @@ const getRouteByName = (name: string) =>
  * @returns {string[]} - The keys of the opened sub-menus.
  */
 const getOpenKeys = () => {
-  console.log(currentRoute);
   return (
     currentRoute.meta?.name ??
     (currentRoute.matched.slice(1).map((n) => n.name) as string[])

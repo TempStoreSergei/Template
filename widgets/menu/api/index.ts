@@ -1,7 +1,7 @@
 import { request } from "~/shared/api/request";
 
 const endpoints = {
-  menu: "/get_admin_menu",
+  menu: "admin/get_admin_menu",
 };
 
 export const getMenu = async (options?: any) => {

@@ -1,111 +1,140 @@
-import type { CSSProperties, WatchOptions } from 'vue';
-import type { RenderCallbackParams } from './form';
-import type { ComponentMapProps, ComponentType } from '../componentMap';
+import type { CSSProperties, WatchOptions } from "vue";
+import type { RenderCallbackParams } from "./form";
+import type { ComponentMapProps, ComponentType } from "../componentMap";
 
+// Exporting ComponentType for use in other modules
 export type { ComponentType };
 
 type ColSpanType = number | string;
 
-/** 组件异步请求配置 */
+/**
+ * Configuration for asynchronous component requests.
+ */
 type RequestConfig =
   | PromiseFn<RenderCallbackParams, any>
   | {
-      /** 指定监听的字段名, 当该字段值发生变化时会调用 callback */
+      /**
+       * Fields to watch; when any of these change, the callback will be invoked.
+       */
       watchFields: string[];
+      /**
+       * Callback to be invoked on field changes.
+       */
       callback: PromiseFn<RenderCallbackParams, any>;
+      /**
+       * Options for the watcher.
+       */
       options?: WatchOptions;
-      /** debounce 请求防抖 */
+      /**
+       * Debounce duration for the request, in milliseconds.
+       */
       wait?: number;
     };
 
-/** 组件属性 */
-export type ComponentProps<T extends ComponentType = ComponentType> = ComponentMapProps[T] & {
-  /** 组件异步请求数据 */
-  request?: RequestConfig;
-  /** 组件异步请求数据结果 */
-  requestResult?: any;
-  style?: CSSProperties;
-  /** 手动指定v-model绑定的key */
-  vModelKey?: string;
-  [key: string]: any;
-};
+/**
+ * Component properties.
+ */
+export type ComponentProps<T extends ComponentType = ComponentType> =
+  ComponentMapProps[T] & {
+    /**
+     * Configuration for asynchronous data requests.
+     */
+    request?: RequestConfig;
+    /**
+     * Result of the asynchronous request.
+     */
+    requestResult?: any;
+    /**
+     * Additional CSS styles for the component.
+     */
+    style?: CSSProperties;
+    /**
+     * Custom key for v-model binding.
+     */
+    vModelKey?: string;
+    /**
+     * Additional properties.
+     */
+    [key: string]: any;
+  };
 
+/**
+ * Extended column properties for layout configuration.
+ */
 export interface ColEx {
-  style?: any;
   /**
-   * raster number of cells to occupy, 0 corresponds to display: none
-   * @default none (0)
-   * @type ColSpanType
+   * Custom styles for the column.
+   */
+  style?: any;
+
+  /**
+   * Number of grid columns the component occupies; 0 means it won't be displayed.
+   * @default 0
    */
   span?: ColSpanType;
 
   /**
-   * raster order, used in flex layout mode
+   * Order of the column in a flex layout.
    * @default 0
-   * @type ColSpanType
    */
   order?: ColSpanType;
 
   /**
-   * the layout fill of flex
-   * @default none
-   * @type ColSpanType
+   * Flex-grow value for the column.
+   * @default 'none'
    */
   flex?: ColSpanType;
 
   /**
-   * the number of cells to offset Col from the left
+   * Number of columns to offset the column from the left.
    * @default 0
-   * @type ColSpanType
    */
   offset?: ColSpanType;
 
   /**
-   * the number of cells that raster is moved to the right
+   * Number of columns the raster is pushed to the right.
    * @default 0
-   * @type ColSpanType
    */
   push?: ColSpanType;
 
   /**
-   * the number of cells that raster is moved to the left
+   * Number of columns the raster is pulled to the left.
    * @default 0
-   * @type ColSpanType
    */
   pull?: ColSpanType;
 
   /**
-   * <576px and also default setting, could be a span value or an object containing above props
+   * Responsive settings for <576px; can be a span value or an object.
    * @type { span: ColSpanType, offset: ColSpanType } | ColSpanType
    */
   xs?: { span: ColSpanType; offset: ColSpanType } | ColSpanType;
 
   /**
-   * ≥576px, could be a span value or an object containing above props
+   * Responsive settings for ≥576px; can be a span value or an object.
    * @type { span: ColSpanType, offset: ColSpanType } | ColSpanType
    */
   sm?: { span: ColSpanType; offset: ColSpanType } | ColSpanType;
 
   /**
-   * ≥768px, could be a span value or an object containing above props
+   * Responsive settings for ≥768px; can be a span value or an object.
    * @type { span: ColSpanType, offset: ColSpanType } | ColSpanType
    */
   md?: { span: ColSpanType; offset: ColSpanType } | ColSpanType;
 
   /**
-   * ≥992px, could be a span value or an object containing above props
+   * Responsive settings for ≥992px; can be a span value or an object.
    * @type { span: ColSpanType, offset: ColSpanType } | ColSpanType
    */
   lg?: { span: ColSpanType; offset: ColSpanType } | ColSpanType;
 
   /**
-   * ≥1200px, could be a span value or an object containing above props
+   * Responsive settings for ≥1200px; can be a span value or an object.
    * @type { span: ColSpanType, offset: ColSpanType } | ColSpanType
    */
   xl?: { span: ColSpanType; offset: ColSpanType } | ColSpanType;
 
   /**
-   * ≥1600px, could be a span value or an object containing above props
+   * Responsive settings for ≥1600px; can be a span value or an object.
    * @type { span: ColSpanType, offset: ColSpanType } | ColSpanType
    */
   xxl?: { span: ColSpanType; offset: ColSpanType } | ColSpanType;

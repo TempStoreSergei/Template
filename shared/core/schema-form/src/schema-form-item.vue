@@ -6,6 +6,7 @@
     >
       <component :is="renderLabelHelpMessage" />
     </Divider>
+
     <Form.Item
       v-else
       v-bind="{ ...schema.formItemProps, ...itemLabelWidthProp }"
@@ -27,7 +28,6 @@
           v-if="isFunction(schema.beforeSlot)"
         />
       </template>
-
       <!-- Custom Slot -->
       <slot v-if="schema.slot" :name="schema.slot" v-bind="getValues" />
       <template v-else-if="getComponent">
@@ -330,25 +330,36 @@ const componentEvents = computed(() => {
 
 const renderLabelHelpMessage = computed(() => {
   const { helpMessage, helpComponentProps, subLabel } = props.schema;
-  const renderLabel = subLabel ? (
-    <span>
-      {getLabel.value} <span class="text-secondary">{subLabel}</span>
-    </span>
-  ) : (
-    vnodeFactory(getLabel.value)
-  );
+
+  // Render the label with optional sub-label
+  const renderLabel = () => {
+    if (subLabel) {
+      return (
+        <span>
+          {getLabel.value} <span class="text-secondary"> {subLabel} </span>
+        </span>
+      );
+    }
+    return vnodeFactory(getLabel.value);
+  };
+
+  // Determine the help message
   const getHelpMessage = isFunction(helpMessage)
     ? helpMessage(unref(getValues))
     : helpMessage;
+
+  // Early return if there's no help message
   if (
     !getHelpMessage ||
     (Array.isArray(getHelpMessage) && getHelpMessage.length === 0)
   ) {
-    return renderLabel;
+    return renderLabel();
   }
+
+  // Render the label and help component
   return (
     <span>
-      {renderLabel}
+      {renderLabel()}
       <BasicHelp
         placement="top"
         class="mx-1"
@@ -358,7 +369,6 @@ const renderLabelHelpMessage = computed(() => {
     </span>
   );
 });
-
 function setComponentRuleType(
   rule: RuleObject,
   component: ComponentType,

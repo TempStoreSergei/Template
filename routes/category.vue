@@ -3,8 +3,8 @@ import { CategoryPage } from "~/pages/CategoryPage";
 
 definePageMeta({
   layout: "admin",
-  name: "Category",
-  title: "Категорий",
+  name: "category",
+  title: "Группы заготовок",
 });
 </script>
 

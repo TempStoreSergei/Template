@@ -8,7 +8,8 @@
       <ActionItemRender v-bind="actionItem">
         <a-button
           type="link"
-          size="small"
+          size="large"
+          class="table-action"
           :loading="loadingMap.get(generateKey(actionItem, index))"
           v-bind="actionItem"
         >
@@ -113,7 +114,7 @@ const getStyle = computed(() => {
   return {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-evenly",
   };
 });
 
@@ -169,3 +170,12 @@ const getTooltipProps = (tooltip: ActionItem["tooltip"]): TooltipProps => {
   };
 };
 </script>
+
+<style lang="scss">
+.table-action {
+  > svg {
+    height: 32px;
+    width: 32px;
+  }
+}
+</style>

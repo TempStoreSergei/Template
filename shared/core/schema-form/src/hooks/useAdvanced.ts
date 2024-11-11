@@ -1,16 +1,22 @@
-import { computed, unref, watch } from 'vue';
-import { useFormContext } from './useFormContext';
-import type { ColEx } from '../types/component';
-import { isBoolean, isFunction, isNumber, isObject } from '~/shared/utils/is';
-import { useBreakpoint } from '~/hooks/event/useBreakpoint';
+import { computed, unref, watch } from "vue";
+import { useFormContext } from "./useFormContext";
+import type { ColEx } from "../types/component";
+import { isBoolean, isFunction, isNumber, isObject } from "~/shared/utils/is";
+import { useBreakpoint } from "~/hooks/event/useBreakpoint";
 
 const BASIC_COL_LEN = 24;
 
 export const useAdvanced = () => {
   const schemaFormContext = useFormContext();
   const { realWidthRef, screenEnum, screenRef } = useBreakpoint();
-  const { advanceState, getFormProps, formSchemasRef, formModel, defaultFormValues, emit } =
-    schemaFormContext;
+  const {
+    advanceState,
+    getFormProps,
+    formSchemasRef,
+    formModel,
+    defaultFormValues,
+    emit,
+  } = schemaFormContext;
 
   const getEmptySpan = computed((): number => {
     if (!advanceState.isAdvanced) {
@@ -43,7 +49,11 @@ export const useAdvanced = () => {
     { immediate: true },
   );
 
-  function getAdvanced(itemCol: Partial<ColEx>, itemColSum = 0, isLastAction = false) {
+  function getAdvanced(
+    itemCol: Partial<ColEx>,
+    itemColSum = 0,
+    isLastAction = false,
+  ) {
     const width = unref(realWidthRef);
 
     const mdWidth =
@@ -74,7 +84,8 @@ export const useAdvanced = () => {
         advanceState.isAdvanced = true;
       } else if (
         itemColSum > BASIC_COL_LEN * 2 &&
-        itemColSum <= BASIC_COL_LEN * (unref(getFormProps).autoAdvancedLine || 3)
+        itemColSum <=
+          BASIC_COL_LEN * (unref(getFormProps).autoAdvancedLine || 3)
       ) {
         advanceState.hideAdvanceBtn = false;
 
@@ -85,7 +96,10 @@ export const useAdvanced = () => {
       }
       return { isAdvanced: advanceState.isAdvanced, itemColSum };
     }
-    if (itemColSum > BASIC_COL_LEN * (unref(getFormProps).alwaysShowLines || 1)) {
+    if (
+      itemColSum >
+      BASIC_COL_LEN * (unref(getFormProps).alwaysShowLines || 1)
+    ) {
       return { isAdvanced: advanceState.isAdvanced, itemColSum };
     } else {
       // The first line is always displayed
@@ -110,7 +124,9 @@ export const useAdvanced = () => {
         isShow = vShow({
           schema: computed(() => {
             // @ts-ignore
-            return unref(formSchemasRef).find((n) => n.field === schema.field) as any;
+            return unref(formSchemasRef).find(
+              (n) => n.field === schema.field,
+            ) as any;
           }),
           formModel,
           field: schema.field,
@@ -137,11 +153,16 @@ export const useAdvanced = () => {
       }
     }
 
-    advanceState.actionSpan = (realItemColSum % BASIC_COL_LEN) + unref(getEmptySpan);
+    advanceState.actionSpan =
+      (realItemColSum % BASIC_COL_LEN) + unref(getEmptySpan);
 
-    getAdvanced(unref(getFormProps).actionColOptions || { span: BASIC_COL_LEN }, itemColSum, true);
+    getAdvanced(
+      unref(getFormProps).actionColOptions || { span: BASIC_COL_LEN },
+      itemColSum,
+      true,
+    );
 
-    emit('advanced-change');
+    emit("advanced-change");
   }
 
   function handleToggleAdvanced() {

@@ -1,7 +1,13 @@
 <script lang="ts" setup>
-import { WelcomePage } from "~/pages/WelcomePage";
+import { HomePage } from "~/pages/HomePage";
+
+definePageMeta({
+  layout: "default",
+  name: "userLogin",
+  title: "Вход",
+});
 </script>
 
 <template>
-  <WelcomePage />
+  <HomePage />
 </template>

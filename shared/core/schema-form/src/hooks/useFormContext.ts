@@ -1,7 +1,7 @@
-import { injectLocal, provideLocal } from '@vueuse/core';
-import type { SchemaFormType } from './';
+import { injectLocal, provideLocal } from "@vueuse/core";
+import type { SchemaFormType } from "./";
 
-const key = Symbol('schema-form');
+const key = Symbol("schema-form");
 
 export async function createFormContext(instance: SchemaFormType) {
   provideLocal(key, instance);

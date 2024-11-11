@@ -1,131 +1,173 @@
 <template>
-  <section>
-    <swiper
-      direction="vertical"
-      :slides-per-view="1"
-      :space-between="30"
-      :mousewheel="mouseWheelSetting"
-      :modules="[Mousewheel, Pagination]"
-      class="page"
-      @swiper="onSwiperInit"
-      @slideChange="onSlideChange"
-    >
-      <swiper-slide v-for="category in categories" :key="category.categoryId">
-        <article class="collage">
-          <div class="image-container">
-            <div class="image">
-              <img
-                :src="getDataFromServer(category.categoryIMG)"
-                alt="category-image"
-              />
-              <div class="image-hero">
-                <h1 class="image-title">{{ category.categoryName }}</h1>
-              </div>
-            </div>
-            <swiper
-              :effect="'coverflow'"
-              :grabCursor="true"
-              :centeredSlides="true"
-              slideActiveClass="active-goods"
-              :slidesPerView="'auto'"
-              :coverflowEffect="{
-                rotate: 20,
-                stretch: 25,
-                depth: 250,
-                modifier: 1,
-                slideShadows: false,
-              }"
-              :pagination="false"
-              :modules="[EffectCoverflow]"
-              class="horizontal-scroll"
-            >
-              <swiper-slide
-                v-for="good in category.goods"
-                :key="good.goodId"
-                style="width: max-content; height: 100%"
+  <a-card title="Вход в приложение Этикетка продукта">
+    <main class="login-user__container">
+      <div class="login-user__logo-section">
+        <div class="login-user__logo">Этикетка</div>
+      </div>
+
+      <div class="login-user__list-section">
+        <a-list
+          bordered
+          class="login-user__list"
+          ghost
+          item-layout="horizontal"
+          :data-source="list"
+          :locale="{ emptyText: 'Пользователей нет' }"
+        >
+          <template #renderItem="{ item }">
+            <a-list-item @click="goToUserScreen(item)">
+              <a-list-item-meta description="Повар">
+                <template #title>
+                  {{ getFormattedName(item) }}
+                </template>
+                <template #avatar>
+                  <a-avatar
+                    :style="{
+                      backgroundColor: getColorFromId(
+                        item.user_first_name,
+                        item.user_surname,
+                      ),
+                    }"
+                  >
+                    {{ !item.avatar ? getInitials(item) : "" }}
+                  </a-avatar>
+                </template>
+              </a-list-item-meta>
+            </a-list-item>
+          </template>
+        </a-list>
+      </div>
+    </main>
+    <a-card-meta>
+      <template #description>
+        <article class="login-user__footer">
+          <div
+            style="display: flex; flex-direction: column; align-items: center"
+          >
+            <div>
+              <a-typography-text>
+                © 2024 Все права защищены
+              </a-typography-text>
+
+              <a-typography-text type="secondary"
+                >Версия приложения: 0.0.3</a-typography-text
               >
-                <Product
-                  :image="getDataFromServer(good.mainImg)"
-                  :price="good.goodPrice"
-                  :title="good.goodName"
-                  :goodId="good.goodId"
-                />
-              </swiper-slide>
-            </swiper>
+            </div>
+            <a-typography-link href="#" target="_self"
+              >FS-TECHNOLOGY</a-typography-link
+            >
           </div>
-        </article>
-      </swiper-slide>
-    </swiper>
-  </section>
+        </article></template
+      >
+    </a-card-meta>
+  </a-card>
 </template>
 
-<script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
-import { Mousewheel, Pagination, EffectCoverflow } from "swiper/modules";
-import type { AxiosRequestConfig } from "axios";
-import { useTabsStore } from "~/entities/navigation/modal/tabs";
-import { getDataFromServer } from "~/shared/utils/urlUtils";
+<script lang="ts" setup>
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { getCreatedUser, getUserCookes } from "../api";
 
-import { request } from "~/shared/api/request";
-
-import Product from "~/entities/products";
-import { useGoodStore } from "~/entities/description/modal/good";
-
-const getInfo = (options?: AxiosRequestConfig) => {
-  return request({
-    url: "/system/get_data",
-    method: "GET",
-    ...options,
-  });
-};
-
-const tabs = useTabsStore();
-const goodStore = useGoodStore();
-
-const swiperInstance = ref(null);
-const activeIndex = ref(0);
-
-// Reactive state for left offset
-const categories = ref([]);
-
-const mouseWheelSetting = computed(() => ({
-  enabled: true,
-  forceToAxis: true,
-}));
-
-const onSlideChange = (swiper) => {
-  activeIndex.value = swiper.activeIndex;
-  tabs.setActiveIndex(swiper.activeIndex);
-};
-
-const goToSlide = (index) => {
-  if (swiperInstance.value) {
-    swiperInstance.value.slideTo(index); // Use the stored Swiper instance to navigate to the slide
-  }
-};
-
-const onSwiperInit = (swiper) => {
-  swiperInstance.value = swiper; // Store the Swiper instance when initialized
-};
-
-// Watch for activeTab changes and trigger slide navigation
-watch(
-  () => tabs.getActiveTab(),
-  (newIndex) => {
-    goToSlide(newIndex);
-  },
-);
+const list = ref([]);
+const router = useRouter();
 
 onMounted(async () => {
-  categories.value = await getInfo();
-  const elements = categories.value.map((category, index) => ({
-    value: index,
-    title: category.categoryName,
-  }));
-  tabs.saveTabs(elements);
+  list.value = await getCreatedUser();
 });
+
+// Generates a consistent color based on user ID
+const getColorFromId = (id: string, id2: string): string => {
+  let hash = 0;
+  const combinedString = id + id2;
+
+  for (let i = 0; i < combinedString.length; i++) {
+    hash = combinedString.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  hash = Math.abs(hash);
+
+  const color = `hsl(${hash % 360}, 70%, 75%)`;
+  return color;
+};
+
+const getFormattedName = (user) => {
+  const firstInitial = user.user_first_name.charAt(0).toUpperCase();
+  const patronymicInitial = user.user_patronymic.charAt(0).toUpperCase();
+
+  return `${user.user_surname} ${firstInitial}.${patronymicInitial}.`;
+};
+
+// Returns user initials for the avatar
+const getInitials = (user) => {
+  const firstInitial = user.user_first_name.charAt(0).toUpperCase();
+  const patronymicInitial = user.user_patronymic.charAt(0).toUpperCase();
+  return `${firstInitial}${patronymicInitial}`;
+};
+
+const goToUserScreen = async (user) => {
+  const token = await getUserCookes(user.id);
+  localStorage.setItem("token", token);
+  router.push({ name: "screen" });
+};
 </script>
 
 <style lang="scss">
-@import "styles.module";
+.login-user__container {
+  .ant-avatar {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+  }
+
+  .ant-avatar-string {
+    font-size: 32px !important;
+  }
+}
+
+.login-user {
+  &__container {
+    display: flex;
+    height: 75vh;
+    aspect-ratio: 1.618 / 1;
+    background-color: #f5f5f5;
+  }
+
+  &__footer {
+    .ant-typography {
+      font-size: 10px;
+    }
+
+    text-align: center;
+  }
+
+  &__logo-section {
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+  }
+
+  &__logo {
+    width: 200px;
+    font-size: 48px !important;
+    height: auto;
+  }
+
+  &__list-section {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    background-color: white;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__list {
+    overflow-y: auto;
+    height: 100%;
+    width: 100%;
+  }
+}
 </style>

@@ -1,166 +1,170 @@
 <template>
   <DynamicTable
-    row-key="id"
-    header-title="VPN Management"
-    title-tooltip="Manage VPN Configurations"
+    header-title="Управление заготовка"
+    title-tooltip="Пожалуйста, не удаляйте заготовки без необходимости, иначае будут удалены все продукты из этой группу заготовок и пропадут из готовоых блюд."
     :data-request="getCategory"
     :columns="columns"
-    bordered
-    :scroll="{ x: 1600 }"
+    :scroll="{ x: 800, y: 240 }"
+    :row-selection="rowSelection"
+    :pagination="{ total: countOfElemnt }"
   >
+    <template v-if="isCheckRows" #title>
+      <Alert class="w-full" type="info" show-icon>
+        <template #message>
+          Выбрано {{ isCheckRows }} заготовок
+          <a-button type="link" @click="rowSelection.selectedRowKeys = []"
+            >Отменить выбор</a-button
+          >
+        </template>
+      </Alert>
+    </template>
     <template #toolbar>
-      <Button type="primary" @click="openAddModal()">Add New</Button>
+      <a-button type="primary" @click="openUserModal({})">
+        <Icon icon="ant-design:plus-outlined" /> Добавить
+      </a-button>
+      <a-button
+        type="primary"
+        :disabled="!isCheckRows"
+        @click="delRowConfirm(rowSelection.selectedRowKeys)"
+      >
+        <Icon icon="ant-design:delete-outlined" /> Удалить
+      </a-button>
     </template>
   </DynamicTable>
 </template>
 
-<script setup lang="ts">
-import { Button, Modal, message } from "ant-design-vue";
+<script setup lang="tsx">
+import { ref, computed } from "vue";
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
+import { Modal, Alert } from "ant-design-vue";
+import { categoriSchemas } from "../config/formSchemas";
+import { baseColumns, searchFormSchema } from "../config/columns";
 import {
   getCategory,
-  creteVPNConfig,
-  removeVPNConfig,
-  updateCategory,
-} from "../api";
-import { baseColumns } from "../config/columns";
-import { vpnCreate } from "../config/formSchemas";
-import { serverIp } from "~/shared/api/request";
+  categoriesDelete,
+  categoryCreate,
+  categoryUpdate,
+  categoryDelete,
+  getLenthOfTable,
+} from "../api/index";
 import { useTable } from "~/shared/core/dynamic-table";
-import { useFormModal } from "~/hooks/useModal/";
+import { useFormModal } from "~/hooks/useModal";
 
 defineOptions({
-  name: "SystemVpn",
+  name: "SystemCategory",
 });
 
 const [DynamicTable, dynamicTableInstance] = useTable({
-  formProps: { autoSubmitOnEnter: true },
+  formProps: { autoSubmitOnEnter: true, schemas: searchFormSchema },
 });
 const [showModal] = useFormModal();
 
-// Modal for adding new VPN configuration
-const openAddModal = () => {
-  showModal({
+const countOfElemnt = ref(0);
+
+const setPageSize = async () => {
+  countOfElemnt.value = await getLenthOfTable();
+};
+
+setPageSize();
+
+const rowSelection = ref({
+  selectedRowKeys: [] as number[],
+  onChange: (selectedRowKeys: number[], selectedRows: TableListItem[]) => {
+    console.log(
+      `selectedRowKeys: ${selectedRowKeys}`,
+      "selectedRows: ",
+      selectedRows,
+    );
+    rowSelection.value.selectedRowKeys = selectedRowKeys;
+  },
+});
+
+// Проверка выбора строк в таблице
+const isCheckRows = computed(() => rowSelection.value.selectedRowKeys.length);
+
+/**
+ * @description Открытие модального окна для редактирования/создания пользователя
+ */
+const openUserModal = async (record: Partial<TableListItem> = {}) => {
+  const isUpdate = Boolean(record.id);
+
+  const [formRef] = await showModal({
     modalProps: {
-      title: "Add new category",
-      width: "50%",
+      title: `${isUpdate ? "Редактировать" : "Добавить"} заготовоку`,
+      width: 700,
       onFinish: async (values) => {
-        try {
-          await creteVPNConfig(values);
-          message.success("VPN configuration added successfully.");
-          dynamicTableInstance?.reload();
-        } catch (error) {
-          message.error("Failed to add VPN configuration.");
+        values.id = record.id;
+        if (record.id) {
+          await categoryUpdate(record.id, values);
+        } else {
+          countOfElemnt.value += 1;
+          await categoryCreate(values);
         }
+        dynamicTableInstance?.reload();
       },
     },
     formProps: {
       labelWidth: 100,
-      schemas: vpnCreate,
+      schemas: categoriSchemas,
+      autoSubmitOnEnter: true,
     },
   });
-};
-const filterSameProperties = (values, record) => {
-  // Iterate over each key in the values object
-  for (const key in values) {
-    // If the property exists in both objects and the values are the same
-    if (
-      values.hasOwnProperty(key) &&
-      record.hasOwnProperty(key) &&
-      values[key] === record[key]
-    ) {
-      // Delete the property from the values object
-      delete values[key];
-    }
+
+  if (isUpdate) {
+    formRef?.setFieldsValue({
+      categoryName: record.category_name,
+    });
   }
 };
 
-const TestAfterDelete = async (record: any) => {
-  const [formRef] = await showModal({
-    modalProps: {
-      title: "Add new category",
-      width: "50%",
-      onFinish: async (values) => {
-        try {
-          filterSameProperties(values, record);
-          const isEmpty = Object.keys(values).length === 0;
-          if (isEmpty) {
-            message.warn("Data not change.");
-          } else {
-            if (values.hasOwnProperty("description")) {
-              const isNullValue = values.description.length === 0;
-              values.description = isNullValue ? "empty" : values.description;
-            }
-            if (values.hasOwnProperty("file")) {
-              const isString = typeof values.file === "string";
-              if (isString) {
-                delete values.file;
-              }
-            }
-            values.sale = ~~values.sale;
-            await updateCategory(record.id, values);
-            dynamicTableInstance?.reload();
-            message.success("VPN configuration added successfully.");
-          }
-        } catch (error) {
-          message.error("Failed to add VPN configuration.");
-        }
-      },
-    },
-    formProps: {
-      labelWidth: 100,
-      schemas: vpnCreate,
-    },
-  });
-
-  formRef?.setFieldsValue({
-    ...record,
-    file: serverIp + record.img,
-  });
-};
-
-// Handle delete action
-const handleDelete = (record) => {
-  Modal.confirm({
-    title: "Are you sure you want to delete this record?",
-    okText: "Yes",
-    cancelText: "No",
-    onOk: async () => {
-      try {
-        await removeVPNConfig(record.id);
-        message.success("Record deleted successfully.");
+/**
+ * @description Удаление строки из таблицы
+ */
+const delRowConfirm = async (categoryId: number | number[]) => {
+  if (Array.isArray(categoryId)) {
+    Modal.confirm({
+      title: "Вы уверены, что хотите удалить выбранные заготовки?",
+      icon: <ExclamationCircleOutlined />,
+      centered: true,
+      onOk: async () => {
+        await categoriesDelete({ categoriesID: categoryId });
+        countOfElemnt.value -= categoryId.length;
         dynamicTableInstance?.reload();
-      } catch (error) {
-        message.error("Failed to delete the record.");
-      }
-    },
-  });
+      },
+    });
+  } else {
+    await categoryDelete(categoryId).finally(() => {
+      countOfElemnt.value -= 1;
+      dynamicTableInstance?.reload();
+    });
+  }
 };
 
-// Define columns for the DynamicTable
-const columns = [
+const columns: TableColumnItem[] = [
   ...baseColumns,
   {
-    title: "Actions",
-    width: 180,
+    title: "Действие",
+    width: 40,
     dataIndex: "ACTION",
-    hideInSearch: true,
     fixed: "right",
     actions: ({ record }) => [
       {
-        label: "Delete",
-        auth: "system:vpn:delete",
-        popConfirm: {
-          title: "Are you sure you want to delete?",
-          placement: "left",
-          onConfirm: () => handleDelete(record),
-        },
+        icon: "ant-design:edit-outlined",
+        tooltip: "Редактировать данные заготовки",
+        onClick: () => openUserModal(record),
       },
       {
-        label: "Update",
-        auth: "system:vpn:download",
-        onClick: () => TestAfterDelete(record),
+        icon: "ant-design:delete-outlined",
+        tooltip: "Удалить заготовку",
+        popConfirm: {
+          title: "Вы уверены, что хотите удалить?",
+          placement: "left",
+          onConfirm: () => delRowConfirm(record.id),
+        },
       },
     ],
   },
 ];
 </script>
+
+<style></style>

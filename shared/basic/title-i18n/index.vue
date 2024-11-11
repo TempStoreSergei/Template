@@ -1,5 +1,5 @@
 <template>
-  <i18n-t tag="span" :keypath="getTitle" scope="global" />
+  <span> {{ getTitle }}</span>
 </template>
 
 <script setup lang="ts">

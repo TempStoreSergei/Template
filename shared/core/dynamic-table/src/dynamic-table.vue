@@ -12,7 +12,10 @@
           @toggle-advanced="handleToggleAdvanced"
           @submit="handleSubmit"
         >
-          <template v-for="item in getFormSlotKeys" :key="item" #item="data">
+          <template
+            v-for="item of getFormSlotKeys"
+            #[replaceFormSlotKey(item)]="data"
+          >
             <slot :name="item" v-bind="data || {}" />
           </template>
         </SchemaForm>
@@ -25,8 +28,12 @@
             :title-tooltip="titleTooltip"
             :show-table-setting="showTableSetting"
           >
-            <template v-slot:toolbar="data">
-              <slot name="toolbar" v-bind="data || {}" />
+            <template
+              v-for="name of Object.keys($slots)"
+              #[name]="data"
+              :key="name"
+            >
+              <slot :name="name" v-bind="data || {}" />
             </template>
           </ToolBar>
 
@@ -42,16 +49,18 @@
               ref="tableRef"
               v-bind="tableProps"
               :columns="innerColumns"
+              :locale="locale"
               :data-source="tableData"
               @change="handleTableChange"
             >
               <template
-                v-for="(_, slotName) in $slots"
+                v-for="(_, slotName) of $slots"
+                #[slotName]="slotData"
                 :key="slotName"
-                #slotName="slotData"
               >
                 <slot :name="slotName" v-bind="slotData" />
               </template>
+
               <template #bodyCell="slotData">
                 <slot name="bodyCell" v-bind="slotData" />
               </template>
@@ -64,7 +73,13 @@
 </template>
 
 <script lang="ts" setup>
-import { useSlots, computed, onBeforeMount } from "vue";
+import {
+  useSlots,
+  computed,
+  onBeforeMount,
+  defineProps,
+  defineEmits,
+} from "vue";
 import { Table } from "ant-design-vue";
 import {
   useTableMethods,
@@ -120,8 +135,26 @@ Object.assign(dynamicTableContext, editableHooks);
 
 const { innerColumns } = useColumns();
 
+const locale = {
+  filterConfirm: "OK",
+  filterReset: "Сбросить",
+  filterEmptyText: "Нет фильтров",
+  filterCheckall: "Выбрать все",
+  filterSearchPlaceholder: "Поиск по фильтру",
+  filterSelectAll: "Выбрать все",
+  emptyText: "Нет данных",
+  selectAll: "Выбрать все строки",
+  selectInvert: "Инвертировать выбор",
+  sortTitle: "Сортировать",
+  expand: "Развернуть",
+  collapse: "Свернуть",
+  triggerDesc: "Отсортировать по убыванию",
+  triggerAsc: "Отсортировать по возрастанию",
+  cancelSort: "Отменить сортировку",
+};
+
 const tableForm = useTableForm();
-const { getFormProps, getFormSlotKeys } = tableForm;
+const { getFormProps, replaceFormSlotKey, getFormSlotKeys } = tableForm;
 
 const exportData2ExcelHooks = useExportData2Excel();
 
@@ -157,8 +190,10 @@ const handleToggleAdvanced = (e: Event) => {
 <style lang="scss" scoped>
 .dynamic-table__search-form {
   background-color: white;
+  border-radius: 24px;
   padding-top: 24px;
   padding-right: 24px;
+  padding: 16px;
   margin-bottom: 16px;
 
   &.dark {
@@ -167,6 +202,7 @@ const handleToggleAdvanced = (e: Event) => {
 }
 
 .dynamic-table__content {
+  border-radius: 24px;
   background-color: white;
 
   &.dark {

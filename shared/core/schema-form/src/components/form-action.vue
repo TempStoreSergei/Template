@@ -35,11 +35,7 @@
           class="form-action__button form-action__button--advanced"
           @click="toggleAdvanced"
         >
-          {{
-            isAdvanced
-              ? t("component.form.putAway")
-              : t("component.form.unfold")
-          }}
+          {{ isAdvanced ? "Свернуть " : "Развернуть" }}
           <BasicArrow class="form-action__icon" :expand="!isAdvanced" />
         </a-button>
 
@@ -124,7 +120,7 @@ const actionColOpt = computed(() => {
 const getResetBtnOptions = computed((): ButtonOptions => {
   return Object.assign(
     {
-      text: t("common.resetText"),
+      text: "Сбросить",
     },
     props.resetButtonOptions,
   );
@@ -133,7 +129,7 @@ const getResetBtnOptions = computed((): ButtonOptions => {
 const getSubmitBtnOptions = computed(() => {
   return Object.assign(
     {
-      text: t("common.queryText"),
+      text: "Поиск",
     },
     props.submitButtonOptions,
   );

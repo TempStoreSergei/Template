@@ -1,23 +1,31 @@
-import type { RowProps } from 'ant-design-vue';
-import type { RuleObject } from 'ant-design-vue/es/form/interface';
-import type { FormItemProps } from 'ant-design-vue/es/form/FormItem';
-import type { Component, ComputedRef, UnwrapRef, VNode } from 'vue';
-import type { ButtonProps as AntdButtonProps } from '~/shared/basic/button';
-import type { ColEx, ComponentType, ComponentProps } from './component';
-import type { SchemaFormType } from '../hooks';
-import type { TableActionType } from '~/shared/core/dynamic-table';
+import type { RowProps } from "ant-design-vue";
+import type { RuleObject } from "ant-design-vue/es/form/interface";
+import type { FormItemProps } from "ant-design-vue/es/form/FormItem";
+import type { Component, ComputedRef, UnwrapRef, VNode } from "vue";
+import type { ButtonProps as AntdButtonProps } from "~/shared/basic/button";
+import type { ColEx, ComponentType, ComponentProps } from "./component";
+import type { SchemaFormType } from "../hooks";
+import type { TableActionType } from "~/shared/core/dynamic-table";
 
+// Exporting RowProps for use in other modules
 export type { RowProps };
 
+// Mapping field names to their types and optional descriptions
 export type FieldMapToTime = [string, [string, string], string?][];
 
+// Extended rule type with custom triggers
 export type Rule = RuleObject & {
-  trigger?: 'blur' | 'change' | ['change', 'blur'];
+  trigger?: "blur" | "change" | ["change", "blur"];
 };
 
-/** 获取所有字段名 */
+/**
+ * Extract all field names excluding symbols and numbers.
+ */
 export type GetFieldKeys<T> = Exclude<keyof T, symbol | number>;
 
+/**
+ * Parameters for rendering callbacks in forms.
+ */
 export interface RenderCallbackParams<
   T extends object = Recordable,
   P extends ComponentProps = ComponentProps,
@@ -27,142 +35,192 @@ export interface RenderCallbackParams<
       componentProps: P;
     }
   >;
-  /** 响应式的表单数据对象 */
+  /** Reactive form data object */
   formModel: Objectable<T>;
   field: GetFieldKeys<T>;
-  /** 非响应式的表单数据对象(最终表单要提交的数据) */
+  /** Non-reactive form data object (final data for submission) */
   values: any;
-  /** 动态表单实例 */
+  /** Dynamic form instance */
   formInstance: SchemaFormType;
-  /** 动态表格实例 */
+  /** Dynamic table instance, optional */
   tableInstance?: TableActionType;
-  /** 动态表格rowKey */
+  /** Row key for the dynamic table, optional */
   tableRowKey?: Key;
-  /** 作用域插槽数据 */
+  /** Scoped slot data */
   slotData?: Recordable;
 }
-/** 自定义VNode渲染器 */
+
+/**
+ * Custom VNode renderer function type.
+ */
 export type CustomRenderFn<T extends object = Recordable> = (
   renderCallbackParams: RenderCallbackParams<T>,
 ) => VNode | VNode[] | string;
 
+/**
+ * Properties for button components, extending AntdButtonProps.
+ */
 export interface ButtonProps extends AntdButtonProps {
   text?: string;
 }
 
-export type UnwrapFormSchema<T extends object = Recordable> = UnwrapRef<FormSchema<T>>;
+/**
+ * Unwraps a FormSchema type.
+ */
+export type UnwrapFormSchema<T extends object = Recordable> = UnwrapRef<
+  FormSchema<T>
+>;
 
+/**
+ * Schema definition for form components.
+ */
 type ComponentSchema<T extends object = Recordable> =
   | {
       [K in ComponentType]: {
-        /** 表单项对应的组件，eg: Input */
+        /** Associated form component, e.g., Input */
         component: K;
-        /** 表单组件属性 */
+        /** Component properties */
         componentProps?:
           | ComponentProps<K>
-          | ((opt: RenderCallbackParams<T, ComponentProps<K>>) => ComponentProps<K>);
+          | ((
+              opt: RenderCallbackParams<T, ComponentProps<K>>,
+            ) => ComponentProps<K>);
       };
     }[ComponentType]
   | {
-      component: CustomRenderFn<T> | ((opt: RenderCallbackParams<T>) => Component);
-      componentProps?: ComponentProps | ((opt: RenderCallbackParams<T>) => ComponentProps);
+      /** Custom renderer function or component */
+      component:
+        | CustomRenderFn<T>
+        | ((opt: RenderCallbackParams<T>) => Component);
+      componentProps?:
+        | ComponentProps
+        | ((opt: RenderCallbackParams<T>) => ComponentProps);
     };
 
-/** 表单项 */
+/**
+ * Definition for form schema items.
+ */
 export type FormSchema<T extends object = Recordable> = ComponentSchema<T> & {
-  /** 字段名 */
+  /** Field name */
   field: GetFieldKeys<T>;
-  // Event name triggered by internal value change, default change
+
+  /** Event name triggered by internal value changes; defaults to 'change' */
   changeEvent?: string;
-  // Variable name bound to v-model Default value
+
+  /** Name of the variable bound to v-model; default value */
   valueField?: string;
-  // Label name
+
+  /** Label text or a function to derive label text */
   label?: string | ((v: RenderCallbackParams<T>) => string);
-  // Auxiliary text
+
+  /** Auxiliary text displayed alongside the label */
   subLabel?: string;
-  // Help text on the right side of the text
+
+  /** Help text, either as a string/array or as a function */
   helpMessage?:
     | string
     | string[]
-    | ((renderCallbackParams: RenderCallbackParams<T>) => string | string[]);
-  // BaseHelp component props
+    | ((params: RenderCallbackParams<T>) => string | string[]);
+
+  /** Props for help component */
   helpComponentProps?: Partial<HelpComponentProps>;
-  // Label width, if it is passed, the labelCol and WrapperCol configured by itemProps will be invalid
+
+  /** Fixed label width; overrides labelCol and wrapperCol */
   labelWidth?: string | number;
-  // Disable the adjustment of labelWidth with global settings of formModel, and manually set labelCol and wrapperCol by yourself
+
+  /** Prevent label width adjustments from global settings */
   disabledLabelWidth?: boolean;
 
-  /** 表单组件slots，例如 a-input 的 suffix slot 可以写成：{ suffix: () => VNode } */
+  /** Component slots; can be functions or static objects */
   componentSlots?:
-    | ((renderCallbackParams: RenderCallbackParams<T>) => Recordable<CustomRenderFn<T>>)
+    | ((params: RenderCallbackParams<T>) => Recordable<CustomRenderFn<T>>)
     | Recordable<CustomRenderFn<T>>
     | ReturnType<CustomRenderFn>;
-  // Required
-  required?: boolean | ((renderCallbackParams: RenderCallbackParams<T>) => boolean);
 
-  suffix?: string | number | ((values: RenderCallbackParams<T>) => string | number);
+  /** Indicates if the field is required */
+  required?: boolean | ((params: RenderCallbackParams<T>) => boolean);
 
-  // Validation rules
+  /** Suffix text or value */
+  suffix?:
+    | string
+    | number
+    | ((values: RenderCallbackParams<T>) => string | number);
+
+  /** Validation rules for the field */
   rules?: Rule[];
-  // Check whether the information is added to the label
+
+  /** Join rules messages with the label */
   rulesMessageJoinLabel?: boolean;
-  /** 组件加载状态 */
+
+  /** Loading state of the component */
   loading?: boolean;
 
-  // Reference formModelItem
+  /** Reference to FormItem props */
   formItemProps?: Partial<FormItemProps>;
 
-  // col configuration outside formModelItem
+  /** Column configuration outside FormItem */
   colProps?: Partial<ColEx>;
 
-  /** 搜索表单项排序 */
+  /** Order for sorting form items */
   order?: number;
-  // 默认值
+
+  /** Default value for the field */
   defaultValue?: any;
+
+  /** Indicator if the item is part of an advanced search */
   isAdvanced?: boolean;
 
-  // Matching details components
+  /** Column span for layout */
   span?: number;
-  /** 作用同v-show */
-  vShow?: boolean | ((renderCallbackParams: RenderCallbackParams<T>) => any);
-  /** 作用同v-if */
-  vIf?: boolean | ((renderCallbackParams: RenderCallbackParams<T>) => any);
-  /**
-   * 转换表单项的值
-   * @param value 转换前的值
-   * @returns 返回值若是基本类型，则将作为当前表单项的最终值；
-   * 若返回值是对象，则对象的 key 将会覆盖当前表单项定义的 field 字段
-   */
+
+  /** Condition to show the component (similar to v-show) */
+  vShow?: boolean | ((params: RenderCallbackParams<T>) => any);
+
+  /** Condition to include the component (similar to v-if) */
+  vIf?: boolean | ((params: RenderCallbackParams<T>) => any);
+
+  /** Value transformation function */
   transform?: (value: any) => any;
-  /** 渲染col内容需要外层包装form-item */
+
+  /** Rendered content of the column, wrapped in FormItem */
   renderColContent?: CustomRenderFn<T>;
 
-  /** Custom slot, in from-item */
+  /** Custom slot name for FormItem */
   slot?: string;
-  /** 表单组件前置插槽 */
-  beforeSlot?: string | ((renderCallbackParams: RenderCallbackParams<T>) => any);
-  /** 表单组件后置插槽 */
-  afterSlot?: string | ((renderCallbackParams: RenderCallbackParams<T>) => any);
 
-  // 自定义槽，类似renderColContent
+  /** Prepend slot for the form component */
+  beforeSlot?: string | ((params: RenderCallbackParams<T>) => any);
+
+  /** Append slot for the form component */
+  afterSlot?: string | ((params: RenderCallbackParams<T>) => any);
+
+  /** Custom column slot, similar to renderColContent */
   colSlot?: string;
 
-  dynamicDisabled?: boolean | ((renderCallbackParams: RenderCallbackParams<T>) => boolean);
+  /** Dynamically disable the field */
+  dynamicDisabled?: boolean | ((params: RenderCallbackParams<T>) => boolean);
 
-  dynamicRules?: (renderCallbackParams: RenderCallbackParams<T>) => Rule[];
+  /** Dynamic validation rules */
+  dynamicRules?: (params: RenderCallbackParams<T>) => Rule[];
 };
+
+/**
+ * Props for help components in the form.
+ */
 export interface HelpComponentProps {
   maxWidth: string;
-  // Whether to display the serial number
+  /** Indicates whether to show index */
   showIndex: boolean;
-  // Text list
+  /** List of help text */
   text: any;
-  // colour
+  /** Color of the help text */
   color: string;
-  // font size
+  /** Font size of the help text */
   fontSize: string;
+  /** Icon displayed in the help component */
   icon: string;
+  /** Absolute positioning of the help text */
   absolute: boolean;
-  // Positioning
+  /** Positioning of the help text */
   position: any;
 }

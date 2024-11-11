@@ -8,23 +8,59 @@ body {
   }
 }
 
+.ant-menu-title-content {
+  display: flex;
+  height: 100%;
+  align-items: center;
+}
+
+.ant-modal-footer {
+  * {
+    font-size: 24px !important;
+  }
+}
+
 .ant-image-preview-root img {
   display: unset;
 }
 
+.ant-form-item-label {
+  width: auto !important;
+}
+
 .ant-layout-header {
-  background: transparent !important;
-  position: fixed;
-  z-index: 40;
+  background: #fff !important;
+  height: auto !important;
+}
+
+.ant-checkbox-inner {
+  width: 24px !important;
+  height: 24px !important;
 }
 
 .ant-segmented {
-  color: #fff;
-  background: #1677ff !important;
+  width: max-content;
 }
 
-.ant-tabs-nav {
-  margin: 0 !important;
+.ant-menu-item {
+  height: 2.5em !important;
 }
 
+.ant-select-selector {
+  height: auto !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+.ant-btn {
+  height: auto !important;
+}
+
+.ant-list-item-meta {
+  align-items: center !important;
+}
+
+.ant-input-number {
+  min-width: 340px;
+  max-width: 100% !important;
+}
 

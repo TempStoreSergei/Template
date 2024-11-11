@@ -3,45 +3,56 @@ import { request } from "~/shared/api/request.ts";
 
 export const getCategory = async (options?: AxiosRequestConfig) => {
   return await request({
-    url: "/system/get_category",
+    url: "admin/category/get_all_category",
     method: "GET",
-    ...options,
+    params: options,
   });
 };
 
-export const creteVPNConfig = async (
-  body: any,
-  options?: AxiosRequestConfig,
-) => {
+export const getLenthOfTable = async () => {
   return await request({
-    url: "system/create_category",
+    url: "admin/category/get_groceries_category_len/",
+    method: "GET",
+  });
+};
+
+export const categoryCreate = async (body: any, options?: AxiosRequestConfig) => {
+  return await request({
+    url: "admin/category/create_category",
     method: "POST",
-    requestType: "form",
     data: body,
     ...options,
   });
 };
 
-export const updateCategory = async (
+export const categoryUpdate = async (
   id: number,
   body: any,
   options?: AxiosRequestConfig,
 ) => {
   return await request({
-    url: `system/update_category/${id}`,
+    url: `admin/category/update_category/${id}`,
     method: "PUT",
-    requestType: "form",
     data: body,
     ...options,
   });
 };
 
-export const removeVPNConfig = async (
-  id: number,
+export const categoryDelete = async (id: number, options?: AxiosRequestConfig) => {
+  return await request({
+    url: `admin/category/delete_category/${id}`,
+    method: "DELETE",
+    ...options,
+  });
+};
+
+export const categoriesDelete = async (
+  ids: Array<number>,
   options?: AxiosRequestConfig,
 ) => {
   return await request({
-    url: `system/delete_category/${id}`,
+    url: `admin/grocery/delete_groceries`,
+    data: ids,
     method: "DELETE",
     ...options,
   });

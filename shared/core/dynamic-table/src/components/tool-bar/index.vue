@@ -76,7 +76,6 @@ const { exportData2Excel } = useTableContext();
   &__title {
     display: flex;
     align-items: center;
-    font-size: 16px;
     font-weight: 500;
   }
 

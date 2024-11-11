@@ -8,20 +8,25 @@ import {
 } from "vue-router";
 import { useKeepAliveStore } from "~/entities/store/modules/keepAlive";
 import { useLayoutSettingStore } from "~/entities/store/modules/layoutSetting";
-import { LOGIN_NAME, REDIRECT_NAME, PAGE_NOT_FOUND_NAME } from "~/constants";
+import {
+  LOGIN_NAME,
+  REDIRECT_NAME,
+  PAGE_NOT_FOUND_NAME,
+} from "~/constants/router";
 
-/** Routes that should not appear in tabs */
 export const routeExcludes = [
   REDIRECT_NAME,
   LOGIN_NAME,
   PAGE_NOT_FOUND_NAME,
+  "screen",
+  "UserLogin",
 ] as const;
 
 export const useTabsViewStore = defineStore(
   "tabs-view",
   () => {
     const currentRoute = useRoute();
-    const router = useRouter(); // Use useRouter hook instead of importing router directly
+    const router = useRouter();
     const layoutSettingStore = useLayoutSettingStore();
     const tabsList = ref<RouteLocationNormalizedLoaded[]>([]);
 
@@ -45,9 +50,7 @@ export const useTabsViewStore = defineStore(
 
     // Check if a route should be excluded
     const isInRouteExcludes = (route: RouteLocationNormalizedLoaded) => {
-      return (
-        route.meta?.hideInTabs || routeExcludes.includes(route.name as string)
-      );
+      return route.meta?.hideInTabs || routeExcludes.includes(route.name);
     };
 
     // Remove components from keep-alive cache
@@ -195,7 +198,6 @@ export const useTabsViewStore = defineStore(
   },
 );
 
-// Function to use the store outside of components
 export const useTabsViewStoreWithOut = () => {
   return useTabsViewStore();
 };

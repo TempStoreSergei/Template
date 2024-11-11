@@ -1,5 +1,5 @@
 /**
- * Component list, register here to setting it in the form
+ * Component list: Register components here to use them in the form.
  */
 import {
   Input,
@@ -18,9 +18,10 @@ import {
   Rate,
   Divider,
   Upload,
-} from 'ant-design-vue';
-import type { Component, VNodeProps } from 'vue';
+} from "ant-design-vue"; // Importing components from Ant Design Vue
+import type { Component, VNodeProps } from "vue"; // Importing types from Vue
 
+// Map of components for easy access in forms
 const componentMap = {
   Input,
   InputGroup: Input.Group,
@@ -45,22 +46,27 @@ const componentMap = {
   WeekPicker: DatePicker.WeekPicker,
   TimePicker,
   Upload,
-
   Divider,
 };
 
+// Type to extract prop types from components
 type ExtractPropTypes<T extends Component> = T extends new (...args: any) => any
-  ? Writable<Omit<InstanceType<T>['$props'], keyof VNodeProps>>
+  ? Writable<Omit<InstanceType<T>["$props"], keyof VNodeProps>> // Omit VNodeProps from component props
   : never;
 
+// Type for the component map
 type ComponentMapType = typeof componentMap;
 
+// Type representing the keys of componentMap
 export type ComponentType = keyof ComponentMapType;
 
+// Mapping each component type to its props
 export type ComponentMapProps = {
   [K in ComponentType]: ExtractPropTypes<ComponentMapType[K]>;
 };
 
+// Combined props type for all components
 export type AllComponentProps = ComponentMapProps[ComponentType];
 
+// Export the component map for use in forms
 export { componentMap };

@@ -1,22 +1,25 @@
-import { nextTick, ref, unref, watch } from 'vue';
-import { isEmpty } from 'lodash-es';
-import SchemaForm from '../schema-form.vue';
-import type { FunctionalComponent, Ref } from 'vue';
-import type { SchemaFormProps } from '../schema-form';
+import { nextTick, ref, unref, watch } from "vue";
+import { isEmpty } from "lodash-es";
+import SchemaForm from "../schema-form.vue";
+import type { FunctionalComponent, Ref } from "vue";
+import type { SchemaFormProps } from "../schema-form";
 
 type SchemaFormInstance = InstanceType<typeof SchemaForm>;
 
-export function useForm(props?: Partial<SchemaFormProps>) {
+export const useForm = (props?: Partial<SchemaFormProps>) => {
   const formRef = ref<SchemaFormInstance>({} as SchemaFormInstance);
 
-  async function getFormInstance() {
+  // Arrow function to get the form instance after the next DOM update
+  const getFormInstance = async () => {
     await nextTick();
     const form = unref(formRef);
     if (isEmpty(form)) {
-      console.error('未获取表单实例!');
+      console.error("Form instance not retrieved!");
     }
     return form;
-  }
+  };
+
+  // Watch for changes in props, and update the form instance when necessary
   watch(
     () => props,
     async () => {
@@ -29,12 +32,13 @@ export function useForm(props?: Partial<SchemaFormProps>) {
     {
       immediate: true,
       deep: true,
-      flush: 'post',
+      flush: "post",
     },
   );
 
+  // Proxy to access methods of the form instance dynamically
   const methods = new Proxy<Ref<SchemaFormInstance>>(formRef, {
-    get(target, key: string) {
+    get: (target, key: string) => {
       if (Reflect.has(target, key)) {
         return unref(target);
       }
@@ -48,7 +52,11 @@ export function useForm(props?: Partial<SchemaFormProps>) {
     },
   });
 
-  const SchemaFormRender: FunctionalComponent<SchemaFormProps> = (compProps, { attrs, slots }) => {
+  // Functional component to render the schema form with passed props and slots
+  const SchemaFormRender: FunctionalComponent<SchemaFormProps> = (
+    compProps,
+    { attrs, slots },
+  ) => {
     return (
       <SchemaForm
         ref={formRef}
@@ -59,4 +67,4 @@ export function useForm(props?: Partial<SchemaFormProps>) {
   };
 
   return [SchemaFormRender, unref(methods)] as const;
-}
+};

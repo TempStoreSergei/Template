@@ -2,15 +2,14 @@ import type { AxiosRequestConfig } from "axios";
 import { request } from "~/shared/api/request";
 
 const endpoints = {
-  login: "/login",
+  login: "admin/login_admin",
 };
 
-export const authLogin = async (body: any, options?: AxiosRequestConfig) => {
+export const authLogin = async (body: any) => {
   try {
     return await request(endpoints.login, {
       method: "POST",
       data: body,
-      ...options,
       isReturnResult: false,
     });
   } catch (error: any) {

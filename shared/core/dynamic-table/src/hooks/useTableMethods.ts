@@ -37,7 +37,7 @@ export const useTableMethods = () => {
    * @description Fetches data based on query parameters and updates table data
    */
   const fetchData = debounce(async (params: Recordable = {}) => {
-    const { dataRequest, dataSource, fetchConfig, searchParams } = props;
+    const { dataRequest, dataSource, fetchConfig, searchParams, total } = props;
 
     if (!dataRequest || !isFunction(dataRequest) || Array.isArray(dataSource)) {
       return;
@@ -89,18 +89,15 @@ export const useTableMethods = () => {
         ? res.length
         : Number(get(res, totalField));
 
-      if (enablePagination && resultTotal) {
-        const { current = 1, pageSize = tableConfig.defaultPageSize } =
-          pagination;
-        const currentTotalPage = Math.ceil(resultTotal / pageSize);
-        if (current > currentTotalPage) {
-          updatePagination({ current: currentTotalPage });
+      if (enablePagination) {
+        const { current = 1 } = pagination;
+        if (resultTotal === 0 && current > 1) {
+          updatePagination({ current: current - 1 });
           return await fetchData(params);
         }
       }
 
       tableData.value = resultItems;
-      updatePagination({ total: ~~resultTotal });
       if (queryParams[pageField]) {
         updatePagination({ current: queryParams[pageField] || 1 });
       }

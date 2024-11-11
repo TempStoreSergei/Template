@@ -16,7 +16,7 @@ import {
 } from "vue-router";
 import { isFunction } from "lodash-es";
 import { message } from "ant-design-vue";
-import { REDIRECT_NAME } from "~/constants";
+import { REDIRECT_NAME } from "~/constants/router";
 import { TitleI18n } from "~/shared/basic/title-i18n";
 import { isDevMode } from "~/constants/env";
 import { useTabsViewStore } from "~/entities/tabs/modal/tabsView";
@@ -45,7 +45,7 @@ const isCurrentRoute = (route: RouteLocationNormalizedLoaded) =>
 
 const removeTab = () => {
   if (tabsList.value.length === 1) {
-    return message.warning("This is the last tab, it cannot be closed!");
+    return message.warning("Это последняя вкладка, она не может быть закрыта!");
   }
   tabsViewStore.closeCurrentTab(props.tabItem);
 };
@@ -120,8 +120,7 @@ defineExpose({
       <DownOutlined :style="{ fontSize: '20px' }" />
     </a>
     <div v-else style="display: inline-block">
-      {{ tabItem.name }}
-      <!-- <TitleI18n :title="tabItem.meta?.title" /> -->
+      <TitleI18n :title="tabItem.meta?.title" />
     </div>
     <template #overlay>
       <a-menu style="user-select: none">
@@ -131,35 +130,35 @@ defineExpose({
           @click="reloadPage"
         >
           <ReloadOutlined />
-          {{ $t("layout.multipleTab.reload") }}
+          Обновить текущую
         </a-menu-item>
         <a-menu-item key="2" @click="removeTab">
           <CloseOutlined />
-          {{ $t("layout.multipleTab.close") }}
+          Закрыть текущую
         </a-menu-item>
         <a-menu-divider />
         <a-menu-item key="3" @click="closeLeft">
           <VerticalRightOutlined />
-          {{ $t("layout.multipleTab.closeLeft") }}
+          Закрыть слева
         </a-menu-item>
         <a-menu-item key="4" @click="closeRight">
           <VerticalLeftOutlined />
-          {{ $t("layout.multipleTab.closeRight") }}
+          Закрыть справа
         </a-menu-item>
         <a-menu-divider />
         <a-menu-item key="5" @click="closeOther">
           <ColumnWidthOutlined />
-          {{ $t("layout.multipleTab.closeOther") }}
+          Закрыть другие
         </a-menu-item>
         <a-menu-item key="6" @click="closeAll">
           <MinusOutlined />
-          {{ $t("layout.multipleTab.closeAll") }}
+          Закрыть все
         </a-menu-item>
         <template v-if="isDevMode">
           <a-menu-divider />
           <a-menu-item key="7" @click="openPageFile">
             <ColumnWidthOutlined />
-            Open page in editor
+            Открыть страницу в редакторе
           </a-menu-item>
         </template>
       </a-menu>
