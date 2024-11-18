@@ -154,13 +154,6 @@ defineExpose({
           <MinusOutlined />
           Закрыть все
         </a-menu-item>
-        <template v-if="isDevMode">
-          <a-menu-divider />
-          <a-menu-item key="7" @click="openPageFile">
-            <ColumnWidthOutlined />
-            Открыть страницу в редакторе
-          </a-menu-item>
-        </template>
       </a-menu>
     </template>
   </a-dropdown>

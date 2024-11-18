@@ -26,6 +26,7 @@ export default defineNuxtPlugin(() => {
         }
       }
     } else {
+      console.log(to.name);
       const whiteNameList = ["UserLogin", LOGIN_NAME, PAGE_NOT_FOUND_NAME];
       if (whiteNameList.some((name) => name === to.name)) {
         next();

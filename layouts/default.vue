@@ -3,7 +3,6 @@
     component-size="large"
     :theme="{
       token: {
-        borderRadius: 6,
         fontSize: 24,
         lineWidth: 2,
         colorBorder: '#1677ff',

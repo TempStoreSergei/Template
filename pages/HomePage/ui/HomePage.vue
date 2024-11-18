@@ -12,7 +12,6 @@
           ghost
           item-layout="horizontal"
           :data-source="list"
-          :locale="{ emptyText: 'Пользователей нет' }"
         >
           <template #renderItem="{ item }">
             <a-list-item @click="goToUserScreen(item)">
@@ -35,6 +34,14 @@
               </a-list-item-meta>
             </a-list-item>
           </template>
+          <div v-if="list.length === 0" class="login-user__list-refresh">
+            <a-typography-title :level="4"
+              >Пользователей нет</a-typography-title
+            >
+            <a-button type="primary" block @click="init"
+              >Попробывать еще раз</a-button
+            >
+          </div>
         </a-list>
       </div>
     </main>
@@ -66,13 +73,17 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { getCreatedUser, getUserCookes } from "../api";
+import { getUserCookes, getCreatedUser } from "../api";
 
 const list = ref([]);
 const router = useRouter();
 
-onMounted(async () => {
+const init = async () => {
   list.value = await getCreatedUser();
+};
+
+onMounted(async () => {
+  await init();
 });
 
 // Generates a consistent color based on user ID
@@ -168,6 +179,12 @@ const goToUserScreen = async (user) => {
     overflow-y: auto;
     height: 100%;
     width: 100%;
+  }
+
+  &__list-refresh {
+    margin-top: 32px;
+    width: max-content;
+    margin: auto;
   }
 }
 </style>

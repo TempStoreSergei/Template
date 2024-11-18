@@ -4,6 +4,10 @@
     :theme="{
       token: {
         fontSize: 22,
+        lineWidth: 2,
+        colorBorder: '#1677ff',
+        colorSplit: '#1677ff',
+        colorBorderSecondary: '#1677ff',
       },
     }"
   >

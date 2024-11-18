@@ -62,6 +62,7 @@ import {
   chagePrinterPapperSize,
   chagePrinterSpeed,
   testPagePrint,
+  getInfoAboutSticker,
 } from "../api";
 import { customSizePaper } from "../config/formSchemas";
 import { useFormModal } from "~/hooks/useModal";
@@ -89,7 +90,7 @@ const processOptions = (settings) => {
 const [showModal] = useFormModal();
 
 const openPageSetting = async () => {
-  await showModal({
+  const [formRef] = await showModal({
     modalProps: {
       title: "Изменить размер печати принтера",
       width: 700,
@@ -110,6 +111,11 @@ const openPageSetting = async () => {
       schemas: customSizePaper,
       autoSubmitOnEnter: true,
     },
+  });
+  const infoAboutSticker = await getInfoAboutSticker();
+  formRef?.setFieldsValue({
+    width: infoAboutSticker.printer_settings_width,
+    height: infoAboutSticker.printer_settings_height,
   });
 };
 

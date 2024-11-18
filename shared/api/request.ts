@@ -21,7 +21,7 @@ interface BaseResponse<T = any> {
 }
 
 const UNKNOWN_ERROR = "Unknown error. Please retry.";
-export const serverIp = "http://localhost:6543/";
+export const serverIp = "http://192.168.0.105:6543/";
 export const baseApiUrl = `${serverIp}api/`;
 
 // Abort controller for request cancellation
@@ -50,7 +50,6 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response: AxiosResponse<BaseResponse>) => {
     const res = response.data;
-    const router = useRouter();
 
     // if the custom code is not 200, it is judged as an error.
     if (res.code !== ResultEnum.SUCCESS) {
@@ -74,15 +73,8 @@ service.interceptors.response.use(
         });
       }
 
-      console.log(res.code);
-
-      if (res.code === 403) {
-        showError({ message: "Not allow", statusCode: 403 });
-        throw createError({
-          statusCode: 403,
-          statusMessage: "Not allow",
-          fatal: true,
-        });
+      if (res.code === 403 || res.code === 423) {
+        showError({ message: "Not allow", statusCode: res.code });
       }
       // throw other
       const error = new Error(res.message || UNKNOWN_ERROR) as Error & {
@@ -95,8 +87,7 @@ service.interceptors.response.use(
     }
   },
   (error) => {
-    console.log(error);
-    if (!(error instanceof CanceledError)) {
+    if (!error) {
       const errMsg = error?.response?.data?.message ?? UNKNOWN_ERROR;
       $message.error({ content: errMsg, key: errMsg });
       error.message = errMsg;

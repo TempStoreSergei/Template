@@ -64,7 +64,10 @@
     width="700"
     :footer="null"
     :mask-closable="false"
-    @cancel="isRecipeModalOpen = false"
+    @cancel="
+      isRecipeModalOpen = false;
+      count = null;
+    "
   >
     <a-flex>
       <div v-if="isHaveRecipe" :style="oneOrTwoPart">
@@ -77,6 +80,7 @@
         <a-table
           v-if="isHaveGroceries"
           :columns="dynamicColumns"
+          :scroll="{ x: 720, y: 640 }"
           :pagination="false"
           :data-source="groceriesItem"
         >
@@ -131,8 +135,9 @@ const groceriesItem = ref([]);
 const dynamicColumns = computed(() => {
   const baseColumns = [
     {
-      title: "Название ингредиента",
+      title: "Название",
       dataIndex: "grocery_name",
+      fixed: true,
       width: "60%",
     },
   ];
@@ -141,19 +146,22 @@ const dynamicColumns = computed(() => {
     baseColumns.push({
       title: "Количество",
       dataIndex: "amount",
-      width: "40%",
+      width: "30%",
+      fixed: false,
     });
   } else {
     baseColumns.push(
       {
-        title: "На одну порцию",
+        title: "На порцию",
         dataIndex: "amount",
         width: "30%",
+        fixed: false,
       },
       {
-        title: `Количество (для ${count.value})`,
+        title: `На ${count.value}`,
         dataIndex: "amountMany",
-        width: "30%",
+        width: "40%",
+        fixed: false,
       },
     );
   }

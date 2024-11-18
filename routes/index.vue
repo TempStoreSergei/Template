@@ -2,9 +2,9 @@
 import { HomePage } from "~/pages/HomePage";
 
 definePageMeta({
-  layout: "default",
-  name: "userLogin",
-  title: "Вход",
+  name: "UserLogin",
+  hideInTabs: true,
+  title: "Пользовательский вход",
 });
 </script>
 

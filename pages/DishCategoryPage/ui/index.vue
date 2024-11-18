@@ -5,7 +5,7 @@
     :data-request="getCategory"
     :columns="columns"
     :row-selection="rowSelection"
-    :scroll="{ x: 1200, y: 240 }"
+    :scroll="{ x: 800, y: 240 }"
     :pagination="{ total: countOfElemnt }"
   >
     <template v-if="isCheckRows" #title>

@@ -17,7 +17,7 @@ export const groceriesInfoPrint: FormSchema<any>[] = [
   {
     field: "amount",
     component: "InputNumber",
-    label: "Объем/Масса",
+    label: "Масса",
     colProps: {
       span: 24,
     },
