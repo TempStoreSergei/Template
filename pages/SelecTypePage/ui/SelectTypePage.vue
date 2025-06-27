@@ -64,6 +64,7 @@ const fetchData = async () => {
     const data = await getAvalibleInfo();
     isCategoriesLoaded.value = data.groceries;
     isDishesLoaded.value = data.dishes;
+    activeKey.value = data.groceries ? activeKey.value : "dishes";
 
     // Set error if both categories and dishes are empty
     error.value = !data.groceries && !data.dishes;

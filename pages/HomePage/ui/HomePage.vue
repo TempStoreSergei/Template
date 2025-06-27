@@ -73,13 +73,13 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { getUserCookes, getCreatedUser } from "../api";
+import { getUserCookes, getCreatedUsers } from "../api";
 
 const list = ref([]);
 const router = useRouter();
 
 const init = async () => {
-  list.value = await getCreatedUser();
+  list.value = await getCreatedUsers();
 };
 
 onMounted(async () => {

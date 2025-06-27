@@ -1,6 +1,6 @@
 <template>
   <DynamicTable
-    header-title="Управление заготовка"
+    header-title="Управление заготовками"
     title-tooltip="Пожалуйста, не удаляйте заготовки без необходимости, иначае будут удалены все продукты из этой группу заготовок и пропадут из готовоых блюд."
     :data-request="getCategory"
     :columns="columns"
@@ -149,13 +149,12 @@ const columns: TableColumnItem[] = [
     fixed: "right",
     actions: ({ record }) => [
       {
-        icon: "ant-design:edit-outlined",
+        icon: "EditOutlined",
         tooltip: "Редактировать данные заготовки",
         onClick: () => openUserModal(record),
       },
       {
-        icon: "ant-design:delete-outlined",
-        tooltip: "Удалить заготовку",
+        icon: "DeleteOutlined",
         popConfirm: {
           title: "Вы уверены, что хотите удалить?",
           placement: "left",

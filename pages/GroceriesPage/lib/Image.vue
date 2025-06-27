@@ -26,9 +26,7 @@ const stop = watch(modelValue, (avatarFile) => {
         uid: `vc-upload-${Date.now()}-1`,
         name: avatarFile.name || "Avatar",
         status: "done",
-        url: isHttpUrl(avatarFile)
-          ? avatarFile
-          : URL.createObjectURL(avatarFile), // Create URL for file preview
+        url: isHttpUrl(avatarFile) ? avatarFile : getDataFromServer(avatarFile), // Create URL for file preview
       },
     ];
     stop();

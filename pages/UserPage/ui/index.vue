@@ -62,11 +62,6 @@ const [showModal] = useFormModal();
 const rowSelection = ref({
   selectedRowKeys: [] as number[],
   onChange: (selectedRowKeys: number[], selectedRows: TableListItem[]) => {
-    console.log(
-      `selectedRowKeys: ${selectedRowKeys}`,
-      "selectedRows: ",
-      selectedRows,
-    );
     rowSelection.value.selectedRowKeys = selectedRowKeys;
   },
 });
@@ -113,7 +108,7 @@ const openUserModal = async (record: Partial<TableListItem> = {}) => {
     formRef?.setFieldsValue({
       userSurname: record.user_surname,
       userFirstName: record.user_first_name,
-      userPatronymic: record.user_surname,
+      userPatronymic: record.user_patronymic,
     });
   }
 };
@@ -151,13 +146,12 @@ const columns: TableColumnItem[] = [
     fixed: "right",
     actions: ({ record }) => [
       {
-        icon: "ant-design:edit-outlined",
+        icon: "EditOutlined",
         tooltip: "Редактировать данные пользователя",
         onClick: () => openUserModal(record),
       },
       {
-        icon: "ant-design:delete-outlined",
-        tooltip: "Удалить пользователя",
+        icon: "DeleteOutlined",
         popConfirm: {
           title: "Вы уверены, что хотите удалить?",
           placement: "left",

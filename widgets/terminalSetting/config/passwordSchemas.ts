@@ -7,7 +7,7 @@ export const passwordForm: FormSchema<any>[] = [
     label: "Старый пароль",
     rules: [{ required: true }],
     colProps: {
-      span: 12,
+      span: 24,
     },
   },
   {
@@ -16,7 +16,7 @@ export const passwordForm: FormSchema<any>[] = [
     rules: [{ required: true }],
     label: "Новый пароль",
     colProps: {
-      span: 12,
+      span: 24,
     },
   },
 ];

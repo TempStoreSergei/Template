@@ -38,11 +38,10 @@ export const categoriySchemas: FormSchema<any>[] = [
   },
   {
     field: "dish_life_time",
-    component: "InputNumber",
+    component: "Input",
     label: "Срок годности (в часах)",
     rules: [{ required: true, type: "string" }],
     componentProps: {
-      type: "number",
       id: "calculator",
     },
     colProps: {
@@ -53,6 +52,17 @@ export const categoriySchemas: FormSchema<any>[] = [
     field: "groceries_list",
     label: "Список ингредиентов",
     component: () => ListSelect,
+    colProps: {
+      span: 24,
+    },
+  },
+  {
+    field: "dish_recipe",
+    component: "InputTextArea",
+    label: "Рецепт блюда",
+    componentProps: {
+      autosize: { minRows: 6, maxRows: 6 },
+    },
     colProps: {
       span: 24,
     },

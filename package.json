@@ -13,6 +13,7 @@
 		"@ant-design-vue/nuxt": "^1.4.2",
 		"@iconify-json/ant-design": "^1.2.0",
 		"@iconify-json/ep": "^1.2.0",
+		"@iconify/json": "^2.2.279",
 		"@nuxtjs/i18n": "^8.5.1",
 		"@pinia/nuxt": "^0.5.4",
 		"@vite-pwa/nuxt": "^0.10.1",

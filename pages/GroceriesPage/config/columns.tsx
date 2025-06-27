@@ -1,8 +1,6 @@
 import { Tag, Image, Typography } from "ant-design-vue";
-import { grocerieInStokUpdate } from "../api";
 import type { TableColumn } from "~/shared/core/dynamic-table";
 import { getCategory } from "~/pages/CategoryPage";
-import { getUnits } from "~/pages/UnitPage";
 import { getDataFromServer } from "~/shared/utils/urlUtils";
 
 // Define the type for your table's list items
@@ -37,39 +35,6 @@ const getHourDeclension = (hours: number): string => {
   }
 };
 
-const category = ref([]);
-const units = ref([]);
-
-const getAllCategory = async () => {
-  return await getCategory(); // Assuming getCategory() is an API call or similar
-};
-
-const getAllUnits = async () => {
-  return await getUnits(); // Assuming getCategory() is an API call or similar
-};
-
-// Fetch and assign categories
-const fetchCategories = async () => {
-  category.value = await getAllCategory();
-  units.value = await getAllUnits();
-};
-
-fetchCategories();
-
-const getCategoryNameById = (id: number) => {
-  const foundCategory = category.value.find((cat) => cat.id === id);
-  return foundCategory ? foundCategory.category_name : "Unknown Category";
-};
-
-const updateStock = async (id: number) => {
-  const data = await grocerieInStokUpdate(id);
-};
-
-const getUnitNameById = (id: number) => {
-  const foundUnit = units.value.find((cat) => cat.id === id);
-  return foundUnit ? foundUnit.unit_fullname : "Unknown Category";
-};
-
 // Configuration for table columns
 export const baseColumns: TableColumnItem[] = [
   {
@@ -79,10 +44,10 @@ export const baseColumns: TableColumnItem[] = [
   },
   {
     title: "Группа заготовок",
-    dataIndex: "category_id",
+    dataIndex: "category_id_name",
     width: 200,
     customRender: ({ record }) => {
-      return <Typography>{getCategoryNameById(record.category_id)}</Typography>;
+      return <Typography>{(record.category_id_name)}</Typography>;
     },
   },
   {
@@ -101,10 +66,10 @@ export const baseColumns: TableColumnItem[] = [
   {
     title: "Еденица измерения",
     hideInSearch: true,
-    dataIndex: "grocery_unit",
+    dataIndex: "grocery_unit_name",
     width: 200,
     customRender: ({ record }) => {
-      return <Tag color={"blue"}>{getUnitNameById(record.grocery_unit)}</Tag>;
+      return <Tag color={"blue"}>{record.grocery_unit_name}</Tag>;
     },
   },
   {
@@ -114,10 +79,7 @@ export const baseColumns: TableColumnItem[] = [
     width: 200,
     customRender: ({ record }) => {
       return (
-        <Tag
-          onClick={() => updateStock(record.id)}
-          color={record.grocery_in_stock > 0 ? "green" : "red"}
-        >
+        <Tag color={record.grocery_in_stock > 0 ? "green" : "red"}>
           {record.grocery_in_stock > 0 ? "В наличий" : "Отсутствует"}
         </Tag>
       );
@@ -158,7 +120,8 @@ export const searchFormSchemas: FormSchema[] = [
     colProps: { span: 24 },
     componentProps: {
       request: async () => {
-        return category.value.map((category) => ({
+        const category = await getCategory();
+        return category.map((category) => ({
           label: category.category_name,
           value: category.id,
         }));

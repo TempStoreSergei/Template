@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { PlusOutlined } from "@ant-design/icons-vue";
-import type { UploadFile, UploadProps } from "ant-design-vue";
 import { message, Upload } from "ant-design-vue";
+import type { UploadFile, UploadProps } from "ant-design-vue";
 
 defineOptions({
   name: "AvatarUpload",
@@ -11,7 +11,7 @@ defineOptions({
 
 type FileType = Parameters<NonNullable<UploadProps["beforeUpload"]>>[0];
 
-const modelValue = defineModel<File | null>("value");  // Store the file as File object
+const modelValue = defineModel<File | null>("value"); // Store the file as File object
 
 const fileList = ref<UploadFile[]>([]);
 const previewVisible = ref(false);
@@ -26,7 +26,7 @@ const stop = watch(modelValue, (avatarFile) => {
         uid: `vc-upload-${Date.now()}-1`,
         name: avatarFile.name || "Avatar",
         status: "done",
-        url: isHttpUrl(avatarFile) ? avatarFile : URL.createObjectURL(avatarFile),  // Create URL for file preview
+        url: avatarFile,
       },
     ];
     stop();
@@ -72,13 +72,12 @@ const handleCancel = () => {
 
 const handlePreview = async (file: UploadFile) => {
   if (modelValue.value) {
-    previewImage.value = file.url || URL.createObjectURL(modelValue.value);  // Use file URL for preview
+    previewImage.value = file.url || URL.createObjectURL(modelValue.value); // Use file URL for preview
     previewVisible.value = true;
     previewTitle.value = file.name || "Avatar Preview";
   }
 };
 </script>
-
 
 <template>
   <Upload

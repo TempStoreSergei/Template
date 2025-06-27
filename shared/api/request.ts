@@ -21,7 +21,7 @@ interface BaseResponse<T = any> {
 }
 
 const UNKNOWN_ERROR = "Unknown error. Please retry.";
-export const serverIp = "http://192.168.0.105:6543/";
+export const serverIp = "http://10.0.0.8:6543/";
 export const baseApiUrl = `${serverIp}api/`;
 
 // Abort controller for request cancellation

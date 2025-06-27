@@ -10,17 +10,14 @@
       Изменить пароль
     </a-button>
 
-    <a-divider>Название цеха</a-divider>
-    <a-typography-paragraph
-      v-model:content="name"
-      :editable="{
-        triggerType: ['icon', 'text'],
-        onChange: (value) => {
-          name.value = value;
-        },
-        onEnd: async () => await changeTerminalName({ terminalName: name }),
-      }"
-    />
+    <a-divider>Название цеха: {{ name }}</a-divider>
+    <a-button
+      type="primary"
+      class="device-settings__button"
+      @click="openChangeTerminalNameModal"
+    >
+      Поменять название цеха
+    </a-button>
   </section>
 </template>
 
@@ -28,6 +25,7 @@
 import { ref, onMounted } from "vue";
 import { changePassword, getTerminalName, changeTerminalName } from "../api";
 import { passwordForm } from "../config/passwordSchemas";
+import { terminalForm } from "../config/terminalSchemas";
 import { useFormModal } from "~/hooks/useModal";
 
 const name = ref("");
@@ -45,6 +43,24 @@ const openChangePasswordModal = async () => {
     formProps: {
       labelWidth: 100,
       schemas: passwordForm,
+      autoSubmitOnEnter: true,
+    },
+  });
+};
+
+const openChangeTerminalNameModal = async () => {
+  await showModal({
+    modalProps: {
+      title: "Сменить пароль",
+      width: 700,
+      onFinish: async (values) => {
+        await changeTerminalName({ terminalName: values.terminalName });
+        name.value = await getTerminalName();
+      },
+    },
+    formProps: {
+      labelWidth: 100,
+      schemas: terminalForm,
       autoSubmitOnEnter: true,
     },
   });

@@ -14,16 +14,7 @@ export const updateContent = async (info: any) => {
     url: "admin/settings/update_database/",
     method: "PUT",
     requestType: "form",
-    data: info,
-  });
-};
-
-
-export const checkFormat = async (info: any) => {
-  return await request({
-    url: "/admin/settings/check_update_database_file/",
-    method: "PUT",
-    requestType: "form",
+    showSuccessMsg: true,
     data: info,
   });
 };

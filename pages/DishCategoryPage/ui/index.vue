@@ -69,11 +69,6 @@ setPageSize();
 const rowSelection = ref({
   selectedRowKeys: [] as number[],
   onChange: (selectedRowKeys: number[], selectedRows: TableListItem[]) => {
-    console.log(
-      `selectedRowKeys: ${selectedRowKeys}`,
-      "selectedRows: ",
-      selectedRows,
-    );
     rowSelection.value.selectedRowKeys = selectedRowKeys;
   },
 });
@@ -89,7 +84,7 @@ const openUserModal = async (record: Partial<TableListItem> = {}) => {
 
   const [formRef] = await showModal({
     modalProps: {
-      title: `${isUpdate ? "Редактировать" : "Добавить"} заготовоку`,
+      title: `${isUpdate ? "Редактировать" : "Добавить"} группу блюд`,
       width: 700,
       onFinish: async (values) => {
         values.id = record.id;
@@ -143,13 +138,12 @@ const columns: TableColumnItem[] = [
     fixed: "right",
     actions: ({ record }) => [
       {
-        icon: "ant-design:edit-outlined",
+        icon: "EditOutlined",
         tooltip: "Редактировать данные заготовки",
         onClick: () => openUserModal(record),
       },
       {
-        icon: "ant-design:delete-outlined",
-        tooltip: "Удалить заготовку",
+        icon: "DeleteOutlined",
         popConfirm: {
           title: "Вы уверены, что хотите удалить?",
           placement: "left",

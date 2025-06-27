@@ -3,8 +3,8 @@
     <a-upload-dragger
       v-model:fileList="fileList"
       class="upload__dragger"
-      :custom-request="customRequest"
-      :headers="uploadHeaders"
+      :custom-request="updateContent"
+      method="PUT"
       @change="handleChange"
       @drop="handleDrop"
     >
@@ -13,6 +13,9 @@
         Щелкните или перетащите файл в эту область для загрузки
       </p>
       <p class="upload__hint">Поддержка одиночной или массовой загрузки.</p>
+      <template #itemRender="{ file, actions }">
+        <a-space />
+      </template>
     </a-upload-dragger>
     <a-divider class="upload__divider" />
     <a-flex gap="large">
@@ -25,7 +28,7 @@
       >
         Очистить контент
       </a-button>
-      <NuxtLink to="/generator">
+      <NuxtLink :to="null" @click.prevent="openAppOnDifferentPort">
         <a-button class="upload__clear-button" type="dashed">
           Сгенерировать установочный файл
         </a-button>
@@ -51,38 +54,19 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { InboxOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
-import { deleteDataBase, updateContent, checkFormat } from "../api";
-import type {
-  UploadChangeParam,
-  UploadFile,
-  UploadProps,
-} from "ant-design-vue";
+import { deleteDataBase, updateContent } from "../api";
+import type { UploadChangeParam, UploadFile } from "ant-design-vue";
 
-const customRequest: UploadProps["customRequest"] = async (options) => {
-  try {
-    await checkFormat({ file: options.file as FileType });
-    options.onSuccess && options.onSuccess(null, options.file);
-  } catch (error) {
-    options.onError && options.onError(error);
-  }
+const openAppOnDifferentPort = () => {
+  window.location.href = `http://10.0.0.8:3333/`; // Ensure the correct format with 'http://' and the desired port
 };
 
 const loading = ref(false);
 const fileList = ref<UploadFile[]>([]);
 const isModalVisible = ref(false);
-
-const uploadHeaders = computed(() => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    console.error("Authorization token not found in localStorage");
-  }
-  return {
-    Authorization: `Bearer ${token || ""}`,
-  };
-});
 
 const showModal = () => {
   isModalVisible.value = true;
@@ -108,10 +92,9 @@ const confirmDelete = async () => {
 const handleChange = (info: UploadChangeParam) => {
   const { status, name } = info.file;
   if (status === "done") {
-    updateContent({ file: fileList.value[0].originFileObj });
-    message.success(`${name} uploaded successfully.`);
+    message.success(`Контент успешно загружен на сервер: ${name}.`);
   } else if (status === "error") {
-    message.error(`${name} failed to upload.`);
+    message.error(`Не удалось загрузить файл: ${name} на сервер.`);
   }
 };
 

@@ -21,3 +21,10 @@ export const getExistedDishe = () => {
     method: "GET",
   });
 };
+
+export const getAllUnits = () => {
+  return request({
+    url: "user/get_units",
+    method: "GET",
+  });
+};

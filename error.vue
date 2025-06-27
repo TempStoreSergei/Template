@@ -35,9 +35,7 @@ const onFinish = async (values: any) => {
     await setToken(values.token);
     await chekcToken();
     router.push({ name: "UserLogin" });
-  } catch {
-    
-  }
+  } catch {}
 };
 
 const onFinishFailed = (errorInfo: any) => {

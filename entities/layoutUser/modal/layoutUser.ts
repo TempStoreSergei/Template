@@ -12,8 +12,6 @@ const router = useRouter();
 export const useLayoutUser = defineStore(
   "layoutUser",
   () => {
-    const terminalName = ref("");
-    const userName = ref(""); // Holds the final formatted user name
     const timestamp = useTimestamp({ offset: 0 });
 
     // Function to format the timestamp into date and time separately
@@ -59,15 +57,6 @@ export const useLayoutUser = defineStore(
       return formatTime(timestamp.value);
     });
 
-    const getTerminalName = computed(() => {
-      if (!terminalName.value) {
-        getInfoAboutSystem().then((response) => {
-          terminalName.value = response;
-        });
-      }
-      return terminalName.value;
-    });
-
     const logOut = async () => {
       try {
         await logoutSesstion();
@@ -83,7 +72,7 @@ export const useLayoutUser = defineStore(
       getInfoAboutUser,
       getCurrentDate, // Separate computed property for date
       getCurrentTime, // Separate computed property for time
-      getTerminalName,
+      getInfoAboutSystem,
       logOut,
     };
   },

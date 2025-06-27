@@ -1,7 +1,7 @@
 <template>
   <DynamicTable
-    header-title="Настройка велечин измерения"
-    title-tooltip="Пожалуйста, не удаляйте велечин измерения без необходимости, чтобы избежать проблемы с отображенем кол-во ингредиентов в блюде."
+    header-title="Настройка величин измерения"
+    title-tooltip="Пожалуйста, не удаляйте велчиин измерения без необходимости, чтобы избежать проблемы с отображенем кол-во ингредиентов в блюде."
     :data-request="getUnits"
     :columns="columns"
     :scroll="{ x: 1600, y: 340 }"
@@ -38,7 +38,7 @@ import { ref, computed } from "vue";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 import { Modal, Alert } from "ant-design-vue";
 import { userSchemas } from "../config/formSchemas";
-import { baseColumns } from "../config/columns";
+import { baseColumns, searchFormSchema } from "../config/columns";
 import {
   getUnits,
   unitCreate,
@@ -55,18 +55,13 @@ defineOptions({
 });
 
 const [DynamicTable, dynamicTableInstance] = useTable({
-  formProps: { autoSubmitOnEnter: true },
+  formProps: { autoSubmitOnEnter: true, schemas: searchFormSchema },
 });
 const [showModal] = useFormModal();
 
 const rowSelection = ref({
   selectedRowKeys: [] as number[],
   onChange: (selectedRowKeys: number[], selectedRows: TableListItem[]) => {
-    console.log(
-      `selectedRowKeys: ${selectedRowKeys}`,
-      "selectedRows: ",
-      selectedRows,
-    );
     rowSelection.value.selectedRowKeys = selectedRowKeys;
   },
 });
@@ -90,7 +85,7 @@ const openUserModal = async (record: Partial<TableListItem> = {}) => {
 
   const [formRef] = await showModal({
     modalProps: {
-      title: `${isUpdate ? "Редактировать" : "Добавить"} величену`,
+      title: `${isUpdate ? "Редактировать" : "Добавить"} величину`,
       width: 700,
       onFinish: async (values) => {
         values.id = record.id;
@@ -124,7 +119,7 @@ const openUserModal = async (record: Partial<TableListItem> = {}) => {
 const delRowConfirm = async (unitId: number | number[]) => {
   if (Array.isArray(unitId)) {
     Modal.confirm({
-      title: "Вы уверены, что хотите удалить выбранные еденицы измерения?",
+      title: "Вы уверены, что хотите удалить выбранные единицы измерения?",
       icon: <ExclamationCircleOutlined />,
       centered: true,
       onOk: async () => {
@@ -150,13 +145,12 @@ const columns: TableColumnItem[] = [
     fixed: "right",
     actions: ({ record }) => [
       {
-        icon: "ant-design:edit-outlined",
+        icon: "EditOutlined",
         tooltip: "Редактировать данные пользователя",
         onClick: () => openUserModal(record),
       },
       {
-        icon: "ant-design:delete-outlined",
-        tooltip: "Удалить пользователя",
+        icon: "DeleteOutlined",
         popConfirm: {
           title: "Вы уверены, что хотите удалить?",
           placement: "left",

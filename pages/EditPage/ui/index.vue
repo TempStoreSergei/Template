@@ -4,6 +4,7 @@
       v-model="text"
       style="margin-bottom: 24px"
       editor-id="myId"
+      role="textbox"
       language="ru-RU"
       :toolbars="toolbar"
       :noKatex="true"
@@ -120,7 +121,6 @@ const recipeId = ref<string | null>(null);
 const text = ref<string>("");
 
 const setValueFromKeyboard = (inputEvent) => {
-  console.log(inputEvent);
   switch (inputEvent.inputType) {
     case "insertText":
       text.value += inputEvent.data;

@@ -1,8 +1,9 @@
 import { useRouter } from "vue-router";
 import { Tag, Image, Button, Typography } from "ant-design-vue";
 import { dishRecipeDelete } from "../api";
-import type { TableColumn } from "~/shared/core/dynamic-table";
 import { getCategory } from "~/pages/DishCategoryPage";
+import type { TableColumn } from "~/shared/core/dynamic-table";
+
 // Define the type for your table's list items
 export type TableListItem = {
   dish_name: string;
@@ -58,24 +59,6 @@ const getHourDeclension = (hours: number): string => {
       return "часов";
   }
 };
-
-const getCategoryNameById = (id: number) => {
-  const foundCategory = category.value.find((cat) => cat.id === id);
-  return foundCategory ? foundCategory.category_name : "Unknown Category";
-};
-
-const getAllCategory = async () => {
-  return await getCategory(); // Assuming getCategory() is an API call or similar
-};
-
-const category = ref([]);
-
-const fetchCategories = async () => {
-  category.value = await getAllCategory();
-};
-
-fetchCategories();
-
 // Configuration for table columns
 export const baseColumns: TableColumnItem[] = [
   {
@@ -132,10 +115,10 @@ export const baseColumns: TableColumnItem[] = [
   },
   {
     title: "Группа заготовок",
-    dataIndex: "category_id",
+    dataIndex: "category_id_name",
     width: 200,
     customRender: ({ record }) => {
-      return <Typography>{getCategoryNameById(record.category_id)}</Typography>;
+      return <Typography>{record.category_id_name}</Typography>;
     },
   },
   {
@@ -183,7 +166,8 @@ export const searchFormSchemas: FormSchema[] = [
     colProps: { span: 24 },
     componentProps: {
       request: async () => {
-        return category.value.map((category) => ({
+        const category = await getCategory();
+        return category.map((category) => ({
           label: category.category_name,
           value: category.id,
         }));

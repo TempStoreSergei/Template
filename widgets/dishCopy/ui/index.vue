@@ -15,8 +15,18 @@
       :key="categoryIndex"
       :tab="category.category_name"
     >
+      <a-input-search
+        v-model:value="search"
+        class="dishes__input"
+        placeholder="Поиск по блюдам"
+        size="large"
+      >
+        <template #enterButton>
+          <a-button>Поиск</a-button>
+        </template>
+      </a-input-search>
       <section class="dishes__list">
-        <article v-for="(dish, index) in category.dishes" :key="index">
+        <article v-for="(dish, index) in filteredDishes(category)" :key="index">
           <a-card class="dishes__item">
             <template #cover>
               <img
@@ -88,25 +98,28 @@
             <template v-if="column.dataIndex === 'amount'">
               <a-flex gap="middle">
                 {{ record.amount }}
-                <a-tag color="green"> Грамм </a-tag>
+                <a-tag color="green">
+                  {{ getDescriptionById(record.unit_id) }}
+                </a-tag>
               </a-flex>
             </template>
             <template v-if="column.dataIndex === 'amountMany'">
               <a-flex gap="middle">
                 {{ record.amount * count }}
-                <a-tag color="green"> Грамм </a-tag>
+                <a-tag color="green">
+                  {{ getDescriptionById(record.unit_id) }}
+                </a-tag>
               </a-flex>
             </template>
           </template>
         </a-table>
         <a-flex>
           <a-typography-text strong> Рассчитать: </a-typography-text>
-          <a-input-number
+          <a-input
             id="calculatorPrinter"
             v-model:value="count"
-            type="number"
             :min="1"
-            style="margin-left: 32px"
+            style="margin-left: 32px; width: 60%"
           />
         </a-flex>
       </a-flex>
@@ -120,6 +133,7 @@ import { PrinterOutlined, ReconciliationOutlined } from "@ant-design/icons-vue";
 import { marked } from "marked"; // Markdown parser
 import { printStikerGroceries, getExistedDishe } from "../api";
 import { groceriesInfoPrint } from "../conf/formSchemas";
+import { getAllUnits } from "../api";
 import { useFormModal } from "~/hooks/useModal";
 
 // Refs
@@ -131,6 +145,8 @@ const parsedRecipeContent = ref("");
 const isHaveRecipe = ref(false);
 const isHaveGroceries = ref(false);
 const groceriesItem = ref([]);
+const search = ref("");
+const units = ref([]);
 
 const dynamicColumns = computed(() => {
   const baseColumns = [
@@ -168,6 +184,10 @@ const dynamicColumns = computed(() => {
   return baseColumns;
 });
 
+const getDescriptionById = (id: number) => {
+  return units.value.find((item) => item.id === id).unit_fullname;
+};
+
 const oneOrTwoPart = computed(() => {
   if (isHaveRecipe.value && isHaveGroceries.value) {
     return { flexBasis: "50%", overflow: "auto", maxHeight: "80vh" };
@@ -198,6 +218,17 @@ const openPrintStikerModal = async (name: string, id: number) => {
   });
 };
 
+const filteredDishes = (category) => {
+  if (!search.value) {
+    return category.dishes;
+  }
+
+  const searchTerm = search.value.toLowerCase();
+  return categories.value
+    .flatMap((cat) => cat.dishes)
+    .filter((dish) => dish.dish_name.toLowerCase().includes(searchTerm));
+};
+
 const openRecipeModal = async (recipe: string, groceries: Array<any>) => {
   if (recipe) {
     parsedRecipeContent.value = await marked(recipe);
@@ -221,6 +252,7 @@ const handleImageError = (event) => {
 // Load categories data on component mount
 onMounted(async () => {
   const dishes = await getExistedDishe();
+  units.value = await getAllUnits();
   categories.value = dishes;
 });
 </script>
@@ -228,13 +260,16 @@ onMounted(async () => {
 <style lang="scss">
 .dishes {
   &__list {
-    height: 100%;
+    height: calc(100% - 42px);
     display: flex;
     overflow: auto;
     flex-wrap: wrap;
     padding: 24px 0 24px 24px !important;
     align-items: flex-start;
     gap: 24px;
+  }
+  &__input {
+    padding: 8px 24px;
   }
   &__item {
     width: 440px;

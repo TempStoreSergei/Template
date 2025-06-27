@@ -39,7 +39,7 @@ export const grocerieSchemas: FormSchema<any>[] = [
   {
     field: "grocery_unit",
     component: "Select",
-    label: "Еденицы измерения",
+    label: "Единицы измерения",
     rules: [{ required: true, type: "number" }],
     colProps: {
       span: 24,
@@ -65,13 +65,12 @@ export const grocerieSchemas: FormSchema<any>[] = [
   },
   {
     field: "grocery_life_time",
-    component: "InputNumber",
+    component: "Input",
     componentProps: {
-      type: "number",
       id: "calculator",
     },
     label: "Срок годности",
-    rules: [{ required: true, type: "number" }],
+    rules: [{ required: true}],
     colProps: {
       span: 24,
     },

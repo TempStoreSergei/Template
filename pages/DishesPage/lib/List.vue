@@ -8,11 +8,19 @@
     <a-form-item>
       <template v-if="formState.groceries.length">
         <ul>
-          <template v-for="(grocerie, index) in formState.groceries" :key="grocerie.key">
+          <template
+            v-for="(grocerie, index) in formState.groceries"
+            :key="grocerie.key"
+          >
             <li class="user">
-              {{ grocerie.grocery_name }} - {{ grocerie.grocery_amount }} г
-              <a @click="onEdit(index)" style="margin-left: 10px;">Изменить</a>
-              <a @click="onDelete(index)" style="margin-left: 10px; color: red">Удалить</a>
+              {{ grocerie.grocery_name }} - {{ grocerie.grocery_amount }}
+              <span class="user__unit">
+                {{ getUnitName(grocerie.grocery_unit_id ?? grocerie.unit_id) }}
+              </span>
+              <a style="margin-left: 10px" @click="onEdit(index)">Изменить</a>
+              <a style="margin-left: 10px; color: red" @click="onDelete(index)"
+                >Удалить</a
+              >
             </li>
           </template>
         </ul>
@@ -34,7 +42,15 @@
     </a-form-item>
   </a-form>
 
-  <a-modal v-model:open="visible" title="Добавить ингредиент" @ok="onOk">
+  <a-modal
+    v-model:open="visible"
+    title="Добавить ингредиент"
+    ok-text="Добавить"
+    cancel-text="Отмена"
+    :maskClosable="false"
+    :onCancel="setNullParam"
+    @ok="onOk"
+  >
     <a-form
       ref="modalFormRef"
       :model="modalFormState"
@@ -46,16 +62,39 @@
         label="Название ингредиента"
         :rules="[
           { required: true, message: 'Название обязательно' },
-          { validator: uniqueGroceryNameValidator, message: 'Название должно быть уникальным' }
+          {
+            validator: uniqueGroceryNameValidator,
+            message: 'Название должно быть уникальным',
+          },
         ]"
       >
         <a-input v-model:value="modalFormState.grocery_name" />
       </a-form-item>
-      <a-form-item name="grocery_amount" label="Грамовки (в граммах)">
-        <a-input-number
+      <a-form-item
+        name="unit_id"
+        label="Единица измерения"
+        :rules="[
+          { required: true, message: 'Пожалуйста, выберите единицу измерения' },
+        ]"
+      >
+        <a-select
+          v-model:value="modalFormState.unit_id"
+          placeholder="Выберите единицу измерения"
+          :options="unitOptions"
+          :loading="isFetchingUnits"
+        />
+      </a-form-item>
+
+      <a-form-item
+        name="grocery_amount"
+        label="Масса/Объем"
+        :rules="[
+          { required: true, message: 'Пожалуйста, выберите массу/объем' },
+        ]"
+      >
+        <a-input
+          id="calculator"
           v-model:value="modalFormState.grocery_amount"
-          type="number"
-          :min="1"
         />
       </a-form-item>
     </a-form>
@@ -66,10 +105,12 @@
 import { reactive, ref, watch, toRaw } from "vue";
 import { SmileOutlined } from "@ant-design/icons-vue";
 import type { FormInstance } from "ant-design-vue";
+import { getUnits } from "~/pages/UnitPage";
 
 interface UserType {
   grocery_name?: string;
   grocery_amount?: number;
+  unit_id?: number; // Add this field
   key?: number;
 }
 
@@ -80,13 +121,50 @@ const formState = reactive<FormState>({
   groceries: [],
 });
 const modalFormState = ref<UserType>({});
+const unitMap = ref<Map<number, string>>(new Map());
 const editingIndex = ref<number | null>(null); // To track if we are editing an existing grocery
 
 const modelValue = defineModel<Array<UserType> | null>("value", {
   default: () => [],
 });
 
+const unitOptions = ref<{ label: string; value: number }[]>([]);
+const isFetchingUnits = ref(false);
+
+// Fetch units from API
+const fetchUnits = async () => {
+  isFetchingUnits.value = true;
+  try {
+    const response = await getUnits(); // Replace with your endpoint
+    unitOptions.value = response.map(
+      (unit: { id: number; unit_fullname: string }) => ({
+        label: unit.unit_fullname,
+        value: unit.id,
+      }),
+    );
+    unitMap.value = new Map(
+      response.map((unit: { id: number; unit_fullname: string }) => [
+        unit.id,
+        unit.unit_fullname,
+      ]),
+    );
+  } catch (error) {
+    console.error("Failed to fetch units:", error);
+  } finally {
+    isFetchingUnits.value = false;
+  }
+};
+
+const setNullParam = () => {
+  editingIndex.value = null;
+  modalFormState.value = {};
+};
+
 formState.groceries = modelValue.value ?? [];
+
+const getUnitName = (unitId?: number) => {
+  return unitMap.value.get(unitId!) || "Неизвестная единица";
+};
 
 watch(
   () => formState.groceries.length,
@@ -102,7 +180,10 @@ watch(modelValue, () => {
 const onOk = () => {
   modalFormRef.value.validateFields().then(() => {
     if (editingIndex.value !== null) {
-      formState.groceries[editingIndex.value] = { ...modalFormState.value, key: formState.groceries[editingIndex.value].key };
+      formState.groceries[editingIndex.value] = {
+        ...modalFormState.value,
+        key: formState.groceries[editingIndex.value].key,
+      };
     } else {
       formState.groceries.push({ ...modalFormState.value, key: Date.now() });
     }
@@ -121,7 +202,7 @@ const onDelete = (index: number) => {
 
 const onEdit = (index: number) => {
   editingIndex.value = index;
-  modalFormState.value = { ...formState.groceries[index] }; // Populate form with selected grocery data
+  modalFormState.value = { ...formState.groceries[index] };
   visible.value = true;
 };
 
@@ -131,11 +212,18 @@ const onAdd = () => {
 
 // Validator to ensure the grocery name is unique
 const uniqueGroceryNameValidator = (_: any, value: string) => {
-  if (formState.groceries.some((grocery, index) => grocery.grocery_name === value && index !== editingIndex.value)) {
-    return Promise.reject('Название должно быть уникальным');
+  if (
+    formState.groceries.some(
+      (grocery, index) =>
+        grocery.grocery_name === value && index !== editingIndex.value,
+    )
+  ) {
+    return Promise.reject("Название должно быть уникальным");
   }
   return Promise.resolve();
 };
+
+onMounted(fetchUnits);
 </script>
 
 <style scoped>

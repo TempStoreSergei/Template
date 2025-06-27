@@ -36,10 +36,7 @@
           </template>
           <a-flex gap="large" justify="space-between">
             <a-statistic title="ФИО" :value="userName" />
-            <a-statistic
-              title="Название цеха"
-              :value="layoutUserStore.getTerminalName"
-            />
+            <a-statistic title="Название цеха" :value="terminalName" />
             <a-statistic
               title="Текущая дата"
               :value="layoutUserStore.getCurrentDate"
@@ -79,7 +76,8 @@ import { ref, onMounted } from "vue";
 import { useLayoutUser } from "~/entities/layoutUser/modal/layoutUser";
 
 const layoutUserStore = useLayoutUser();
-const userName = ref("Загрузка..."); // Initial loading state
+const userName = ref("Загрузка...");
+const terminalName = ref("Загрузка...");
 
 const getUserName = async () => {
   try {
@@ -93,9 +91,20 @@ const getUserName = async () => {
   }
 };
 
+const getTerminalName = async () => {
+  try {
+    const response = await layoutUserStore.getInfoAboutSystem();
+    terminalName.value = response;
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    terminalName.value = "Ошибка загрузки";
+  }
+};
+
 // Fetch user info when component is mounted
 onMounted(() => {
   getUserName();
+  getTerminalName();
 });
 </script>
 <style lang="scss">

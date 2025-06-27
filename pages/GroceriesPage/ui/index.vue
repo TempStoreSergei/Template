@@ -2,7 +2,7 @@
   <DynamicTable
     header-title="Управление заготовками"
     title-tooltip="Пожалуйста, не удаляйте заготовки без необходимости. Иначе будут удалены все продукты из этой группы заготовок и пропадут из готовых блюд."
-    :data-request="getGroceries"
+    :data-request="fetchGroceries"
     :columns="columns"
     :scroll="{ x: 2000, y: 240 }"
     :row-selection="rowSelection"
@@ -47,12 +47,38 @@ import {
   groceriesDelete,
   getLenthOfTable,
 } from "../api/index";
+import { getCategory } from "~/pages/CategoryPage";
+import { getUnits } from "~/pages/UnitPage";
 import { useTable } from "~/shared/core/dynamic-table";
 import { useFormModal } from "~/hooks/useModal";
 
 defineOptions({
   name: "SystemUser",
 });
+
+const fetchGroceries = async (params: any) => {
+  const originalData = await getGroceries(params);
+  const categories = await getCategory();
+  const units = await getUnits();
+
+  const getCategoryNameById = (id) => {
+    const foundCategory = categories.find((cat) => cat.id === id);
+    return foundCategory ? foundCategory.category_name : "Unknown Category";
+  };
+
+  const getUnitNameById = (id) => {
+    const foundUnit = units.find((unit) => unit.id === id);
+    return foundUnit ? foundUnit.unit_fullname : "Unknown Unit";
+  };
+
+  const updatedData = originalData.map((grocery) => ({
+    ...grocery,
+    grocery_unit_name: getUnitNameById(grocery.grocery_unit),
+    category_id_name: getCategoryNameById(grocery.category_id),
+  }));
+
+  return updatedData;
+};
 
 const [DynamicTable, dynamicTableInstance] = useTable({
   formProps: { autoSubmitOnEnter: true, schemas: searchFormSchemas },
@@ -62,11 +88,6 @@ const [showModal] = useFormModal();
 const rowSelection = ref({
   selectedRowKeys: [],
   onChange: (selectedRowKeys, selectedRows) => {
-    console.log(
-      `selectedRowKeys: ${selectedRowKeys}`,
-      "selectedRows: ",
-      selectedRows,
-    );
     rowSelection.value.selectedRowKeys = selectedRowKeys;
   },
 });
@@ -105,7 +126,7 @@ const openModal = async (record = {}) => {
         }
 
         if (values.grocery_img === null) {
-          values.grocerie_img_delete = true;
+          values.grocery_img_delete = true;
         }
 
         await handleFormSubmission(record.id, values);
@@ -120,7 +141,6 @@ const openModal = async (record = {}) => {
   });
 
   if (isUpdate) {
-    console.log(getDataFromServer(record.grocery_img));
     formRef?.setFieldsValue({
       ...record,
       grocery_img: record.grocery_img
@@ -135,7 +155,7 @@ const openModal = async (record = {}) => {
  */
 const cleanValues = (record, values) => {
   Object.keys(values).forEach((key) => {
-    if (key === "grocerie_img" && isHttpUrl(values[key])) {
+    if (key === "grocery_img" && isHttpUrl(values[key])) {
       delete values[key];
     }
     if (record[key] === values[key]) {
@@ -189,13 +209,12 @@ const columns: TableColumnItem[] = [
     fixed: "right",
     actions: ({ record }) => [
       {
-        icon: "ant-design:edit-outlined",
+        icon: "EditOutlined",
         tooltip: "Редактировать данные заготовки",
         onClick: () => openModal(record),
       },
       {
-        icon: "ant-design:delete-outlined",
-        tooltip: "Удалить заготовку",
+        icon: "DeleteOutlined",
         popConfirm: {
           title: "Вы уверены, что хотите удалить?",
           placement: "left",

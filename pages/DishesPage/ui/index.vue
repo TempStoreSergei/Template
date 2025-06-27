@@ -1,7 +1,7 @@
 <template>
   <DynamicTable
-    header-title="Управление готовымы блюдами"
-    :data-request="getDishes"
+    header-title="Управление готовыми блюдами"
+    :data-request="fetchDishes"
     :columns="columns"
     :scroll="{ x: 2200, y: 240 }"
     :row-selection="rowSelection"
@@ -47,6 +47,7 @@ import {
   getDish,
   getLenthOfTable,
 } from "../api/index";
+import { getCategory } from "~/pages/DishCategoryPage";
 import { useTable } from "~/shared/core/dynamic-table";
 import { useFormModal } from "~/hooks/useModal";
 
@@ -59,14 +60,26 @@ const [DynamicTable, dynamicTableInstance] = useTable({
 });
 const [showModal] = useFormModal();
 
+const fetchDishes = async (params: any) => {
+  const originalData = await getDishes(params);
+  const categories = await getCategory();
+
+  const getCategoryNameById = (id) => {
+    const foundCategory = categories.find((cat) => cat.id === id);
+    return foundCategory ? foundCategory.category_name : "Unknown Category";
+  };
+
+  const updatedData = originalData.map((grocery) => ({
+    ...grocery,
+    category_id_name: getCategoryNameById(grocery.category_id),
+  }));
+
+  return updatedData;
+};
+
 const rowSelection = ref({
   selectedRowKeys: [] as number[],
   onChange: (selectedRowKeys: number[], selectedRows: TableListItem[]) => {
-    console.log(
-      `selectedRowKeys: ${selectedRowKeys}`,
-      "selectedRows: ",
-      selectedRows,
-    );
     rowSelection.value.selectedRowKeys = selectedRowKeys;
   },
 });
@@ -91,6 +104,7 @@ const openUserModal = async (record: Partial<TableListItem> = {}) => {
         formData.append("dish_name", values.dish_name);
         formData.append("category_id", values.category_id);
         formData.append("dish_life_time", values.dish_life_time);
+        formData.append("dish_recipe", values.dish_recipe);
         if (values.dish_img && !isHttpUrl(values.dish_img)) {
           formData.append("dish_img", values.dish_img);
         }
@@ -102,6 +116,7 @@ const openUserModal = async (record: Partial<TableListItem> = {}) => {
               JSON.stringify({
                 grocery_name: item.grocery_name,
                 grocery_amount: item.grocery_amount,
+                unit_id: item.unit_id,
               }),
             );
           });
@@ -128,10 +143,14 @@ const openUserModal = async (record: Partial<TableListItem> = {}) => {
       dish_name: infoAboutDish.dish_name,
       category_id: infoAboutDish.category_id,
       dish_life_time: infoAboutDish.dish_life_time,
+      dish_recipe: infoAboutDish.dish_recipe,
       dish_img: infoAboutDish.dish_img
         ? getDataFromServer(infoAboutDish.dish_img)
         : null,
-      groceries_list: infoAboutDish.dish_groceries_list,
+      groceries_list: infoAboutDish.dish_groceries_list.map((grocery) => ({
+        ...grocery,
+        unit_id: grocery.grocery_unit_id,
+      })),
     });
   }
 };
@@ -172,13 +191,12 @@ const columns: TableColumnItem[] = [
     fixed: "right",
     actions: ({ record }) => [
       {
-        icon: "ant-design:edit-outlined",
+        icon: "EditOutlined",
         tooltip: "Редактировать данные блюда",
         onClick: () => openUserModal(record),
       },
       {
-        icon: "ant-design:delete-outlined",
-        tooltip: "Удалить блюдо",
+        icon: "DeleteOutlined",
         popConfirm: {
           title: "Вы уверены, что хотите удалить?",
           placement: "left",
