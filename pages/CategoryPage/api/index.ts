@@ -1,59 +1,49 @@
 import type { AxiosRequestConfig } from "axios";
 import { request } from "~/shared/api/request.ts";
 
-export const getCategory = async (options?: AxiosRequestConfig) => {
+export const getCategoryData = async (options?: AxiosRequestConfig) => {
   return await request({
-    url: "admin/category/get_all_category",
+    url: "categories/get_all_categories",
     method: "GET",
     params: options,
+    isReturnResult: false,
   });
 };
 
-export const getLenthOfTable = async () => {
-  return await request({
-    url: "admin/category/get_groceries_category_len/",
-    method: "GET",
-  });
-};
 
-export const categoryCreate = async (body: any, options?: AxiosRequestConfig) => {
+
+export const categoryCreate = async (body: any) => {
   return await request({
-    url: "admin/category/create_category",
+    url: "categories/create_category",
     method: "POST",
     data: body,
-    ...options,
   });
 };
 
 export const categoryUpdate = async (
-  id: number,
   body: any,
-  options?: AxiosRequestConfig,
 ) => {
   return await request({
-    url: `admin/category/update_category/${id}`,
+    url: `categories/update_category_by_id`,
     method: "PUT",
     data: body,
-    ...options,
   });
 };
 
-export const categoryDelete = async (id: number, options?: AxiosRequestConfig) => {
+export const categoryDelete = async (id: number) => {
   return await request({
-    url: `admin/category/delete_category/${id}`,
+    url: `categories/delete_category_by_id`,
     method: "DELETE",
-    ...options,
+    data: { categoryID: id },
   });
 };
 
 export const categoriesDelete = async (
   ids: Array<number>,
-  options?: AxiosRequestConfig,
 ) => {
   return await request({
-    url: `admin/grocery/delete_groceries`,
+    url: `categories/delete_categories`,
     data: ids,
     method: "DELETE",
-    ...options,
   });
 };

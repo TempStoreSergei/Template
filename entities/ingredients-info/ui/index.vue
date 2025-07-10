@@ -4,9 +4,9 @@
     <List itemLayout="horizontal" :dataSource="recipe.ingredients">
       <List.Item v-for="item in recipe.ingredients" :key="item.name">
         <List.Item.Meta :title="`${item.quantity} ${item.unit} ${item.name}`" />
-        <Tooltip :title="`Свежее в течение ${item.freshness} дней`">
+        <Tooltip :title="`Свежее в течение ${item.freshness} часов`">
           <Tag :color="item.freshness <= 0 ? 'red' : 'green'">
-            {{ item.freshness }} дней
+            {{ item.freshness }} часов
           </Tag>
         </Tooltip>
       </List.Item>

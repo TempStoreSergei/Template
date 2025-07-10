@@ -9,7 +9,7 @@
       collapsible
       @click="clickMenuItem"
     >
-      <template v-for="item in menus" :key="item.module_route">
+      <template v-for="item in menus" :key="item.moduleRoute">
         <SubMenuItem :item="item" />
       </template>
     </Menu>

@@ -8,9 +8,13 @@
         @finish="handleSubmit"
         @finishFailed="onFinishFailed"
       >
-        <a-form-item label="Пароль" name="adminPass" :rules="rules.adminPass">
+        <a-form-item
+          label="Пароль"
+          name="adminPassword"
+          :rules="rules.adminPassword"
+        >
           <a-input-password
-            v-model:value="loginForm.adminPass"
+            v-model:value="loginForm.adminPassword"
             placeholder="Введите пароль"
             aria-label="Пароль"
           />
@@ -39,12 +43,12 @@ const router = useRouter();
 const route = useRoute();
 
 const loginForm = ref({
-  adminPass: "",
+  adminPassword: "",
 });
 const loading = ref(false);
 
 const rules = {
-  adminPass: [
+  adminPassword: [
     { required: true, message: "Пароль обязателен", trigger: "blur" },
   ],
 };
@@ -54,7 +58,7 @@ const handleSubmit = async (e) => {
     loading.value = true;
     const response = await authLogin(loginForm.value);
 
-    localStorage.setItem("token", response.data);
+    localStorage.setItem("token", response.sessionToken);
     message.success("Вход выполнен успешно!");
 
     const redirectRoute = route.query.redirect || "user";

@@ -1,6 +1,6 @@
 import type { FormSchema } from "~/shared/core/schema-form/";
-import { getCategory } from "~/pages/CategoryPage";
-import { getUnits } from "~/pages/UnitPage";
+import { getCategoryData } from "~/pages/CategoryPage";
+import { getUnitsData } from "~/pages/UnitPage";
 import AvatarUpload from "../lib/Image.vue";
 
 export const grocerieSchemas: FormSchema<any>[] = [
@@ -28,9 +28,9 @@ export const grocerieSchemas: FormSchema<any>[] = [
     },
     componentProps: {
       request: async () => {
-        const request = await getCategory();
-        return request.map((category) => ({
-          label: category.category_name,
+        const request = await getCategoryData();
+        return request.categoriesData.map((category) => ({
+          label: category.categoryName,
           value: category.id,
         }));
       },
@@ -46,9 +46,9 @@ export const grocerieSchemas: FormSchema<any>[] = [
     },
     componentProps: {
       request: async () => {
-        const request = await getUnits();
-        return request.map((category) => ({
-          label: category.unit_fullname,
+        const request = await getUnitsData();
+        return request.unitsData.map((category) => ({
+          label: category.unitFullname,
           value: category.id,
         }));
       },

@@ -1,63 +1,59 @@
 import type { AxiosRequestConfig } from "axios";
 import { request } from "~/shared/api/request";
 
-export const getDishes = async (options?: AxiosRequestConfig) => {
+export const getItemsData = async (options?: AxiosRequestConfig) => {
   return await request({
-    url: "admin/dish/get_all_dishes",
+    url: "items/get_all_items",
     method: "GET",
     params: options,
+    isReturnResult: false,
   });
 };
 
-export const getLenthOfTable = async (options?: AxiosRequestConfig) => {
-  return await request({
-    url: "admin/dish/get_dishes_len/",
-    method: "GET",
-    params: options,
-  });
-};
 
-export const getDish = async (id: number) => {
+export const getItem = async (id: string) => {
   return await request({
-    url: `admin/dish/get_dish/${id}`,
+    url: `items/get_item_by_id/${id}`,
     method: "GET",
   });
 };
 
-export const dishCreate = async (body: any) => {
+export const itemCreate = async (body: any) => {
   return await request({
-    url: "admin/dish/create_dish",
+    url: "items/create_item",
     method: "POST",
     requestType: "form",
     data: body,
   });
 };
 
-export const dishUpdate = async (id: number, body: any) => {
+export const itemUpdate = async (id: string, body: any) => {
   return await request({
-    url: `admin/dish/update_dish/${id}`,
+    url: `items/update_item_by_id`,
     method: "PUT",
     data: body,
   });
 };
 
-export const dishDelete = async (id: number) => {
+export const itemDelete = async (id: string) => {
   return await request({
-    url: `admin/dish/delete_dish/${id}`,
+    url: `items/delete_item`,
+    data: { itemID: id },
     method: "DELETE",
   });
 };
 
-export const dishRecipeDelete = async (id: number) => {
+export const itemRecipeDelete = async (id: string) => {
   return await request({
-    url: `admin/dish/delete_recipe/${id}`,
+    url: `items/delete_recipe_by_id`,
+    data: { recipeID: id },
     method: "DELETE",
   });
 };
 
-export const dishesDelete = async (ids: Array<number>) => {
+export const itemsDelete = async (ids: Array<string>) => {
   return await request({
-    url: `admin/dish/delete_dishes`,
+    url: `items/delete_items`,
     data: ids,
     method: "DELETE",
   });

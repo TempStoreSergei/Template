@@ -40,12 +40,11 @@ import { Modal, Alert } from "ant-design-vue";
 import { userSchemas } from "../config/formSchemas";
 import { baseColumns, searchFormSchema } from "../config/columns";
 import {
-  getUnits,
+  getUnitsData,
   unitCreate,
   unitUpdate,
   unitDelete,
   unitsDelete,
-  getLenthOfTable,
 } from "../api/index";
 import { useTable } from "~/shared/core/dynamic-table";
 import { useFormModal } from "~/hooks/useModal";
@@ -68,12 +67,6 @@ const rowSelection = ref({
 
 const countOfElemnt = ref(0);
 
-const setPageSize = async () => {
-  countOfElemnt.value = await getLenthOfTable();
-};
-
-setPageSize();
-
 // Проверка выбора строк в таблице
 const isCheckRows = computed(() => rowSelection.value.selectedRowKeys.length);
 
@@ -81,16 +74,15 @@ const isCheckRows = computed(() => rowSelection.value.selectedRowKeys.length);
  * @description Открытие модального окна для редактирования/создания пользователя
  */
 const openUserModal = async (record: Partial<TableListItem> = {}) => {
-  const isUpdate = Boolean(record.id);
+  const isUpdate = Boolean(record.unitID);
 
   const [formRef] = await showModal({
     modalProps: {
       title: `${isUpdate ? "Редактировать" : "Добавить"} величину`,
       width: 700,
       onFinish: async (values) => {
-        values.id = record.id;
-        if (record.id) {
-          await unitUpdate(record.id, values);
+        if (record.unitID) {
+          await unitUpdate({ ...values, unitID: record.unitID });
         } else {
           await unitCreate(values);
           countOfElemnt.value += 1;
@@ -107,10 +99,16 @@ const openUserModal = async (record: Partial<TableListItem> = {}) => {
 
   if (isUpdate) {
     formRef?.setFieldsValue({
-      unitFullname: record.unit_fullname,
-      unitShortname: record.unit_shortname,
+      unitFullname: record.unitFullname,
+      unitShortname: record.unitShortname,
     });
   }
+};
+
+const getUnits = async ($event: any) => {
+  const result = await getUnitsData($event);
+  countOfElemnt.value = result.lenUnitsData;
+  return result.unitsData;
 };
 
 /**
@@ -154,7 +152,7 @@ const columns: TableColumnItem[] = [
         popConfirm: {
           title: "Вы уверены, что хотите удалить?",
           placement: "left",
-          onConfirm: () => delRowConfirm(record.id),
+          onConfirm: () => delRowConfirm(record.unitID),
         },
       },
     ],

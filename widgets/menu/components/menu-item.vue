@@ -1,5 +1,5 @@
 <template>
-  <Menu.Item :key="item?.module_route" @click="handleMenuItemClick(item)">
+  <Menu.Item :key="item?.moduleRoute" @click="handleMenuItemClick(item)">
     <MenuItemContent :item="item" />
   </Menu.Item>
 </template>
@@ -25,6 +25,6 @@ defineProps({
 const router = useRouter();
 
 const handleMenuItemClick = (item: RouteRecordRaw) => {
-  router.push({ name: item.module_route });
+  router.push({ name: item.moduleRoute });
 };
 </script>

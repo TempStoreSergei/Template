@@ -3,7 +3,7 @@ import { DishPage } from "~/pages/DishesPage";
 
 definePageMeta({
   layout: "admin",
-  name: "dishes",
+  name: "items",
   title: "Блюда",
 });
 </script>

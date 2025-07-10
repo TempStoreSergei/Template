@@ -40,12 +40,11 @@ import { Modal, Alert } from "ant-design-vue";
 import { userSchemas } from "../config/formSchemas";
 import { baseColumns, searchFormSchema } from "../config/columns";
 import {
-  getUser,
+  getUserInfo,
   userCreate,
   userUpdate,
   userDelete,
   usersDelete,
-  getLenthOfTable,
 } from "../api/index";
 import { useTable } from "~/shared/core/dynamic-table";
 import { useFormModal } from "~/hooks/useModal";
@@ -68,12 +67,6 @@ const rowSelection = ref({
 
 const countOfElemnt = ref(0);
 
-const setPageSize = async () => {
-  countOfElemnt.value = await getLenthOfTable();
-};
-
-setPageSize();
-
 const isCheckRows = computed(() => rowSelection.value.selectedRowKeys.length);
 
 /**
@@ -87,9 +80,8 @@ const openUserModal = async (record: Partial<TableListItem> = {}) => {
       title: `${isUpdate ? "Редактировать" : "Добавить"} пользователя`,
       width: 700,
       onFinish: async (values) => {
-        values.id = record.id;
         if (record.id) {
-          await userUpdate(record.id, values);
+          await userUpdate({ ...values, userID: record.id });
         } else {
           await userCreate(values);
           countOfElemnt.value += 1;
@@ -106,9 +98,9 @@ const openUserModal = async (record: Partial<TableListItem> = {}) => {
 
   if (isUpdate) {
     formRef?.setFieldsValue({
-      userSurname: record.user_surname,
-      userFirstName: record.user_first_name,
-      userPatronymic: record.user_patronymic,
+      userSurname: record.userSurname,
+      userFullname: record.userFullname,
+      userPatronymic: record.userPatronymic,
     });
   }
 };
@@ -161,6 +153,10 @@ const columns: TableColumnItem[] = [
     ],
   },
 ];
-</script>
 
-<style></style>
+const getUser = async ($event: any) => {
+  const result = await getUserInfo($event);
+  countOfElemnt.value = result.lenUsersData;
+  return result.usersData;
+};
+</script>

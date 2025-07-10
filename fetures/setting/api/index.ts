@@ -24,7 +24,7 @@ export const restartSystem = async () => {
 
 export const logOut = async () => {
   return await request({
-    url: "api/admin/admin_logout/",
+    url: "auth/admin_logout",
     method: "GET",
   });
 };

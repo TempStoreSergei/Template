@@ -3,7 +3,7 @@ import { UnitPage } from "~/pages/UnitPage";
 
 definePageMeta({
   layout: "admin",
-  name: "groceries_units",
+  name: "units",
   title: "Единицы измерения",
 });
 </script>

@@ -11,7 +11,7 @@ export const userSchemas: FormSchema<any>[] = [
     },
   },
   {
-    field: "userFirstName",
+    field: "userFullname",
     rules: [{ required: true, type: "string" }],
     component: "Input",
     label: "Имя",

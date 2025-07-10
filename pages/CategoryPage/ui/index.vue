@@ -1,6 +1,6 @@
 <template>
   <DynamicTable
-    header-title="Управление заготовками"
+    header-title="Управление папками"
     title-tooltip="Пожалуйста, не удаляйте заготовки без необходимости, иначае будут удалены все продукты из этой группу заготовок и пропадут из готовоых блюд."
     :data-request="getCategory"
     :columns="columns"
@@ -40,12 +40,11 @@ import { Modal, Alert } from "ant-design-vue";
 import { categoriSchemas } from "../config/formSchemas";
 import { baseColumns, searchFormSchema } from "../config/columns";
 import {
-  getCategory,
+  getCategoryData,
   categoriesDelete,
   categoryCreate,
   categoryUpdate,
   categoryDelete,
-  getLenthOfTable,
 } from "../api/index";
 import { useTable } from "~/shared/core/dynamic-table";
 import { useFormModal } from "~/hooks/useModal";
@@ -61,20 +60,15 @@ const [showModal] = useFormModal();
 
 const countOfElemnt = ref(0);
 
-const setPageSize = async () => {
-  countOfElemnt.value = await getLenthOfTable();
+const getCategory = async ($event: any) => {
+  const result = await getCategoryData($event);
+  countOfElemnt.value = result.lenCategoriesData;
+  return result.categoriesData;
 };
-
-setPageSize();
 
 const rowSelection = ref({
   selectedRowKeys: [] as number[],
   onChange: (selectedRowKeys: number[], selectedRows: TableListItem[]) => {
-    console.log(
-      `selectedRowKeys: ${selectedRowKeys}`,
-      "selectedRows: ",
-      selectedRows,
-    );
     rowSelection.value.selectedRowKeys = selectedRowKeys;
   },
 });
@@ -93,9 +87,8 @@ const openUserModal = async (record: Partial<TableListItem> = {}) => {
       title: `${isUpdate ? "Редактировать" : "Добавить"} заготовоку`,
       width: 700,
       onFinish: async (values) => {
-        values.id = record.id;
-        if (record.id) {
-          await categoryUpdate(record.id, values);
+          if (record.id) {
+          await categoryUpdate({ ...values, categoryID: record.id });
         } else {
           countOfElemnt.value += 1;
           await categoryCreate(values);
@@ -112,7 +105,9 @@ const openUserModal = async (record: Partial<TableListItem> = {}) => {
 
   if (isUpdate) {
     formRef?.setFieldsValue({
-      categoryName: record.category_name,
+      categoryName: record.categoryName,
+      categoryShortname: record.categoryShortname,
+      categoryExpirationDate: record.categoryExpirationDate,
     });
   }
 };

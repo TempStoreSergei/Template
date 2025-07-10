@@ -1,49 +1,40 @@
 import type { AxiosRequestConfig } from "axios";
 import { request } from "~/shared/api/request.ts";
 
-export const getUnits = async (options?: AxiosRequestConfig) => {
+export const getUnitsData = async (options?: AxiosRequestConfig) => {
   return await request({
-    url: "admin/unit/get_all_units",
+    url: "units/get_all_units",
     method: "GET",
     params: options,
+    isReturnResult: false,
   });
 };
 
-export const getLenthOfTable = async (options?: AxiosRequestConfig) => {
+export const unitCreate = async (body: any) => {
   return await request({
-    url: "admin/unit/get_units_len",
-    method: "GET",
-    params: options,
-  });
-};
-
-export const unitCreate = async (body: any, options?: AxiosRequestConfig) => {
-  return await request({
-    url: "admin/unit/create_unit",
+    url: "units/create_unit",
     method: "POST",
     data: body,
-    ...options,
   });
 };
 
 export const unitUpdate = async (
-  id: number,
   body: any,
   options?: AxiosRequestConfig,
 ) => {
   return await request({
-    url: `admin/unit/update_unit/${id}`,
+    url: `units/update_unit`,
     method: "PUT",
     data: body,
     ...options,
   });
 };
 
-export const unitDelete = async (id: number, options?: AxiosRequestConfig) => {
+export const unitDelete = async (id: number) => {
   return await request({
-    url: `admin/unit/delete_unit/${id}`,
+    url: `units/delete_unit`,
     method: "DELETE",
-    ...options,
+    data: { unitID: id },
   });
 };
 
@@ -52,7 +43,7 @@ export const unitsDelete = async (
   options?: AxiosRequestConfig,
 ) => {
   return await request({
-    url: `admin/unit/delete_units`,
+    url: `units/delete_units`,
     data: ids,
     method: "DELETE",
     ...options,

@@ -47,8 +47,8 @@ import {
   groceriesDelete,
   getLenthOfTable,
 } from "../api/index";
-import { getCategory } from "~/pages/CategoryPage";
-import { getUnits } from "~/pages/UnitPage";
+import { getCategoryData } from "~/pages/CategoryPage";
+import { getUnitsData } from "~/pages/UnitPage";
 import { useTable } from "~/shared/core/dynamic-table";
 import { useFormModal } from "~/hooks/useModal";
 
@@ -58,8 +58,8 @@ defineOptions({
 
 const fetchGroceries = async (params: any) => {
   const originalData = await getGroceries(params);
-  const categories = await getCategory();
-  const units = await getUnits();
+  const { categoriesData: categories } = await getCategoryData();
+  const { unitsData: units } = await getUnitsData();
 
   const getCategoryNameById = (id) => {
     const foundCategory = categories.find((cat) => cat.id === id);

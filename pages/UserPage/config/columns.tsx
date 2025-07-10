@@ -12,17 +12,17 @@ export type TableColumnItem = TableColumn<TableListItem>;
 export const baseColumns: TableColumnItem[] = [
   {
     title: "Фамилия",
-    dataIndex: "user_surname",
+    dataIndex: "userSurname",
     width: 30,
   },
   {
     title: "Имя",
-    dataIndex: "user_first_name",
+    dataIndex: "userFullname",
     width: 30,
   },
   {
     title: "Отчество",
-    dataIndex: "user_patronymic",
+    dataIndex: "userPatronymic",
     width: 30,
   },
 ];

@@ -105,7 +105,7 @@
 import { reactive, ref, watch, toRaw } from "vue";
 import { SmileOutlined } from "@ant-design/icons-vue";
 import type { FormInstance } from "ant-design-vue";
-import { getUnits } from "~/pages/UnitPage";
+import { getUnitsData } from "~/pages/UnitPage";
 
 interface UserType {
   grocery_name?: string;
@@ -135,10 +135,10 @@ const isFetchingUnits = ref(false);
 const fetchUnits = async () => {
   isFetchingUnits.value = true;
   try {
-    const response = await getUnits(); // Replace with your endpoint
-    unitOptions.value = response.map(
-      (unit: { id: number; unit_fullname: string }) => ({
-        label: unit.unit_fullname,
+    const response = await getUnitsData(); // Replace with your endpoint
+    unitOptions.value = response.unitsData.map(
+      (unit: { id: number; unitFullname: string }) => ({
+        label: unit.unitFullname,
         value: unit.id,
       }),
     );

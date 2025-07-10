@@ -4,7 +4,7 @@ import { store } from "~/app/providers/store";
 
 export type User = {
   id: number; // Auto-generated unique ID
-  userFirstName: string; // User's first name
+  userFullname: string; // User's first name
   userPatronymic: string; // User's patronymic name
   userSurname: string; // User's surname
 };

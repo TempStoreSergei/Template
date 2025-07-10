@@ -12,26 +12,26 @@ export type TableColumnItem = TableColumn<TableListItem>;
 export const baseColumns: TableColumnItem[] = [
   {
     title: "Полное название величины",
-    dataIndex: "unit_fullname",
+    dataIndex: "unitFullname",
     width: 150,
   },
   {
     title: "Сокращенное название величины",
-    dataIndex: "unit_shortname",
+    dataIndex: "unitShortname",
     width: 150,
   },
 ];
 
 export const searchFormSchema = [
   {
-    field: "unit_fullname",
+    field: "unitFullname",
     label: "Полное название величины",
     component: "Input",
     colProps: { span: 24 },
     outerWidth: 300,
   },
   {
-    field: "unit_shortname",
+    field: "unitShortname",
     label: "Сокращенное название величины",
     component: "Input",
     colProps: { span: 24 },

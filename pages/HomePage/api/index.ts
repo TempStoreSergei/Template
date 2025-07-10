@@ -2,14 +2,19 @@ import { request } from "~/shared/api/request";
 
 export const getCreatedUsers = () => {
   return request({
-    url: "user/get_all_users/",
+    url: "users/get_all_users",
     method: "GET",
+    dataName: "usersData",
   });
 };
 
-export const getUserCookes = (id) => {
+export const getUserCookes = (id: string) => {
   return request({
-    url: `user/login_user/${id}`,
+    url: `auth/user_auth`,
     method: "POST",
+    dataName: "sessionToken",
+    data: {
+      user_id: id,
+    },
   });
 };

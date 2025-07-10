@@ -1,7 +1,7 @@
 import { useRouter } from "vue-router";
 import { Tag, Image, Button, Typography } from "ant-design-vue";
-import { dishRecipeDelete } from "../api";
-import { getCategory } from "~/pages/DishCategoryPage";
+import { itemRecipeDelete } from "../api";
+import { getCategoryData } from "~/pages/CategoryPage";
 import type { TableColumn } from "~/shared/core/dynamic-table";
 
 // Define the type for your table's list items
@@ -90,7 +90,7 @@ export const baseColumns: TableColumnItem[] = [
               type="link"
               danger
               onClick={() => {
-                dishRecipeDelete(record.id);
+                itemRecipeDelete(record.id);
               }}
             >
               Удалить
@@ -103,7 +103,7 @@ export const baseColumns: TableColumnItem[] = [
   {
     title: "Срок годности",
     hideInSearch: true,
-    dataIndex: "grocery_life_time",
+    dataIndex: "itemLifeTime",
     width: 200,
     customRender: ({ record }) => {
       return (
@@ -166,9 +166,9 @@ export const searchFormSchemas: FormSchema[] = [
     colProps: { span: 24 },
     componentProps: {
       request: async () => {
-        const category = await getCategory();
-        return category.map((category) => ({
-          label: category.category_name,
+        const { categoriesData: categories } = await getCategoryData();
+        return categories.map((category) => ({
+          label: category.categoryName,
           value: category.id,
         }));
       },

@@ -8,6 +8,7 @@ export interface RequestOptions extends AxiosRequestConfig {
   isReturnResult?: boolean;
   successMsg?: string;
   errorMsg?: string;
+  dataName?: string;
   showSuccessMsg?: boolean;
   showErrorMsg?: boolean;
   requestType?: "json" | "form";
@@ -21,8 +22,14 @@ interface BaseResponse<T = any> {
 }
 
 const UNKNOWN_ERROR = "Unknown error. Please retry.";
-export const serverIp = "http://10.0.0.8:6543/";
-export const baseApiUrl = `${serverIp}api/`;
+export const serverIp = "http://10.0.0.5:9000/";
+export const baseApiUrl = `${serverIp}`;
+
+// Simple error handler for cases where showError is not available
+const showError = (error: { message: string; statusCode: number }) => {
+  console.error(`Error ${error.statusCode}: ${error.message}`);
+  $message.error(`Ошибка ${error.statusCode}: ${error.message}`);
+};
 
 // Abort controller for request cancellation
 const controller = new AbortController();
@@ -30,7 +37,7 @@ const controller = new AbortController();
 // Axios instance configuration
 export const service = axios.create({
   baseURL: baseApiUrl,
-  timeout: 10000,
+  timeout: 60000,
   signal: controller.signal,
 });
 
@@ -50,17 +57,52 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response: AxiosResponse<BaseResponse>) => {
     const res = response.data;
+    const httpStatus = response.status;
 
-    // if the custom code is not 200, it is judged as an error.
-    if (res.code !== ResultEnum.SUCCESS) {
-      $message.error(res.message || UNKNOWN_ERROR);
-      // Illegal token
-      if ([401].includes(res.code)) {
+    // Если в теле ответа есть код, проверяем его
+    if (res && typeof res.code !== 'undefined') {
+      if (res.code !== ResultEnum.SUCCESS) {
+        $message.error(res.message || UNKNOWN_ERROR);
+        // Illegal token
+        if ([401].includes(res.code)) {
+          Modal.confirm({
+            title: "Внимание",
+            content:
+              res.message ||
+              "Ваша сессия закончиласть. Пожалуйста зайдити еще раз.",
+            okText: "Перезайти",
+            cancelText: "Отмена",
+            onOk: () => {
+              localStorage.removeItem("token");
+              window.location.replace("/login");
+            },
+            onCancel: () => {
+              window.location.replace("/");
+            },
+          });
+        }
+
+        if (res.code === 403 || res.code === 423) {
+          showError({ message: "Not allow", statusCode: res.code });
+        }
+        // throw other
+        const error = new Error(res.message || UNKNOWN_ERROR) as Error & {
+          code: any;
+        };
+        error.code = res.code;
+        return Promise.reject(error);
+      }
+    } 
+    // Если в теле нет кода, проверяем HTTP статус
+    else if (httpStatus < 200 || httpStatus >= 300) {
+      const errorMessage = res?.message || `HTTP Error: ${httpStatus}`;
+      $message.error(errorMessage);
+      
+      // Обработка HTTP статусов
+      if (httpStatus === 401) {
         Modal.confirm({
           title: "Внимание",
-          content:
-            res.message ||
-            "Ваша сессия закончиласть. Пожалуйста зайдити еще раз.",
+          content: "Ваша сессия закончиласть. Пожалуйста зайдити еще раз.",
           okText: "Перезайти",
           cancelText: "Отмена",
           onOk: () => {
@@ -73,18 +115,16 @@ service.interceptors.response.use(
         });
       }
 
-      if (res.code === 403 || res.code === 423) {
-        showError({ message: "Not allow", statusCode: res.code });
+      if ([403, 423].includes(httpStatus)) {
+        showError({ message: "Not allow", statusCode: httpStatus });
       }
-      // throw other
-      const error = new Error(res.message || UNKNOWN_ERROR) as Error & {
-        code: any;
-      };
-      error.code = res.code;
+      
+      const error = new Error(errorMessage) as Error & { code: any };
+      error.code = httpStatus;
       return Promise.reject(error);
-    } else {
-      return response;
     }
+    
+    return response;
   },
   (error) => {
     if (!error) {
@@ -109,7 +149,7 @@ export async function request<T = any>(
   const config = isString(_url) ? _config : _url;
 
   try {
-    const { requestType, isReturnResult = true, ...rest } = config;
+    const { requestType, isReturnResult = true, dataName = "data", ...rest } = config;
 
     const response = await service.request({
       url,
@@ -137,7 +177,7 @@ export async function request<T = any>(
       }
     }
 
-    return isReturnResult ? data.data : data;
+    return isReturnResult ? data[dataName] : data;
   } catch (error: any) {
     return Promise.reject(error);
   }

@@ -1,33 +1,26 @@
 import type { AxiosRequestConfig } from "axios";
 import { request } from "~/shared/api/request.ts";
 
-export const getUser = async (options?: AxiosRequestConfig) => {
+export const getUserInfo = async (options?: AxiosRequestConfig) => {
   return await request({
-    url: "admin/users/get_all_users",
+    url: "users/get_all_users",
     method: "GET",
     params: options,
-  });
-};
-
-export const getLenthOfTable = async (options?: AxiosRequestConfig) => {
-  return await request({
-    url: "admin/users/get_users_len/",
-    method: "GET",
-    params: options,
+    isReturnResult: false,
   });
 };
 
 export const userCreate = async (body: any) => {
   return await request({
-    url: "admin/users/create_user",
+    url: "users/create_user",
     method: "POST",
     data: body,
   });
 };
 
-export const userUpdate = async (id: number, body: any) => {
+export const userUpdate = async (body: any) => {
   return await request({
-    url: `admin/users/update_user/${id}`,
+    url: `users/update_user`,
     method: "PUT",
     data: body,
   });
@@ -35,8 +28,9 @@ export const userUpdate = async (id: number, body: any) => {
 
 export const userDelete = async (id: number) => {
   return await request({
-    url: `admin/users/delete_user/${id}`,
+    url: `users/delete_user`,
     method: "DELETE",
+    data: { userID: id },
   });
 };
 
