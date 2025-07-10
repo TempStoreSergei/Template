@@ -1,190 +1,167 @@
 <template>
-  <a-card title="Вход в приложение Этикетка продукта">
-    <main class="login-user__container">
-      <div class="login-user__logo-section">
-        <div class="login-user__logo">Этикетка</div>
+  <div class="home-page">
+    <div class="hero-section">
+      <md-icon class="hero-icon">label</md-icon>
+      <h1>Создатель этикеток</h1>
+      <p>Создавайте и управляйте шаблонами этикеток</p>
+      
+      <div class="action-buttons">
+        <md-filled-button @click="goToTemplates" class="primary-button">
+          <md-icon slot="icon">folder_open</md-icon>
+          Мои шаблоны
+        </md-filled-button>
+        
+        <md-outlined-button @click="goToSettings" class="secondary-button">
+          <md-icon slot="icon">settings</md-icon>
+          Настройки
+        </md-outlined-button>
       </div>
+    </div>
 
-      <div class="login-user__list-section">
-        <a-list
-          bordered
-          class="login-user__list"
-          ghost
-          item-layout="horizontal"
-          :data-source="list"
-        >
-          <template #renderItem="{ item }">
-            <a-list-item @click="goToUserScreen(item)">
-              <a-list-item-meta description="Повар">
-                <template #title>
-                  {{ getFormattedName(item) }}
-                </template>
-                <template #avatar>
-                  <a-avatar
-                    :style="{
-                      backgroundColor: getColorFromId(
-                        item.user_first_name,
-                        item.user_surname,
-                      ),
-                    }"
-                  >
-                    {{ !item.avatar ? getInitials(item) : "" }}
-                  </a-avatar>
-                </template>
-              </a-list-item-meta>
-            </a-list-item>
-          </template>
-          <div v-if="list.length === 0" class="login-user__list-refresh">
-            <a-typography-title :level="4"
-              >Пользователей нет</a-typography-title
-            >
-            <a-button type="primary" block @click="init"
-              >Попробывать еще раз</a-button
-            >
-          </div>
-        </a-list>
-      </div>
-    </main>
-    <a-card-meta>
-      <template #description>
-        <article class="login-user__footer">
-          <div
-            style="display: flex; flex-direction: column; align-items: center"
-          >
-            <div>
-              <a-typography-text>
-                © 2024 Все права защищены
-              </a-typography-text>
+    <div class="features-section">
+      <md-card class="feature-card">
+        <div class="card-content">
+          <md-icon class="feature-icon">create_new_folder</md-icon>
+          <h3>Организация</h3>
+          <p>Создавайте папки и упорядочивайте шаблоны</p>
+        </div>
+      </md-card>
 
-              <a-typography-text type="secondary"
-                >Версия приложения: 0.0.3</a-typography-text
-              >
-            </div>
-            <a-typography-link href="#" target="_self"
-              >FS-TECHNOLOGY</a-typography-link
-            >
-          </div>
-        </article></template
-      >
-    </a-card-meta>
-  </a-card>
+      <md-card class="feature-card">
+        <div class="card-content">
+          <md-icon class="feature-icon">description</md-icon>
+          <h3>Шаблоны</h3>
+          <p>Создавайте и редактируйте файлы шаблонов</p>
+        </div>
+      </md-card>
+
+      <md-card class="feature-card">
+        <div class="card-content">
+          <md-icon class="feature-icon">search</md-icon>
+          <h3>Поиск</h3>
+          <p>Быстро находите нужные шаблоны</p>
+        </div>
+      </md-card>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
-import { getUserCookes, getCreatedUsers } from "../api";
-
-const list = ref([]);
-const router = useRouter();
-
-const init = async () => {
-  list.value = await getCreatedUsers();
-};
-
-onMounted(async () => {
-  await init();
-});
-
-// Generates a consistent color based on user ID
-const getColorFromId = (id: string, id2: string): string => {
-  let hash = 0;
-  const combinedString = id + id2;
-
-  for (let i = 0; i < combinedString.length; i++) {
-    hash = combinedString.charCodeAt(i) + ((hash << 5) - hash);
-  }
-
-  hash = Math.abs(hash);
-
-  const color = `hsl(${hash % 360}, 70%, 75%)`;
-  return color;
-};
-
-const getFormattedName = (user) => {
-  const firstInitial = user.user_first_name.charAt(0).toUpperCase();
-  const patronymicInitial = user.user_patronymic.charAt(0).toUpperCase();
-
-  return `${user.user_surname} ${firstInitial}.${patronymicInitial}.`;
-};
-
-// Returns user initials for the avatar
-const getInitials = (user) => {
-  const firstInitial = user.user_first_name.charAt(0).toUpperCase();
-  const patronymicInitial = user.user_patronymic.charAt(0).toUpperCase();
-  return `${firstInitial}${patronymicInitial}`;
-};
-
-const goToUserScreen = async (user) => {
-  const token = await getUserCookes(user.id);
-  localStorage.setItem("token", token);
-  router.push({ name: "screen" });
-};
-</script>
-
-<style lang="scss">
-.login-user__container {
-  .ant-avatar {
-    width: 72px;
-    height: 72px;
-    display: flex;
-    align-items: center;
-  }
-
-  .ant-avatar-string {
-    font-size: 32px !important;
-  }
+const goToTemplates = () => {
+  navigateTo('/screen')
 }
 
-.login-user {
-  &__container {
-    display: flex;
-    height: 75vh;
-    aspect-ratio: 1.618 / 1;
-    background-color: #f5f5f5;
+const goToSettings = () => {
+  navigateTo('/setting')
+}
+</script>
+
+<style lang="scss" scoped>
+.home-page {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding: 32px 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+  padding: 48px 16px;
+}
+
+.hero-icon {
+  font-size: 64px;
+  color: var(--md-sys-color-primary);
+}
+
+h1 {
+  font-size: 48px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--md-sys-color-on-surface);
+}
+
+p {
+  font-size: 18px;
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 0;
+  max-width: 600px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.primary-button,
+.secondary-button {
+  min-width: 160px;
+  --md-filled-button-container-height: 56px;
+  --md-outlined-button-container-height: 56px;
+}
+
+.features-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.feature-card {
+  --md-elevated-card-container-shape: 16px;
+  cursor: default;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  padding: 32px 24px;
+}
+
+.feature-icon {
+  font-size: 48px;
+  color: var(--md-sys-color-primary);
+}
+
+h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--md-sys-color-on-surface);
+}
+
+.card-content p {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 36px;
   }
-
-  &__footer {
-    .ant-typography {
-      font-size: 10px;
-    }
-
-    text-align: center;
-  }
-
-  &__logo-section {
-    width: 40%;
-    display: flex;
-    justify-content: center;
+  
+  .action-buttons {
+    flex-direction: column;
     align-items: center;
-    background-color: white;
   }
-
-  &__logo {
-    width: 200px;
-    font-size: 48px !important;
-    height: auto;
-  }
-
-  &__list-section {
+  
+  .primary-button,
+  .secondary-button {
     width: 100%;
-    padding: 20px;
-    display: flex;
-    background-color: white;
-    justify-content: center;
-    align-items: center;
-  }
-
-  &__list {
-    overflow-y: auto;
-    height: 100%;
-    width: 100%;
-  }
-
-  &__list-refresh {
-    margin-top: 32px;
-    width: max-content;
-    margin: auto;
+    max-width: 280px;
   }
 }
 </style>

@@ -1,0 +1,77 @@
+.ios-select {
+    &__select-wrap {
+      position: relative;
+      height: 220px;
+      text-align: center;
+      overflow: hidden;
+      flex-grow: 1;
+      font-weight: 600;
+      color: rgb(32, 40, 96);
+      font-size: 22px;
+      line-height: 27px;
+      letter-spacing: -0.19px;
+  
+      &:before, &:after {
+        position: absolute;
+        z-index: 1;
+        display: block;
+        content: '';
+        width: 100%;
+        height: 50%;
+      }
+  
+      &:before {
+        top: 0;
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+      }
+  
+      &:after {
+        bottom: 0;
+        background-image: linear-gradient(to top, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+      }
+    }
+    &__select-options {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 0;
+        transform-style: preserve-3d;
+        margin: 0 auto;
+        display: block;
+        transform: translateZ(-150px) rotateX(0deg);
+        -webkit-font-smoothing: subpixel-antialiased;
+        color: #666;
+    }
+    &__select-option {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50px;
+  
+      -webkit-font-smoothing: subpixel-antialiased;
+      @for $i from 1 through 100 {
+        &:nth-child(#{$i}) {
+          transform: rotateX(-18deg * ($i - 1)) translateZ(150px);
+        }
+      }
+    }
+    &__highlight {
+      position: absolute;
+      top: 50%;
+      transform: translate(0, -50%);
+      width: 100%;
+      background-color: white;
+      border-top: 1px solid #C8C7CC;
+      border-bottom: 1px solid #C8C7CC;
+      font-size: 24px;
+      overflow: hidden;
+    }
+    &__highlight-list {
+      position: absolute;
+      width: 100%;
+    }
+  }
+  
+  

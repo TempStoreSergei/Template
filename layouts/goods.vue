@@ -1,78 +1,46 @@
 <template>
-  <a-config-provider
-    component-size="large"
-    :theme="{
-      token: {
-        borderRadius: 6,
-        fontSize: 24,
-        lineWidth: 2,
-        colorBorder: '#1677ff',
-        colorSplit: '#1677ff',
-        colorBorderSecondary: '#1677ff',
-      },
-    }"
-  >
-    <a-layout class="app-layout">
-      <a-layout-header class="app-layout__header">
-        <a-page-header title="Этикетка - Продукта">
-          <template #extra>
-            <a-button
-              key="2"
-              type="dashed"
-              danger
-              size="large"
-              @click="layoutUserStore.logOut"
-            >
-              Завершить смену
-            </a-button>
-            <a-button
-              key="1"
-              type="primary"
-              @click="layoutUserStore.printEmptySticker"
-            >
-              <template #icon> <PrinterOutlined /></template>
-              Напечатать пустую этикетку
-            </a-button>
-          </template>
-          <a-flex gap="large" justify="space-between">
-            <a-statistic title="ФИО" :value="userName" />
-            <a-statistic title="Название цеха" :value="terminalName" />
-            <a-statistic
-              title="Текущая дата"
-              :value="layoutUserStore.getCurrentDate"
-            />
-            <a-statistic
-              title="Текущее время"
-              style="width: 280px"
-              :value="layoutUserStore.getCurrentTime"
-            />
-          </a-flex>
-          <div>
-            <template v-for="item in iconLinks" :key="item.src">
-              <a class="example-link">
-                <img
-                  class="example-link-icon"
-                  :src="item.src"
-                  :alt="item.text"
-                />
-                {{ item.text }}
-              </a>
-            </template>
-          </div>
-        </a-page-header>
-      </a-layout-header>
+  <div class="floating-layout">
+    <!-- Header elements that appear to float -->
+    <header class="floating-header">
+      <div class="floating-title">
+        <span class="material-icons">label</span>
+        <h1>Этикетка</h1>
+      </div>
+      <div class="user-info-chip">
+        <span class="material-icons">person</span>
+        <span>{{ userName }}</span>
+      </div>
+      <div class="terminal-info-chip">
+        <span class="material-icons">dns</span>
+        <span>{{ terminalName }}</span>
+      </div>
+      <div class="time-info-chip">
+        <span class="material-icons">schedule</span>
+        <span>
+          {{ layoutUserStore.getCurrentDate }}
+          {{ layoutUserStore.getCurrentTime }}
+        </span>
+      </div>
+      <div class="header-actions">
+        <md-filled-button @click="layoutUserStore.printEmptySticker">
+          <md-icon>print</md-icon>
+          Печать
+        </md-filled-button>
+        <md-outlined-button @click="layoutUserStore.logOut">
+          Выход
+        </md-outlined-button>
+      </div>
+    </header>
 
-      <a-layout-content class="app-layout__content">
-        <div class="app-layout__content-inner">
-          <slot />
-        </div>
-      </a-layout-content>
-    </a-layout>
-  </a-config-provider>
+    <!-- The main content area -->
+    <main class="floating-content">
+      <slot />
+    </main>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted } from "#imports";
 import { useLayoutUser } from "~/entities/layoutUser/modal/layoutUser";
 
 const layoutUserStore = useLayoutUser();
@@ -82,12 +50,12 @@ const terminalName = ref("Загрузка...");
 const getUserName = async () => {
   try {
     const response = await layoutUserStore.getInfoAboutUser();
-    const firstInitial = response.user_first_name.charAt(0).toUpperCase();
-    const patronymicInitial = response.user_patronymic.charAt(0).toUpperCase();
-    userName.value = `${response.user_surname} ${firstInitial}.${patronymicInitial}.`;
+    const firstInitial = response.userFullname.charAt(0).toUpperCase();
+    const patronymicInitial = response.userPatronymic.charAt(0).toUpperCase();
+    userName.value = `${response.userSurname} ${firstInitial}.${patronymicInitial}.`;
   } catch (error) {
     console.error("Error fetching user info:", error);
-    userName.value = "Ошибка загрузки";
+    userName.value = "Ошибка";
   }
 };
 
@@ -96,37 +64,103 @@ const getTerminalName = async () => {
     const response = await layoutUserStore.getInfoAboutSystem();
     terminalName.value = response;
   } catch (error) {
-    console.error("Error fetching user info:", error);
-    terminalName.value = "Ошибка загрузки";
+    console.error("Error fetching terminal info:", error);
+    terminalName.value = "Ошибка";
   }
 };
 
-// Fetch user info when component is mounted
 onMounted(() => {
   getUserName();
   getTerminalName();
 });
 </script>
-<style lang="scss">
-.app-layout {
+
+<style lang="scss" scoped>
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
+.floating-layout {
   height: 100vh;
-  width: 100vw;
+  width: 100%;
+  background: var(--md-sys-color-surface, #fef7ff);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-  &__header {
-    padding: 0 !important;
-  }
+.floating-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid
+    var(--md-sys-color-surface-container-outline, #e0e0e0);
+}
 
-  &__content {
-    min-height: 100%;
-    background: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.floating-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
 
-  &__content-inner {
-    width: 100%;
-    height: 100%;
+  h1 {
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--md-sys-color-on-surface, #1d1b20);
   }
+  .material-icons {
+    color: var(--md-sys-color-primary, #6750a4);
+    font-size: 32px;
+  }
+}
+
+%info-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 24px;
+  background: var(--md-sys-color-surface-container, #f3edf7);
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  font-size: 16px;
+  font-weight: 500;
+
+  .material-icons {
+    font-size: 24px;
+  }
+}
+
+.user-info-chip,
+.terminal-info-chip,
+.time-info-chip {
+  @extend %info-chip;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: 16px;
+}
+
+.floating-content {
+  flex-grow: 1;
+  overflow: auto;
+  padding: 4px;
+}
+
+// Style Material Web components
+md-filled-button {
+  --md-filled-button-container-height: 56px;
+  --md-sys-color-primary: #6750a4;
+  --md-sys-color-on-primary: #ffffff;
+  font-size: 16px;
+}
+
+md-outlined-button {
+  --md-outlined-button-container-height: 56px;
+  --md-sys-color-primary: #6750a4;
+  --md-outlined-button-outline-color: #79747e;
+  font-size: 16px;
 }
 </style>

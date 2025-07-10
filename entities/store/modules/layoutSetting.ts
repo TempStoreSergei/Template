@@ -2,7 +2,7 @@ import { reactive, computed, watchPostEffect } from "vue";
 import { defineStore } from "pinia";
 import { theme as antdTheme } from "ant-design-vue";
 import type { ThemeConfig } from "ant-design-vue/es/config-provider/context";
-import { themeColor, type ThemeColor } from "~/fetures/setting/constant.ts";
+import { themeColor, type ThemeColor } from "~/features/setting/constant.ts";
 
 /**
  * 项目默认配置项

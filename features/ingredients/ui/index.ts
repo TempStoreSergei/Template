@@ -1,0 +1,1 @@
+export { default as IngredientsManager } from "./IngredientsManager.vue"; 

@@ -20,8 +20,8 @@
 
 <script lang="ts" setup>
 import { SearchOutlined } from "@ant-design/icons-vue";
-import Basket from "~/fetures/basket/ui/index.vue";
-import Search from "~/fetures/search";
+import Basket from "~/features/basket/ui/index.vue";
+import Search from "~/features/search";
 </script>
 
 <style lang="scss">

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { HomePage } from "~/pages/HomePage";
+import { SelectTypePage } from "~/pages/SelecTypePage";
 
 definePageMeta({
   name: "UserLogin",
@@ -9,5 +9,5 @@ definePageMeta({
 </script>
 
 <template>
-  <HomePage />
+  <SelectTypePage />
 </template>

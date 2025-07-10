@@ -39,7 +39,10 @@
           </md-icon>
         </md-icon-button>
 
-        <md-icon-button title="Настройки" @click="showSettingsDialog = true">
+        <md-icon-button
+          title="Настройки"
+          @click="showSettingsDialog = true"
+        >
           <md-icon>settings</md-icon>
         </md-icon-button>
       </div>
@@ -69,10 +72,7 @@
             <div class="menu-title">Управление</div>
             <button
               @click="setCurrentView('templates')"
-              :class="[
-                'menu-item',
-                { 'menu-item--active': currentView === 'templates' },
-              ]"
+              :class="['menu-item', { 'menu-item--active': currentView === 'templates' }]"
               type="button"
             >
               <md-icon>description</md-icon>
@@ -80,10 +80,7 @@
             </button>
             <button
               @click="setCurrentView('ingredients')"
-              :class="[
-                'menu-item',
-                { 'menu-item--active': currentView === 'ingredients' },
-              ]"
+              :class="['menu-item', { 'menu-item--active': currentView === 'ingredients' }]"
               type="button"
             >
               <md-icon>restaurant</md-icon>
@@ -91,10 +88,7 @@
             </button>
             <button
               @click="setCurrentView('users')"
-              :class="[
-                'menu-item',
-                { 'menu-item--active': currentView === 'users' },
-              ]"
+              :class="['menu-item', { 'menu-item--active': currentView === 'users' }]"
               type="button"
             >
               <md-icon>people</md-icon>
@@ -102,10 +96,7 @@
             </button>
             <button
               @click="setCurrentView('units')"
-              :class="[
-                'menu-item',
-                { 'menu-item--active': currentView === 'units' },
-              ]"
+              :class="['menu-item', { 'menu-item--active': currentView === 'units' }]"
               type="button"
             >
               <md-icon>straighten</md-icon>
@@ -121,10 +112,7 @@
         <div class="content-header">
           <!-- Improved Breadcrumb -->
           <div class="breadcrumb-container">
-            <div
-              v-if="currentView === 'templates' && selectedTemplate"
-              class="breadcrumb"
-            >
+            <div v-if="currentView === 'templates' && selectedTemplate" class="breadcrumb">
               <md-chip-set>
                 <md-assist-chip
                   @click="selectTemplate(selectedTemplate)"
@@ -145,10 +133,7 @@
                     @click="navigateToCategory(index)"
                     :class="[
                       'breadcrumb-chip',
-                      {
-                        'breadcrumb-chip--current':
-                          index === categoryPath.length - 1,
-                      },
+                      { 'breadcrumb-chip--current': index === categoryPath.length - 1 }
                     ]"
                   >
                     <md-icon slot="icon">folder</md-icon>
@@ -162,21 +147,21 @@
             <div v-else-if="currentView !== 'templates'" class="breadcrumb">
               <md-chip-set>
                 <md-assist-chip class="breadcrumb-chip breadcrumb-chip--active">
-                  <md-icon slot="icon">
-                    {{
-                      currentView === "ingredients"
-                        ? "restaurant"
-                        : currentView === "users"
+                    <md-icon slot="icon">
+                      {{
+                        currentView === "ingredients"
+                          ? "restaurant"
+                          : currentView === "users"
                           ? "people"
                           : "straighten"
-                    }}
-                  </md-icon>
+                      }}
+                    </md-icon>
                   {{
                     currentView === "ingredients"
                       ? "Ингредиенты"
                       : currentView === "users"
-                        ? "Пользователи"
-                        : "Единицы измерения"
+                      ? "Пользователи"
+                      : "Единицы измерения"
                   }}
                 </md-assist-chip>
               </md-chip-set>
@@ -251,19 +236,10 @@
               <md-filled-button
                 @click="saveCurrentTemplate"
                 class="save-btn"
-                :disabled="isLoading"
+                :disabled="isLoading || !hasUnsavedChanges"
               >
-                <md-icon>{{ hasUnsavedChanges ? "save" : "check" }}</md-icon>
-                {{ hasUnsavedChanges ? "Сохранить" : "Сохранено" }}
-              </md-filled-button>
-              <md-filled-button
-                v-if="selectedTemplate"
-                @click="downloadTemplateZip"
-                class="download-btn"
-                :disabled="isLoading"
-              >
-                <md-icon>download</md-icon>
-                Скачать шаблон
+                <md-icon>{{ hasUnsavedChanges ? 'save' : 'check' }}</md-icon>
+                {{ hasUnsavedChanges ? 'Сохранить' : 'Сохранено' }}
               </md-filled-button>
             </div>
           </div>
@@ -291,148 +267,93 @@
           <div v-else class="content-grid" :class="`content-grid--${viewMode}`">
             <!-- Categories/Subcategories -->
             <div
-              v-for="category in filteredCategories || []"
+              v-for="category in filteredCategories"
               :key="category.id"
               @click="selectCategory(category)"
               @keydown.enter="selectCategory(category)"
               @keydown.space.prevent="selectCategory(category)"
-              :class="[
-                'grid-card',
-                'grid-card--folder',
-                `grid-card--${viewMode}`,
-              ]"
+              :class="['grid-card', 'grid-card--folder', `grid-card--${viewMode}`]"
               tabindex="0"
               role="button"
-              :aria-label="`Открыть категорию ${category.categoryName || 'Без названия'}`"
+              :aria-label="`Открыть категорию ${category.categoryName}`"
             >
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;
-                  gap: 8px;
-                  width: 100%;
-                "
-              >
-                <md-icon class="grid-card__icon grid-card__icon--folder"
-                  >folder</md-icon
-                >
-                <div class="grid-card__actions">
-                  <md-icon-button
-                    @click.stop="openEditCategoryDialog(category)"
-                    class="category-edit-btn"
-                    title="Редактировать категорию"
-                  >
-                    <md-icon>edit</md-icon>
-                  </md-icon-button>
-                  <md-icon-button
-                    @click.stop="deleteCategory(category)"
-                    class="category-delete-btn"
-                    title="Удалить категорию"
-                  >
-                    <md-icon>close</md-icon>
-                  </md-icon-button>
-                </div>
+              <div class="grid-card__icon grid-card__icon--folder">
+                <md-icon>folder</md-icon>
               </div>
               <div class="grid-card__content">
-                <h3 class="grid-card__title">
-                  {{ category.categoryName || "Без названия" }}
-                </h3>
-                <p class="grid-card__subtitle">
-                  {{ category.categoryShortName || "" }}
-                </p>
+                <h3 class="grid-card__title">{{ category.categoryName }}</h3>
+                <p class="grid-card__subtitle">{{ category.categoryShortName }}</p>
                 <div class="grid-card__meta">
                   <span class="grid-card__meta-item">
                     {{ getTotalItemsCount(category) }} элементов
                   </span>
                   <span
-                    v-if="category.children && category.children.length > 0"
+                    v-if="category.subcategories && category.subcategories.length > 0"
                     class="grid-card__meta-item"
                   >
-                    {{ category.children.length }} подкатегорий
+                    {{ category.subcategories.length }} подкатегорий
                   </span>
                 </div>
               </div>
+              <md-icon-button
+                @click.stop="showCategoryMenu($event, category)"
+                class="grid-card__menu"
+                title="Меню категории"
+              >
+                <md-icon>more_vert</md-icon>
+              </md-icon-button>
             </div>
 
             <!-- Items in current category -->
             <div
-              v-for="item in filteredItems || []"
+              v-for="item in filteredItems"
               :key="item.id"
               @click="selectItem(item)"
               @keydown.enter="selectItem(item)"
               @keydown.space.prevent="selectItem(item)"
-              :class="[
-                'grid-card',
-                'grid-card--item',
-                `grid-card--${viewMode}`,
-              ]"
+              :class="['grid-card', 'grid-card--item', `grid-card--${viewMode}`]"
               tabindex="0"
               role="button"
-              :aria-label="`Открыть элемент ${item.itemName || 'Без названия'}`"
+              :aria-label="`Открыть элемент ${item.itemName}`"
             >
-              <div
-                class="grid-card__icon grid-card__icon--item"
-                style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;
-                  gap: 8px;
-                  flex-shrink: 0;
-                  width: 100%;
-                "
-              >
-                <md-icon class="grid-card__icon grid-card__icon--item">
+              <div class="grid-card__icon grid-card__icon--item">
+                <md-icon>
                   {{ item.itemInStock ? "inventory" : "inventory_2" }}
                 </md-icon>
-                <md-icon-button
-                  @click.stop="openEditItemDialog(item)"
-                  class="item-ingredients-btn"
-                  title="Редактировать элемент и ингредиенты"
-                >
-                  <md-icon>edit</md-icon>
-                </md-icon-button>
-                <md-icon-button
-                  @click.stop="deleteItem(item)"
-                  class="item-delete-btn"
-                  title="Удалить элемент"
-                >
-                  <md-icon>close</md-icon>
-                </md-icon-button>
               </div>
               <div class="grid-card__content">
-                <h3 class="grid-card__title">
-                  {{ item.itemName || "Без названия" }}
-                </h3>
-                <p class="grid-card__subtitle">
-                  {{ item.itemShortName || "" }}
-                </p>
+                <h3 class="grid-card__title">{{ item.itemName }}</h3>
+                <p class="grid-card__subtitle">{{ item.itemShortName }}</p>
                 <div class="grid-card__meta">
                   <span class="grid-card__meta-item">
-                    {{
-                      (item.ingredients && item.ingredients.length) || 0
-                    }}
-                    ингредиентов
+                    {{ item.ingredients.length }} ингредиентов
                   </span>
                   <span
                     :class="[
                       'grid-card__meta-item',
                       'stock-status',
-                      { 'stock-status--in-stock': item.itemInStock },
+                      { 'stock-status--in-stock': item.itemInStock }
                     ]"
                   >
                     {{ item.itemInStock ? "В наличии" : "Нет в наличии" }}
                   </span>
                 </div>
               </div>
+              <md-icon-button
+                @click.stop="showItemMenu($event, item)"
+                class="grid-card__menu"
+                title="Меню элемента"
+              >
+                <md-icon>more_vert</md-icon>
+              </md-icon-button>
             </div>
 
             <!-- Empty state for categories -->
             <div
               v-if="
                 currentView === 'templates' &&
-                (!filteredCategories || filteredCategories.length === 0) &&
-                (!filteredItems || filteredItems.length === 0)
+                filteredCategories.length === 0 &&
+                filteredItems.length === 0
               "
               class="empty-folder-state"
             >
@@ -441,9 +362,7 @@
               </div>
               <h3 class="empty-folder-state__title">
                 {{
-                  categoryPath.length === 0
-                    ? "Нет категорий"
-                    : "Пустая категория"
+                  categoryPath.length === 0 ? "Нет категорий" : "Пустая категория"
                 }}
               </h3>
               <p class="empty-folder-state__description">
@@ -473,25 +392,13 @@
         </div>
 
         <!-- Ingredients Manager -->
-        <IngredientsManager
-          v-if="currentView === 'ingredients'"
-          :ingredients="allIngredients"
-          :units="selectedTemplate?.units || []"
-        />
+        <IngredientsManager v-if="currentView === 'ingredients'" />
 
         <!-- Users Manager -->
-        <UsersManager
-          v-if="currentView === 'users'"
-          :users="selectedTemplate?.users || []"
-          @add-user="handleAddUser"
-        />
+        <UsersManager v-if="currentView === 'users'" />
 
         <!-- Units Manager -->
-        <UnitsManager
-          v-if="currentView === 'units'"
-          :units="selectedTemplate?.units || []"
-          @add-unit="handleAddUnit"
-        />
+        <UnitsManager v-if="currentView === 'units'" />
       </main>
     </div>
 
@@ -514,9 +421,7 @@
         </md-text-button>
         <md-filled-button
           @click="createTemplate"
-          :disabled="
-            !newTemplateName.trim() || !!newTemplateNameError || isLoading
-          "
+          :disabled="!newTemplateName.trim() || !!newTemplateNameError || isLoading"
         >
           Создать
         </md-filled-button>
@@ -540,29 +445,14 @@
           label="Короткое название"
           required
         />
-        <unit-selector
-          label="Единица измерения"
-          v-model="newCategory.unit"
-          :units="selectedTemplate?.units || []"
-        />
-        <md-outlined-text-field
-          v-model.number="newCategory.itemExpirationDate"
-          label="Срок годности"
-          type="number"
-        />
       </form>
       <div slot="actions">
-        <md-text-button
-          @click="showCategoryDialog = false"
-          :disabled="isLoading"
-        >
+        <md-text-button @click="showCategoryDialog = false" :disabled="isLoading">
           Отмена
         </md-text-button>
         <md-filled-button
           @click="createCategory"
-          :disabled="
-            !newCategory.categoryName.trim() || !!categoryNameError || isLoading
-          "
+          :disabled="!newCategory.categoryName.trim() || !!categoryNameError || isLoading"
         >
           Создать
         </md-filled-button>
@@ -586,29 +476,14 @@
           label="Короткое название"
           required
         />
-        <unit-selector
-          label="Единица измерения"
-          v-model="newCategory.unit"
-          :units="selectedTemplate?.units || []"
-        />
-        <md-outlined-text-field
-          v-model.number="newCategory.itemExpirationDate"
-          label="Срок годности"
-          type="number"
-        />
       </form>
       <div slot="actions">
-        <md-text-button
-          @click="showSubcategoryDialog = false"
-          :disabled="isLoading"
-        >
+        <md-text-button @click="showSubcategoryDialog = false" :disabled="isLoading">
           Отмена
         </md-text-button>
         <md-filled-button
           @click="createCategory"
-          :disabled="
-            !newCategory.categoryName.trim() || !!categoryNameError || isLoading
-          "
+          :disabled="!newCategory.categoryName.trim() || !!categoryNameError || isLoading"
         >
           Создать
         </md-filled-button>
@@ -676,7 +551,7 @@
               <span
                 :class="[
                   'stock-status',
-                  { 'stock-status--in-stock': selectedItem?.itemInStock },
+                  { 'stock-status--in-stock': selectedItem?.itemInStock }
                 ]"
               >
                 {{ selectedItem?.itemInStock ? "В наличии" : "Нет в наличии" }}
@@ -690,10 +565,7 @@
           <p class="item-details__recipe">{{ selectedItem.itemRecipe }}</p>
         </div>
 
-        <div
-          v-if="selectedItem?.ingredients?.length"
-          class="item-details__section"
-        >
+        <div v-if="selectedItem?.ingredients?.length" class="item-details__section">
           <h4 class="item-details__section-title">Ингредиенты</h4>
           <div class="ingredients-list">
             <div
@@ -701,12 +573,10 @@
               :key="ing.id"
               class="ingredients-list__item"
             >
-              <span class="ingredients-list__name">{{
-                ing.ingredientName
-              }}</span>
+              <span class="ingredients-list__name">{{ ing.ingredientName }}</span>
               <span class="ingredients-list__weight">
                 {{ ing.ingredientWeight }}
-                {{ getUnitShortName(ing.unit) }}
+                {{ getUnitShortName(ing.unitId) }}
               </span>
             </div>
           </div>
@@ -714,11 +584,7 @@
       </div>
       <div slot="actions">
         <md-text-button @click="selectedItem = null">Закрыть</md-text-button>
-        <md-filled-button
-          v-if="selectedItem"
-          @click="openEditItemDialog(selectedItem)"
-          >Редактировать</md-filled-button
-        >
+        <md-filled-button @click="editItem">Редактировать</md-filled-button>
       </div>
     </md-dialog>
 
@@ -739,147 +605,27 @@
         </div>
       </div>
       <div slot="actions">
-        <md-text-button @click="showSettingsDialog = false"
-          >Закрыть</md-text-button
-        >
+        <md-text-button @click="showSettingsDialog = false">Закрыть</md-text-button>
         <md-filled-button @click="saveSettings">Сохранить</md-filled-button>
-      </div>
-    </md-dialog>
-
-    <!-- КНОПКИ ДЛЯ КАТЕГОРИИ -->
-    <md-dialog
-      :open="editCategoryDialog.open"
-      @closed="closeEditCategoryDialog"
-    >
-      <div slot="headline">Редактировать категорию</div>
-      <form @submit.prevent="saveEditCategory" slot="content">
-        <md-outlined-text-field
-          v-model="editCategoryDialog.form.categoryName"
-          label="Название категории"
-          required
-        />
-        <md-outlined-text-field
-          v-model="editCategoryDialog.form.categoryShortName"
-          label="Короткое название"
-          required
-        />
-        <md-outlined-text-field
-          v-model.number="editCategoryDialog.form.categoryExpirationDate"
-          label="Срок годности"
-          type="number"
-        />
-        <unit-selector
-          label="Единица измерения"
-          v-model="editCategoryDialog.form.categoryUnit"
-          :units="selectedTemplate?.units || []"
-        />
-      </form>
-      <div slot="actions">
-        <md-text-button @click="closeEditCategoryDialog">Отмена</md-text-button>
-        <md-filled-button @click="saveEditCategory">Сохранить</md-filled-button>
-      </div>
-    </md-dialog>
-
-    <!-- МОДАЛКА РЕДАКТИРОВАНИЯ ТОВАРА (Item) -->
-    <md-dialog
-      :open="editItemDialog.open"
-      @closed="closeEditItemDialog"
-      class="item-editor-dialog"
-    >
-      <div slot="headline">Редактировать элемент</div>
-      <form @submit.prevent="saveEditItem" slot="content" class="item-editor-form">
-        <div class="form-section">
-          <h4 class="form-section-title">Основная информация</h4>
-          <md-outlined-text-field
-            v-model="editItemDialog.form.itemName"
-            label="Название элемента"
-            required
-          />
-          <md-outlined-text-field
-            v-model="editItemDialog.form.itemShortName"
-            label="Короткое название"
-            required
-          />
-          <md-outlined-text-field
-            v-model="editItemDialog.form.itemRecipe"
-            label="Рецепт/Описание"
-            type="textarea"
-            rows="3"
-          />
-          <label class="checkbox-label">
-            <md-checkbox v-model="editItemDialog.form.itemInStock" />
-            В наличии
-          </label>
-        </div>
-
-        <div class="form-section">
-          <h4 class="form-section-title">Ингредиенты</h4>
-          <div
-            v-for="(ing, idx) in editItemDialog.form.ingredients"
-            :key="ing.id || idx"
-            class="ingredient-editor-row"
-          >
-            <md-outlined-text-field
-              v-model="ing.ingredientName"
-              label="Название"
-              style="flex: 3"
-            />
-            <md-outlined-text-field
-              v-model.number="ing.ingredientWeight"
-              label="Вес"
-              type="number"
-              style="flex: 1"
-            />
-            <unit-selector
-              label="Ед. изм."
-              v-model="ing.unit"
-              :units="selectedTemplate?.units || []"
-              style="flex: 2"
-            />
-            <md-icon-button @click="removeEditIngredient(idx)"
-              ><md-icon>close</md-icon></md-icon-button
-            >
-          </div>
-          <md-filled-button
-            type="button"
-            @click="addEditIngredient"
-            style="margin-top: 8px"
-            >Добавить ингредиент</md-filled-button
-          >
-        </div>
-      </form>
-      <div slot="actions">
-        <md-text-button @click="closeEditItemDialog">Отмена</md-text-button>
-        <md-filled-button @click="saveEditItem">Сохранить</md-filled-button>
       </div>
     </md-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed, toRaw, watch, reactive } from "#imports";
-import type {
-  Template,
-  Category,
-  Item,
-  User,
-  Unit,
-  Ingredient,
-} from "~/pages/SelecTypePage/model/types";
-import { getAllTemplates, saveTemplateAsZip } from "~/pages/SelecTypePage/api";
-import IngredientsManager from "~/features/ingredients/ui/IngredientsManager.vue";
-import UsersManager from "~/features/users/ui/UsersManager.vue";
-import UnitsManager from "~/features/units/ui/UnitsManager.vue";
-import UnitSelector from "./components/UnitSelector.vue";
+import { ref, onMounted, computed, toRaw, watch } from "#imports";
+import { templateDB } from "../lib/database";
+import type { Template, Category, Item } from "../model/types";
+import { IngredientsManager, ingredientsApi } from "../../../features/ingredients";
+import { UsersManager } from "../../../features/users";
+import { UnitsManager, unitsApi } from "../../../features/units";
 
 // Loading state
 const isLoading = ref(false);
 const loadingMessage = ref("");
 
 // State
-const currentView = ref<"templates" | "ingredients" | "users" | "units">(
-  "templates",
-);
+const currentView = ref<"templates" | "ingredients" | "users" | "units">("templates");
 const templates = ref<Template[]>([]);
 const selectedTemplate = ref<Template | null>(null);
 const selectedTemplateId = ref<string>("");
@@ -901,8 +647,6 @@ const newTemplateName = ref("");
 const newCategory = ref({
   categoryName: "",
   categoryShortName: "",
-  unit: "",
-  itemExpirationDate: "" as number | string,
 });
 const newItem = ref({
   itemName: "",
@@ -925,70 +669,28 @@ const settings = ref({
 // Computed properties
 const hasUnsavedChanges = ref(false);
 
-const allIngredients = computed(() => {
-  if (!selectedTemplate.value) return [];
-  const ingredients: Ingredient[] = [];
-
-  const collect = (categories: Category[]) => {
-    for (const category of categories) {
-      if (category.items) {
-        for (const item of category.items) {
-          if (item.ingredients) {
-            ingredients.push(...item.ingredients);
-          }
-        }
-      }
-      if (category.children) {
-        collect(category.children);
-      }
-    }
-  };
-
-  collect(selectedTemplate.value.categories);
-
-  // Return unique ingredients by name
-  const uniqueIngredients = new Map<string, Ingredient>();
-  for (const ingredient of ingredients) {
-    if (ingredient.ingredientName && !uniqueIngredients.has(ingredient.ingredientName)) {
-      uniqueIngredients.set(ingredient.ingredientName, ingredient);
-    }
-  }
-  return Array.from(uniqueIngredients.values());
-});
-
 const filteredCategories = computed(() => {
   const categories = getCurrentCategories();
-  if (!categories || !Array.isArray(categories)) return [];
   if (!searchQuery.value) return categories;
-
-  return categories.filter(
-    (category) =>
-      category.categoryName
-        ?.toLowerCase()
-        .includes(searchQuery.value.toLowerCase()) ||
-      category.categoryShortName
-        ?.toLowerCase()
-        .includes(searchQuery.value.toLowerCase()),
+  
+  return categories.filter(category =>
+    category.categoryName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    category.categoryShortName.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
 
 const filteredItems = computed(() => {
   const items = getCurrentItems();
-  if (!items || !Array.isArray(items)) return [];
   if (!searchQuery.value) return items;
-
-  return items.filter(
-    (item) =>
-      item.itemName?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      item.itemShortName
-        ?.toLowerCase()
-        .includes(searchQuery.value.toLowerCase()),
+  
+  return items.filter(item =>
+    item.itemName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    item.itemShortName.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
 
 // Utility functions
-const generateId = () =>
-  `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+const generateId = () => `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
 const setLoading = (loading: boolean, message = "") => {
   isLoading.value = loading;
@@ -1002,7 +704,7 @@ const validateTemplateName = () => {
     newTemplateNameError.value = "Название шаблона не может быть пустым";
     return false;
   }
-  if (templates.value.some((t: Template) => t.name === name)) {
+  if (templates.value.some(t => t.name === name)) {
     newTemplateNameError.value = "Шаблон с таким названием уже существует";
     return false;
   }
@@ -1016,14 +718,14 @@ const validateCategoryName = () => {
     categoryNameError.value = "Название категории не может быть пустым";
     return false;
   }
-
+  
   // Check for duplicates in current level
   const existingCategories = getCurrentCategories();
-  if (existingCategories.some((cat) => cat.categoryName === name)) {
+  if (existingCategories.some(cat => cat.categoryName === name)) {
     categoryNameError.value = "Категория с таким названием уже существует";
     return false;
   }
-
+  
   categoryNameError.value = "";
   return true;
 };
@@ -1034,14 +736,14 @@ const validateItemName = () => {
     itemNameError.value = "Название элемента не может быть пустым";
     return false;
   }
-
+  
   // Check for duplicates in current category
   const existingItems = getCurrentItems();
-  if (existingItems.some((item) => item.itemName === name)) {
+  if (existingItems.some(item => item.itemName === name)) {
     itemNameError.value = "Элемент с таким названием уже существует";
     return false;
   }
-
+  
   itemNameError.value = "";
   return true;
 };
@@ -1053,12 +755,7 @@ const resetCreateTemplateForm = () => {
 };
 
 const resetCategoryForm = () => {
-  newCategory.value = {
-    categoryName: "",
-    categoryShortName: "",
-    unit: "",
-    itemExpirationDate: "",
-  };
+  newCategory.value = { categoryName: "", categoryShortName: "" };
   categoryNameError.value = "";
 };
 
@@ -1073,9 +770,7 @@ const resetItemForm = () => {
 };
 
 // Navigation functions
-const setCurrentView = (
-  view: "templates" | "ingredients" | "users" | "units",
-) => {
+const setCurrentView = (view: "templates" | "ingredients" | "users" | "units") => {
   currentView.value = view;
   selectedItem.value = null;
   categoryPath.value = [];
@@ -1088,27 +783,71 @@ const handleSearch = () => {
   console.log("Searching for:", searchQuery.value);
 };
 
-// Template functions - Updated to use real API
+// Template functions
 const loadTemplates = async () => {
-  setLoading(true, "Загрузка данных с сервера...");
+  setLoading(true, "Загрузка шаблонов...");
   try {
-    const loadedTemplates = await getAllTemplates();
+    const loadedTemplates = await templateDB.getAllTemplates();
     templates.value = loadedTemplates;
-    console.log("Загружено шаблонов:", loadedTemplates.length);
+
+    if (loadedTemplates.length === 0) {
+      setLoading(true, "Создание демо данных...");
+      await templateDB.createDemoData();
+      const demoTemplates = await templateDB.getAllTemplates();
+      templates.value = demoTemplates;
+    }
   } catch (error) {
     console.error("Error loading templates:", error);
-    setLoading(true, "Ошибка загрузки данных. Попробуйте позже.");
-    // Show error for 3 seconds then hide loading
-    setTimeout(() => {
-      setLoading(false);
-    }, 3000);
-    return;
   } finally {
     setLoading(false);
   }
 };
 
 const selectTemplate = async (template: Template) => {
+  if (selectedTemplate.value && selectedTemplate.value.id !== template.id) {
+    if (hasUnsavedChanges.value && settings.value.autoSave) {
+      setLoading(true, "Автосохранение...");
+      try {
+        await templateDB.saveTemplate(toRaw(selectedTemplate.value));
+        hasUnsavedChanges.value = false;
+      } catch (error) {
+        console.error("Error auto-saving template:", error);
+      }
+    } else if (hasUnsavedChanges.value) {
+      const shouldSave = confirm(
+        `Сохранить изменения в шаблоне "${selectedTemplate.value.name}"?`,
+      );
+      
+      if (shouldSave) {
+        setLoading(true, "Сохранение изменений...");
+        try {
+          await templateDB.saveTemplate(toRaw(selectedTemplate.value));
+          hasUnsavedChanges.value = false;
+        } catch (error) {
+          console.error("Error saving template:", error);
+        }
+      } else {
+        // Reload template from database (cancel changes)
+        try {
+          const savedTemplates = await templateDB.getAllTemplates();
+          const savedTemplate = savedTemplates.find(
+            (t: Template) => t.id === selectedTemplate.value!.id,
+          );
+          if (savedTemplate) {
+            const index = templates.value.findIndex(
+              (t: Template) => t.id === savedTemplate.id,
+            );
+            if (index !== -1) {
+              templates.value[index] = savedTemplate;
+            }
+          }
+        } catch (error) {
+          console.error("Error reloading template:", error);
+        }
+      }
+    }
+  }
+
   currentView.value = "templates";
   selectedTemplate.value = template;
   selectedTemplateId.value = template.id;
@@ -1116,6 +855,7 @@ const selectTemplate = async (template: Template) => {
   selectedItem.value = null;
   createActionType.value = "";
   hasUnsavedChanges.value = false;
+  setLoading(false);
 };
 
 const selectTemplateById = async () => {
@@ -1133,7 +873,7 @@ const createTemplate = async () => {
   if (!validateTemplateName()) return;
 
   setLoading(true, "Создание шаблона...");
-
+  
   const newTemplate: Template = {
     id: generateId(),
     name: newTemplateName.value.trim(),
@@ -1143,7 +883,7 @@ const createTemplate = async () => {
   };
 
   try {
-    // For now, just add locally. In real implementation, you'd call your API
+    await templateDB.saveTemplate(newTemplate);
     templates.value.push(newTemplate);
     showCreateDialog.value = false;
     await selectTemplate(newTemplate);
@@ -1154,15 +894,81 @@ const createTemplate = async () => {
   }
 };
 
+// API transform functions
+const transformCategoryForAPI = (category: any): any => {
+  const rawCategory = toRaw(category);
+  
+  return {
+    id: rawCategory.id,
+    patentId: rawCategory.patentId,
+    categoryName: rawCategory.categoryName,
+    categoryShortName: rawCategory.categoryShortName,
+    categoryExpirationDate: rawCategory.categoryExpirationDate,
+    items: rawCategory.items.map((item: any) => {
+      const rawItem = toRaw(item);
+      return {
+        id: rawItem.id,
+        categoryId: rawItem.categoryId,
+        itemName: rawItem.itemName,
+        itemShortName: rawItem.itemShortName,
+        itemInStock: rawItem.itemInStock,
+        itemExpirationDate: rawItem.itemExpirationDate,
+        itemImage: rawItem.itemImage,
+        itemRecipe: rawItem.itemRecipe,
+        ingredients: rawItem.ingredients.map((ing: any) => {
+          const rawIng = toRaw(ing);
+          return {
+            id: rawIng.id,
+            unitId: rawIng.unitId,
+            ingredientName: rawIng.ingredientName,
+            ingredientWeight: rawIng.ingredientWeight,
+          };
+        }),
+      };
+    }),
+    children: rawCategory.subcategories
+      ? rawCategory.subcategories.map((subcat: any) =>
+          transformCategoryForAPI(toRaw(subcat)),
+        )
+      : [],
+  };
+};
+
+const transformTemplateForAPI = (template: Template) => {
+  const rawTemplate = toRaw(template);
+  
+  return {
+    id: rawTemplate.id,
+    name: rawTemplate.name,
+    categories: rawTemplate.categories.map((cat: any) =>
+      transformCategoryForAPI(toRaw(cat)),
+    ),
+    users: rawTemplate.users.map((user: any) => ({
+      id: user.id,
+      userSurname: user.userSurname,
+      userFullname: user.user_fullname,
+      userPatronymic: user.userPatronymic,
+    })),
+    units: rawTemplate.units.map((unit: any) => ({
+      id: unit.id,
+      unitFullname: unit.unitFullname,
+      unitShortname: unit.unitShortname,
+    })),
+  };
+};
+
 const saveCurrentTemplate = async () => {
   if (!selectedTemplate.value) return;
 
   setLoading(true, "Сохранение шаблона...");
-
+  
   try {
+    // Save locally in IndexedDB
+    await templateDB.saveTemplate(toRaw(selectedTemplate.value));
+    
     // Transform data for API
     const apiData = transformTemplateForAPI(selectedTemplate.value);
-
+    
     // Send to server
     const response = await fetch(
       "http://192.168.0.100:8002/templates/create_template",
@@ -1191,72 +997,6 @@ const saveCurrentTemplate = async () => {
   }
 };
 
-// API transform functions
-const transformCategoryForAPI = (category: any): any => {
-  const rawCategory = toRaw(category);
-
-  return {
-    id: rawCategory.id,
-    patentId: rawCategory.patentId,
-    categoryName: rawCategory.categoryName,
-    categoryShortName: rawCategory.categoryShortName,
-    categoryExpirationDate: rawCategory.categoryExpirationDate,
-    items:
-      rawCategory.items?.map((item: any) => {
-        const rawItem = toRaw(item);
-        return {
-          id: rawItem.id,
-          categoryId: rawItem.categoryId,
-          itemName: rawItem.itemName,
-          itemShortName: rawItem.itemShortName,
-          itemInStock: rawItem.itemInStock,
-          itemExpirationDate: rawItem.itemExpirationDate,
-          itemImage: rawItem.itemImage,
-          itemRecipe: rawItem.itemRecipe,
-          ingredients:
-            rawItem.ingredients?.map((ing: any) => {
-              const rawIng = toRaw(ing);
-              return {
-                id: rawIng.id,
-                unit: rawIng.unit,
-                ingredientName: rawIng.ingredientName,
-                ingredientWeight: rawIng.ingredientWeight,
-              };
-            }) || [],
-        };
-      }) || [],
-    children:
-      rawCategory.children?.map((subcat: any) =>
-        transformCategoryForAPI(toRaw(subcat)),
-      ) || [],
-  };
-};
-
-const transformTemplateForAPI = (template: Template) => {
-  const rawTemplate = toRaw(template);
-
-  return {
-    id: rawTemplate.id,
-    name: rawTemplate.name,
-    categories: rawTemplate.categories.map((cat: any) =>
-      transformCategoryForAPI(toRaw(cat)),
-    ),
-    users:
-      rawTemplate.users?.map((user: any) => ({
-        id: user.id,
-        userSurname: user.userSurname,
-        userFullname: user.user_fullname ?? "еуые",
-        userPatronymic: user.userPatronymic ?? "еуые",
-      })) || [],
-    units:
-      rawTemplate.units?.map((unit: any) => ({
-        id: unit.id,
-        unitFullname: unit.unitFullname,
-        unitShortname: unit.unitShortname,
-      })) || [],
-  };
-};
-
 // Navigation functions
 const selectCategory = (category: Category) => {
   categoryPath.value.push(category);
@@ -1283,27 +1023,16 @@ const selectItem = (item: Item) => {
 const createCategory = async () => {
   if (!validateCategoryName() || !selectedTemplate.value) return;
 
-  addUnitIfNotExists(newCategory.value.unit);
-
   setLoading(true, "Создание категории...");
-
-  const expirationDate =
-    typeof newCategory.value.itemExpirationDate === "number"
-      ? newCategory.value.itemExpirationDate
-      : null;
-
+  
   const category: Category = {
     id: generateId(),
-    patentId:
-      categoryPath.value.length > 0
-        ? categoryPath.value[categoryPath.value.length - 1].id
-        : "root",
+    patentId: generateId(),
     categoryName: newCategory.value.categoryName.trim(),
     categoryShortName: newCategory.value.categoryShortName.trim(),
-    categoryExpirationDate: expirationDate,
-    unit: newCategory.value.unit,
+    categoryExpirationDate: Date.now() + 86400000 * 365,
     items: [],
-    children: [],
+    subcategories: [],
   };
 
   try {
@@ -1311,28 +1040,20 @@ const createCategory = async () => {
     const templateClone = structuredClone
       ? structuredClone(rawTemplate)
       : JSON.parse(JSON.stringify(rawTemplate));
-
+    
     if (categoryPath.value.length === 0) {
       templateClone.categories.push(category);
     } else {
-      const currentCategoryId =
-        categoryPath.value[categoryPath.value.length - 1].id;
-
+      const currentCategoryId = categoryPath.value[categoryPath.value.length - 1].id;
+      
       const findAndAddToCategory = (categories: Category[]): boolean => {
         for (const cat of categories) {
           if (cat.id === currentCategoryId) {
-            // Исправление: если children == null, делаем пустым массивом
-            if (!Array.isArray(cat.children)) {
-              cat.children = [];
-            }
-            cat.children.push(category);
+            category.parentCategoryId = cat.id;
+            cat.subcategories.push(category);
             return true;
           }
-          // Рекурсивно ищем в подкатегориях
-          if (
-            Array.isArray(cat.children) &&
-            findAndAddToCategory(cat.children)
-          ) {
+          if (findAndAddToCategory(cat.subcategories)) {
             return true;
           }
         }
@@ -1341,8 +1062,8 @@ const createCategory = async () => {
       findAndAddToCategory(templateClone.categories);
     }
 
-    selectedTemplate.value = templateClone;
-    refreshCategoryPath();
+    await templateDB.saveTemplate(templateClone);
+    await refreshTemplate();
 
     showCategoryDialog.value = false;
     showSubcategoryDialog.value = false;
@@ -1361,51 +1082,41 @@ const getCurrentCategory = (): Category | null => {
 };
 
 const getCurrentCategories = (): Category[] => {
-  if (!selectedTemplate.value || !selectedTemplate.value.categories) return [];
+  if (!selectedTemplate.value) return [];
 
   if (categoryPath.value.length === 0) {
-    return selectedTemplate.value.categories || [];
+    return selectedTemplate.value.categories;
   } else {
     const currentCategory = getCurrentCategory();
-    return currentCategory?.children || [];
+    return currentCategory ? currentCategory.subcategories : [];
   }
 };
 
 const getCurrentItems = (): Item[] => {
   const currentCategory = getCurrentCategory();
-  return currentCategory?.items || [];
+  return currentCategory ? currentCategory.items : [];
 };
 
 const getTotalItemsCount = (category: Category): number => {
-  if (!category) return 0;
-  let count = 0;
-
-  if (category.items && Array.isArray(category.items)) {
-    count += category.items.length;
-  }
-
-  if (
-    category.children &&
-    Array.isArray(category.children) &&
-    category.children.length > 0
-  ) {
-    for (const subcategory of category.children) {
+  if (!category || !category.items) return 0;
+  let count = category.items.length;
+  if (category.subcategories && category.subcategories.length > 0) {
+    for (const subcategory of category.subcategories) {
       count += getTotalItemsCount(subcategory);
     }
   }
-
   return count;
 };
 
 // Item functions
 const createItem = async () => {
   if (!validateItemName()) return;
-
+  
   const currentCategory = getCurrentCategory();
   if (!currentCategory || !selectedTemplate.value) return;
 
   setLoading(true, "Создание элемента...");
-
+  
   const item: Item = {
     id: generateId(),
     categoryId: currentCategory.id,
@@ -1419,10 +1130,9 @@ const createItem = async () => {
   };
 
   try {
-    if (!currentCategory.items) {
-      currentCategory.items = [];
-    }
     currentCategory.items.push(item);
+    await templateDB.saveTemplate(toRaw(selectedTemplate.value));
+    await refreshTemplate();
 
     showItemDialog.value = false;
     hasUnsavedChanges.value = true;
@@ -1434,6 +1144,19 @@ const createItem = async () => {
 };
 
 // Template management
+const refreshTemplate = async () => {
+  const updatedTemplates = await templateDB.getAllTemplates();
+  templates.value = updatedTemplates;
+
+  const updatedTemplate = templates.value.find(
+    (t: Template) => t.id === selectedTemplate.value!.id,
+  );
+  if (updatedTemplate) {
+    selectedTemplate.value = updatedTemplate;
+    refreshCategoryPath();
+  }
+};
+
 const refreshCategoryPath = () => {
   if (categoryPath.value.length === 0) return;
 
@@ -1444,7 +1167,7 @@ const refreshCategoryPath = () => {
     const found = findCategoryById(currentCategories, pathCategory.id);
     if (found) {
       newPath.push(found);
-      currentCategories = found.children;
+      currentCategories = found.subcategories;
     } else {
       break;
     }
@@ -1453,13 +1176,10 @@ const refreshCategoryPath = () => {
   categoryPath.value = newPath;
 };
 
-const findCategoryById = (
-  categories: Category[],
-  id: string,
-): Category | null => {
+const findCategoryById = (categories: Category[], id: string): Category | null => {
   for (const category of categories) {
     if (category.id === id) return category;
-    const found = findCategoryById(category.children, id);
+    const found = findCategoryById(category.subcategories, id);
     if (found) return found;
   }
   return null;
@@ -1484,26 +1204,13 @@ const toggleView = () => {
 // Utility functions
 const getUnitShortName = (unitId: string) => {
   if (!selectedTemplate.value) return "";
-  const unit = selectedTemplate.value.units?.find(
-    (u: Unit) => u.id === unitId || u.unitFullname === unitId,
-  );
-  return unit ? unit.unitShortname : unitId;
+  const unit = selectedTemplate.value.units.find((u: any) => u.id === unitId);
+  return unit ? unit.unitShortname : "";
 };
 
-const editItem = (item: Item) => {
-  selectedItem.value = item;
-};
-
-const deleteItem = (item: Item) => {
-  if (!selectedTemplate.value) return;
-  const currentCategory = getCurrentCategory();
-  if (!currentCategory || !currentCategory.items) return;
-  if (confirm(`Удалить элемент "${item.itemName}"?`)) {
-    currentCategory.items = currentCategory.items.filter(
-      (i) => i.id !== item.id,
-    );
-    hasUnsavedChanges.value = true;
-  }
+const editItem = () => {
+  console.log("Edit item:", selectedItem.value?.itemName);
+  // TODO: Implement item editing
 };
 
 const saveSettings = () => {
@@ -1513,19 +1220,16 @@ const saveSettings = () => {
 };
 
 // Watchers
-watch(
-  selectedTemplate,
-  () => {
-    hasUnsavedChanges.value = false;
-  },
-  { deep: true },
-);
+watch(selectedTemplate, () => {
+  hasUnsavedChanges.value = false;
+}, { deep: true });
 
 // Lifecycle
 onMounted(async () => {
   try {
+    await templateDB.init();
     await loadTemplates();
-
+    
     // Auto-select first template if available
     if (templates.value.length > 0 && !selectedTemplate.value) {
       await selectTemplate(templates.value[0]);
@@ -1534,272 +1238,6 @@ onMounted(async () => {
     console.error("Error initializing:", error);
   }
 });
-
-const downloadTemplateZip = async () => {
-  if (!selectedTemplate.value) return;
-  setLoading(true, "Формирование архива...");
-  try {
-    const url = await saveTemplateAsZip(selectedTemplate.value.id);
-    // Открываем ссылку для скачивания
-    const a = document.createElement("a");
-    a.href = url;
-    a.download =
-      url.split("/").pop() ||
-      `${selectedTemplate.value.name || "template"}.zip`;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-      document.body.removeChild(a);
-    }, 100);
-  } catch (error) {
-    alert("Ошибка при скачивании архива!");
-  } finally {
-    setLoading(false);
-  }
-};
-
-const itemMenuOpen = ref(false);
-const itemMenuTarget = ref<Item | null>(null);
-
-const openItemMenu = (item: Item, event: Event) => {
-  event.stopPropagation();
-  itemMenuTarget.value = item;
-  itemMenuOpen.value = true;
-};
-const closeItemMenu = () => {
-  itemMenuOpen.value = false;
-  itemMenuTarget.value = null;
-};
-
-function handleCategoryAction(action: string, category: Category) {
-  if (action === "edit") {
-    // TODO: реализовать редактирование категории (открыть диалог)
-    alert(`Редактировать категорию: ${category.categoryName}`);
-  } else if (action === "delete") {
-    // TODO: реализовать удаление категории (с подтверждением)
-    if (confirm(`Удалить категорию "${category.categoryName}"?`)) {
-      deleteCategory(category);
-    }
-  }
-}
-
-function deleteCategory(category: Category) {
-  if (!selectedTemplate.value) return;
-  // Удаляем категорию из корня или из children
-  const removeFrom = (categories: Category[]): boolean => {
-    const idx = categories.findIndex((cat) => cat.id === category.id);
-    if (idx !== -1) {
-      categories.splice(idx, 1);
-      hasUnsavedChanges.value = true;
-      return true;
-    }
-    for (const cat of categories) {
-      if (Array.isArray(cat.children) && removeFrom(cat.children)) {
-        return true;
-      }
-    }
-    return false;
-  };
-  removeFrom(selectedTemplate.value.categories);
-  refreshCategoryPath();
-}
-
-function editCategory(category: Category) {
-  // TODO: реализовать диалог редактирования
-  alert(`Редактировать категорию: ${category.categoryName}`);
-}
-
-// --- Состояния для модалок ---
-const editCategoryDialog = ref({
-  open: false,
-  category: null as Category | null,
-  form: reactive({
-    categoryName: "",
-    categoryShortName: "",
-    categoryExpirationDate: null as number | null,
-    categoryUnit: "",
-  }),
-});
-const ingredientsDialog = ref({
-  open: false,
-  item: null as Item | null,
-});
-function openEditCategoryDialog(category: Category) {
-  closeAllDialogs();
-  editCategoryDialog.value.open = true;
-  editCategoryDialog.value.category = category;
-  editCategoryDialog.value.form.categoryName = category.categoryName;
-  editCategoryDialog.value.form.categoryShortName = category.categoryShortName;
-  editCategoryDialog.value.form.categoryExpirationDate =
-    category.categoryExpirationDate;
-  editCategoryDialog.value.form.categoryUnit = category.unit;
-}
-function closeEditCategoryDialog() {
-  editCategoryDialog.value.open = false;
-  editCategoryDialog.value.category = null;
-}
-function saveEditCategory() {
-  const cat = editCategoryDialog.value.category;
-  if (!cat) return;
-
-  addUnitIfNotExists(editCategoryDialog.value.form.categoryUnit);
-
-  const expirationDate =
-    typeof editCategoryDialog.value.form.categoryExpirationDate === "number"
-      ? editCategoryDialog.value.form.categoryExpirationDate
-      : null;
-
-  cat.categoryName = editCategoryDialog.value.form.categoryName;
-  cat.categoryShortName = editCategoryDialog.value.form.categoryShortName;
-  cat.categoryExpirationDate = expirationDate;
-  cat.unit = editCategoryDialog.value.form.categoryUnit;
-  hasUnsavedChanges.value = true;
-  closeEditCategoryDialog();
-}
-function openIngredientsDialog(item: Item) {
-  closeAllDialogs();
-  ingredientsDialog.value.open = true;
-  ingredientsDialog.value.item = item;
-}
-function closeIngredientsDialog() {
-  ingredientsDialog.value.open = false;
-  ingredientsDialog.value.item = null;
-}
-function addIngredient() {
-  if (!ingredientsDialog.value.item) return;
-  if (!ingredientsDialog.value.item.ingredients) {
-    ingredientsDialog.value.item.ingredients = [];
-  }
-  ingredientsDialog.value.item.ingredients.push({
-    id: generateId(),
-    unit: "",
-    ingredientName: "",
-    ingredientWeight: 0,
-  });
-}
-function removeIngredient(idx: number) {
-  if (!ingredientsDialog.value.item) return;
-  ingredientsDialog.value.item.ingredients.splice(idx, 1);
-}
-function saveIngredients() {
-  if (ingredientsDialog.value.item?.ingredients) {
-    for (const ing of ingredientsDialog.value.item.ingredients) {
-      addUnitIfNotExists(ing.unit);
-    }
-  }
-  hasUnsavedChanges.value = true;
-  closeIngredientsDialog();
-}
-
-// --- Состояния для модалок ---
-const editItemDialog = ref({
-  open: false,
-  item: null as Item | null,
-  form: reactive({
-    itemName: "",
-    itemShortName: "",
-    itemRecipe: "",
-    itemInStock: true,
-    ingredients: [] as Ingredient[],
-  }),
-});
-function openEditItemDialog(item: Item) {
-  closeAllDialogs();
-  editItemDialog.value.open = true;
-  editItemDialog.value.item = item;
-  editItemDialog.value.form.itemName = item.itemName;
-  editItemDialog.value.form.itemShortName = item.itemShortName;
-  editItemDialog.value.form.itemRecipe = item.itemRecipe;
-  editItemDialog.value.form.itemInStock = item.itemInStock;
-  // Глубокое копирование, чтобы избежать мутации оригинала до сохранения
-  editItemDialog.value.form.ingredients = JSON.parse(
-    JSON.stringify(item.ingredients || []),
-  );
-}
-function closeEditItemDialog() {
-  editItemDialog.value.open = false;
-  editItemDialog.value.item = null;
-}
-function saveEditItem() {
-  const item = editItemDialog.value.item;
-  if (!item) return;
-
-  // 1. Сохраняем основные поля
-  item.itemName = editItemDialog.value.form.itemName;
-  item.itemShortName = editItemDialog.value.form.itemShortName;
-  item.itemRecipe = editItemDialog.value.form.itemRecipe;
-  item.itemInStock = editItemDialog.value.form.itemInStock;
-
-  // 2. Добавляем новые единицы измерения из ингредиентов
-  if (editItemDialog.value.form.ingredients) {
-    for (const ing of editItemDialog.value.form.ingredients) {
-      addUnitIfNotExists(ing.unit);
-    }
-  }
-
-  // 3. Сохраняем сами ингредиенты
-  item.ingredients = editItemDialog.value.form.ingredients;
-
-  hasUnsavedChanges.value = true;
-  closeEditItemDialog();
-}
-
-// Функции для управления ингредиентами в модалке редактирования
-function addEditIngredient() {
-  editItemDialog.value.form.ingredients.push({
-    id: generateId(),
-    unit: "",
-    ingredientName: "",
-    ingredientWeight: 0,
-  });
-}
-function removeEditIngredient(idx: number) {
-  editItemDialog.value.form.ingredients.splice(idx, 1);
-}
-
-function closeAllDialogs() {
-  editCategoryDialog.value.open = false;
-  editItemDialog.value.open = false;
-}
-
-// Event Handlers
-const handleAddUser = (user: User) => {
-  if (!selectedTemplate.value) return;
-  if (!selectedTemplate.value.users) {
-    selectedTemplate.value.users = [];
-  }
-  selectedTemplate.value.users.push(user);
-  hasUnsavedChanges.value = true;
-};
-
-const handleAddUnit = (unit: Unit) => {
-  if (!selectedTemplate.value) return;
-  if (!selectedTemplate.value.units) {
-    selectedTemplate.value.units = [];
-  }
-  selectedTemplate.value.units.push(unit);
-  hasUnsavedChanges.value = true;
-};
-
-const addUnitIfNotExists = (unitName: string) => {
-  if (!unitName || !selectedTemplate.value) {
-    return;
-  }
-
-  const isExisting = selectedTemplate.value.units.some(
-    (u: Unit) => u.unitFullname.toLowerCase() === unitName.toLowerCase(),
-  );
-
-  if (!isExisting) {
-    const newUnit: Unit = {
-      id: generateId(),
-      unitFullname: unitName,
-      unitShortname: unitName, // Используем полное имя как короткое по умолчанию
-    };
-    selectedTemplate.value.units.push(newUnit);
-    hasUnsavedChanges.value = true;
-  }
-};
 </script>
 
 <style lang="scss" scoped>
@@ -1980,12 +1418,8 @@ const addUnitIfNotExists = (unitName: string) => {
   animation: fadeIn 0.3s ease;
 
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   md-circular-progress {
@@ -2176,42 +1610,24 @@ const addUnitIfNotExists = (unitName: string) => {
     --md-assist-chip-container-height: 40px;
     --md-assist-chip-container-shape: 20px;
     --md-assist-chip-label-text-color: var(--md-sys-color-on-surface, #1d1b20);
-    --md-assist-chip-with-icon-label-text-color: var(
-      --md-sys-color-on-surface,
-      #1d1b20
-    );
+    --md-assist-chip-with-icon-label-text-color: var(--md-sys-color-on-surface, #1d1b20);
     cursor: pointer;
     transition: var(--select-type-transition);
 
     &:hover {
-      --md-assist-chip-container-color: var(
-        --md-sys-color-secondary-container,
-        #e8def8
-      );
+      --md-assist-chip-container-color: var(--md-sys-color-secondary-container, #e8def8);
       transform: translateY(-1px);
     }
 
     // BEM Modifiers
     &.breadcrumb-chip--active {
-      --md-assist-chip-container-color: var(
-        --md-sys-color-primary-container,
-        #eaddff
-      );
-      --md-assist-chip-label-text-color: var(
-        --md-sys-color-on-primary-container,
-        #21005d
-      );
+      --md-assist-chip-container-color: var(--md-sys-color-primary-container, #eaddff);
+      --md-assist-chip-label-text-color: var(--md-sys-color-on-primary-container, #21005d);
     }
 
     &.breadcrumb-chip--current {
-      --md-assist-chip-container-color: var(
-        --md-sys-color-tertiary-container,
-        #ffd8e4
-      );
-      --md-assist-chip-label-text-color: var(
-        --md-sys-color-on-tertiary-container,
-        #31111d
-      );
+      --md-assist-chip-container-color: var(--md-sys-color-tertiary-container, #ffd8e4);
+      --md-assist-chip-label-text-color: var(--md-sys-color-on-tertiary-container, #31111d);
       cursor: default;
     }
   }
@@ -2265,9 +1681,7 @@ const addUnitIfNotExists = (unitName: string) => {
   min-width: 220px;
   --md-outlined-select-text-field-container-shape: 16px;
   --md-outlined-select-text-field-container-height: 56px;
-  --md-outlined-select-text-field-label-text-color: var(
-    --select-type-primary-color
-  );
+  --md-outlined-select-text-field-label-text-color: var(--select-type-primary-color);
 
   @media (max-width: 768px) {
     min-width: auto;
@@ -2298,14 +1712,8 @@ const addUnitIfNotExists = (unitName: string) => {
 }
 
 .quick-action-btn {
-  --md-filled-button-container-color: var(
-    --md-sys-color-primary-container,
-    #eaddff
-  );
-  --md-filled-button-label-text-color: var(
-    --md-sys-color-on-primary-container,
-    #21005d
-  );
+  --md-filled-button-container-color: var(--md-sys-color-primary-container, #eaddff);
+  --md-filled-button-label-text-color: var(--md-sys-color-on-primary-container, #21005d);
   --md-filled-button-container-shape: 24px;
   --md-filled-button-container-height: 48px;
   font-size: 14px;
@@ -2330,10 +1738,7 @@ const addUnitIfNotExists = (unitName: string) => {
 
 .save-btn {
   --md-filled-button-container-color: var(--md-sys-color-secondary, #625b71);
-  --md-filled-button-label-text-color: var(
-    --md-sys-color-on-secondary,
-    #ffffff
-  );
+  --md-filled-button-label-text-color: var(--md-sys-color-on-secondary, #ffffff);
   --md-filled-button-container-height: 56px;
   --md-filled-button-container-shape: 16px;
   font-size: 16px;
@@ -2399,11 +1804,7 @@ const addUnitIfNotExists = (unitName: string) => {
     animation: bounce 2s infinite;
 
     @keyframes bounce {
-      0%,
-      20%,
-      50%,
-      80%,
-      100% {
+      0%, 20%, 50%, 80%, 100% {
         transform: translateY(0);
       }
       40% {
@@ -2437,10 +1838,7 @@ const addUnitIfNotExists = (unitName: string) => {
 
   &__action {
     --md-filled-button-container-color: var(--select-type-primary-color);
-    --md-filled-button-label-text-color: var(
-      --md-sys-color-on-primary,
-      #ffffff
-    );
+    --md-filled-button-label-text-color: var(--md-sys-color-on-primary, #ffffff);
     --md-filled-button-container-shape: 24px;
     --md-filled-button-container-height: 56px;
     font-size: 16px;
@@ -2502,10 +1900,7 @@ const addUnitIfNotExists = (unitName: string) => {
 
   &__action {
     --md-filled-button-container-color: var(--select-type-primary-color);
-    --md-filled-button-label-text-color: var(
-      --md-sys-color-on-primary,
-      #ffffff
-    );
+    --md-filled-button-label-text-color: var(--md-sys-color-on-primary, #ffffff);
     --md-filled-button-container-shape: 24px;
     --md-filled-button-container-height: 56px;
     font-size: 16px;
@@ -2851,40 +2246,6 @@ md-dialog {
     }
   }
 }
-.item-editor-dialog {
-  --md-dialog-container-min-width: 80vw;
-  @media (min-width: 1024px) {
-    --md-dialog-container-min-width: 960px;
-  }
-}
-
-.item-editor-form {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
-
-.form-section {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.form-section-title {
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--md-sys-color-on-surface, #1d1b20);
-  margin: 0 0 8px 0;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--select-type-outline-color);
-}
-
-.ingredient-editor-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-}
 
 // Settings content
 .settings-content {
@@ -2946,9 +2307,7 @@ md-outlined-text-field {
   width: 100%;
   --md-outlined-text-field-container-shape: 12px;
   --md-outlined-text-field-container-height: 56px;
-  --md-outlined-text-field-focus-outline-color: var(
-    --select-type-primary-color
-  );
+  --md-outlined-text-field-focus-outline-color: var(--select-type-primary-color);
   transition: var(--select-type-transition);
 
   &:hover {

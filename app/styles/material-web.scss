@@ -1,0 +1,33 @@
+// Import Google Material Icons
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Outlined');
+
+:root {
+  --md-sys-color-surface: #fafafa;
+  --md-sys-color-surface-container: #ffffff;
+  --md-sys-color-primary: #007aff;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-error: #ff3b30;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-outline: #d1d1d6;
+  --md-sys-color-on-surface: #1c1c1e;
+  --md-sys-color-on-surface-variant: #8e8e93;
+  --md-ref-typeface-brand: "SF Pro Display", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  --md-ref-typeface-plain: "SF Pro Display", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  font-family: var(--md-ref-typeface-plain);
+  background-color: var(--md-sys-color-surface);
+}
+
+// Ensure high contrast for accessibility
+@media (prefers-contrast) {
+  :root {
+    --md-sys-color-primary: #0a84ff;
+    --md-sys-color-error: #ff453a;
+    --md-sys-color-outline: #8e8e93;
+  }
+} 
