@@ -16,7 +16,7 @@
           <div class="header-text">
             <h1 class="choose-account-title">Выберите аккаунт</h1>
             <p class="continue-text">
-              для входа в <span class="company-name">Этикикту</span>
+              для входа в <span class="company-name">Этикекту</span>
             </p>
           </div>
         </div>
