@@ -18,7 +18,7 @@ export const getInfoAboutSystem = () => {
 
 export const printEmptySticker = () => {
   return request({
-    url: `user/print_empty_blank/`,
+    url: `print/print_empty_blank`,
     method: "GET",
   });
 };

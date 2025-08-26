@@ -7,10 +7,10 @@ export const getExistedGrociries = () => {
   });
 };
 
-export const printStikerGroceries = (id: number, body: any) => {
+export const printStikerGroceries = ( item_id: string, weight: number, count: number) => {
   return request({
-    url: `user/print_grocery_blank/${id}`,
-    method: "POST",
-    data: body,
+    url: `print/print_item_blank`,
+    method: "GET",
+    params: { item_id, massa: weight, amount: count },
   });
 };

@@ -22,7 +22,7 @@ interface BaseResponse<T = any> {
 }
 
 const UNKNOWN_ERROR = "Unknown error. Please retry.";
-export const serverIp = "http://10.0.0.5:9000/";
+export const serverIp = "http://192.168.0.229:9000/";
 export const baseApiUrl = `${serverIp}`;
 
 // Simple error handler for cases where showError is not available

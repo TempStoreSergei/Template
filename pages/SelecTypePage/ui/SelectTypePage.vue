@@ -4,14 +4,14 @@
       <!-- Apple Camera Style Navigation -->
       <div class="apple-navigation">
         <!-- Left Arrow -->
-        <md-icon-button 
+        <md-icon-button
           v-if="canScrollLeft"
           @click="scrollLeft"
           class="nav-arrow nav-arrow-left"
         >
           <md-icon>chevron_left</md-icon>
         </md-icon-button>
-        
+
                  <!-- Navigation Container -->
          <div class="nav-container" ref="navContainer">
            <!-- Depth Indicator -->
@@ -24,16 +24,16 @@
                 <span class="nav-text">Главная</span>
               </div>
             </div>
-            
+
                          <!-- Category Items -->
              <template v-for="(part, index) in breadcrumbPath" :key="part.id">
                <!-- Glass Separator -->
                <div class="nav-glass-separator">
                  <div class="separator-line"></div>
                </div>
-               
-               <div 
-                 class="nav-item nav-item-category" 
+
+               <div
+                 class="nav-item nav-item-category"
                  :class="{ 'nav-item-active': index === breadcrumbPath.length - 1 }"
                  @click="navigateToPath(index)"
                >
@@ -45,9 +45,9 @@
              </template>
           </div>
         </div>
-        
+
         <!-- Right Arrow -->
-        <md-icon-button 
+        <md-icon-button
           v-if="canScrollRight"
           @click="scrollRight"
           class="nav-arrow nav-arrow-right"
@@ -61,18 +61,18 @@
         <div class="search-input-wrapper">
           <!-- Селект режима поиска внутри input -->
           <div class="search-mode-selector">
-            <md-icon-button 
+            <md-icon-button
               @click="toggleSearchModeMenu"
               class="search-mode-btn"
               :class="{ 'active': isSearchModeMenuOpen }"
             >
               <md-icon>{{ getSearchModeIcon() }}</md-icon>
             </md-icon-button>
-            
+
             <!-- Выпадающее меню режимов -->
             <div v-if="isSearchModeMenuOpen" class="search-mode-menu" @click.stop>
-              <div 
-                v-for="mode in searchModes" 
+              <div
+                v-for="mode in searchModes"
                 :key="mode.value"
                 class="search-mode-option"
                 :class="{ 'selected': searchMode === mode.value }"
@@ -87,7 +87,7 @@
               </div>
             </div>
           </div>
-          
+
           <md-icon class="search-icon">search</md-icon>
           <input
             v-model="searchQuery"
@@ -110,7 +110,7 @@
         </div>
 
 
-        
+
         <!-- Русская виртуальная клавиатура с интегрированным Dynamic Island -->
         <VirtualKeyboard
           v-model="searchQuery"
@@ -126,8 +126,8 @@
         >
           <!-- Dynamic Island внутри клавиатуры -->
           <template #dynamic-island>
-            <div 
-              v-if="showDynamicIsland" 
+            <div
+              v-if="showDynamicIsland"
               class="search-no-results"
               @click="clearSearch"
             >
@@ -138,15 +138,15 @@
                   <div class="no-results-query">{{ searchQuery }}</div>
                 </div>
                 <div class="no-results-actions">
-                  <md-icon-button 
+                  <md-icon-button
                     v-if="searchMode !== 'global'"
                     @click.stop="switchToGlobalSearch"
                     class="action-btn global-btn"
                     title="Поиск везде"
                   >
-                    <md-icon>public</md-icon>
+                    <md-icon >public</md-icon>
                   </md-icon-button>
-                  <md-icon-button 
+                  <md-icon-button
                     @click.stop="clearSearch"
                     class="action-btn clear-btn"
                     title="Очистить"
@@ -279,9 +279,10 @@
                   @click="selectItem(item)"
                 >
                   <div class="dish-card-content">
-                    <div class="dish-icon-container">
+                    <div v-if="!item.itemImage" class="dish-icon-container">
                       <md-icon class="dish-icon">restaurant_menu</md-icon>
                     </div>
+                    <img v-else :src="getDataFromServer(item.itemImage)" alt="item.itemImage">
                     <div class="dish-info-overlay">
                       <h3 class="dish-name">{{ item.itemName }}</h3>
                       <div class="dish-status">
@@ -344,16 +345,16 @@
           <!-- Тетрадь -->
           <div class="notebook">
             <!-- Левая страница -->
-            <div 
+            <div
               v-if="currentNotebookPage > 0"
               class="notebook-page notebook-page-left"
             >
               <div class="page-number">{{ currentNotebookPage }}</div>
               <div class="page-content" v-html="notebookPages[currentNotebookPage - 1]"></div>
             </div>
-            
+
             <!-- Правая страница -->
-            <div 
+            <div
               v-if="notebookPages[currentNotebookPage]"
               class="notebook-page notebook-page-right"
             >
@@ -364,16 +365,16 @@
 
           <!-- Навигация по страницам -->
           <div class="notebook-navigation">
-            <md-icon-button 
-              @click="prevPage" 
+            <md-icon-button
+              @click="prevPage"
               :disabled="currentNotebookPage === 0"
               class="nav-button prev-button"
             >
               <md-icon>chevron_left</md-icon>
             </md-icon-button>
-            
+
             <div class="page-dots">
-              <div 
+              <div
                 v-for="(page, index) in notebookPages"
                 :key="index"
                 class="page-dot"
@@ -381,9 +382,9 @@
                 @click="goToPage(index)"
               ></div>
             </div>
-            
-            <md-icon-button 
-              @click="nextPage" 
+
+            <md-icon-button
+              @click="nextPage"
               :disabled="currentNotebookPage >= notebookPages.length - 1"
               class="nav-button next-button"
             >
@@ -399,70 +400,80 @@
             <div class="dish-properties">
               <!-- Счетчик количества с iOS пикерами -->
               <div class="quantity-section">
-                <md-filled-button>Количество порций</md-filled-button>
-                <div class="six-digit-picker">
-                  <TimePicker
-                    :data="{
+                <div style="display: flex; width: 100%; gap: 12px">
+                  <div class="column-digits">
+                    <md-filled-button>Кол-во порций</md-filled-button>
+                    <div class="two-digit-picker">
+                      <TimePicker
+                        :data="{
                       source: generateDigits(),
                       count: 10,
                       value: quantityDigits.digit1,
                       sensitivity: 0.8,
                     }"
-                    @onChange="setDigit1($event)"
-                  />
-                  <TimePicker
-                    :data="{
+                        @onChange="setDigit1($event)"
+                      />
+                      <TimePicker
+                        :data="{
                       source: generateDigits(),
                       count: 10,
                       value: quantityDigits.digit2,
                       sensitivity: 0.8,
                     }"
-                    @onChange="setDigit2($event)"
-                  />
-                  <TimePicker
-                    :data="{
-                      source: generateDigits(),
-                      count: 10,
-                      value: quantityDigits.digit3,
-                      sensitivity: 0.8,
-                    }"
-                    @onChange="setDigit3($event)"
-                  />
-                  <TimePicker
-                    :data="{
-                      source: generateDigits(),
-                      count: 10,
-                      value: quantityDigits.digit4,
-                      sensitivity: 0.8,
-                    }"
-                    @onChange="setDigit4($event)"
-                  />
-                  <TimePicker
-                    :data="{
-                      source: generateDigits(),
-                      count: 10,
-                      value: quantityDigits.digit5,
-                      sensitivity: 0.8,
-                    }"
-                    @onChange="setDigit5($event)"
-                  />
-                  <TimePicker
-                    :data="{
-                      source: generateDigits(),
-                      count: 10,
-                      value: quantityDigits.digit6,
-                      sensitivity: 0.8,
-                    }"
-                    @onChange="setDigit6($event)"
-                  />
+                        @onChange="setDigit2($event)"
+                      />
+                    </div>
+                  </div>
+                  <div class="column-digits" style="flex-grow: 4">
+                    <md-filled-button>Масса (г)</md-filled-button>
+                    <div class="two-digit-picker">
+                      <TimePicker
+                        :data="{
+        source: generateDigits(),
+        count: 10,
+        value: quantityDigits.digit3,
+        sensitivity: 0.8,
+      }"
+                        @onChange="setDigit3($event)"
+                      />
+                      <TimePicker
+                        :data="{
+        source: generateDigits(),
+        count: 10,
+        value: quantityDigits.digit4,
+        sensitivity: 0.8,
+      }"
+                        @onChange="setDigit4($event)"
+                      />
+                      <TimePicker
+                        :data="{
+        source: generateDigits(),
+        count: 10,
+        value: quantityDigits.digit5,
+        sensitivity: 0.8,
+      }"
+                        @onChange="setDigit5($event)"
+                      />
+                      <TimePicker
+                        :data="{
+        source: generateDigits(),
+        count: 10,
+        value: quantityDigits.digit6,
+        sensitivity: 0.8,
+      }"
+                        @onChange="setDigit6($event)"
+                      />
+                    </div>
+                  </div>
                 </div>
+
                 <div class="recipe-button-container">
                   <md-filled-button
                     class="recipe-button"
                     :disabled="!selectedItem?.itemRecipe"
                     @click="openRecipe"
                   >
-                    <md-icon slot="icon">menu_book</md-icon>
+                    <md-icon style="font-size: 72px; height: 72px; width: 72px" slot="icon">menu_book</md-icon>
                     Рецепт
                   </md-filled-button>
                 </div>
@@ -504,7 +515,7 @@
             <div class="dish-image-container">
               <img
                 v-if="selectedItem?.itemImage"
-                :src="selectedItem.itemImage"
+                :src="getDataFromServer(selectedItem.itemImage)"
                 :alt="selectedItem.itemName"
                 class="dish-image"
                 @error="onImageError"
@@ -520,7 +531,7 @@
                 :disabled="!selectedItem?.itemInStock"
                 @click="addToCart"
               >
-                <md-icon slot="icon">add_shopping_cart</md-icon>
+                <md-icon style="font-size: 72px; height: 72px; width: 72px" slot="icon">add_shopping_cart</md-icon>
                 Напечатать
               </md-filled-button>
             </div>
@@ -571,12 +582,12 @@
                   <h3 class="sheet-title">{{ selectedItem?.itemName }}</h3>
                   <div class="sheet-divider"></div>
                 </div>
-                
+
                 <!-- Контент в формате markdown -->
                 <div class="sheet-body">
                   <div class="markdown-content" v-html="markdownToHtml(selectedItem.itemRecipe)"></div>
                 </div>
-                
+
                 <!-- Подпись листа -->
                 <div class="sheet-footer">
                   <div class="sheet-signature">
@@ -609,7 +620,7 @@
             {{ getNotificationIcon(notification.type) }}
           </md-icon>
           <span class="notification-message">{{ notification.message }}</span>
-          <md-icon-button 
+          <md-icon-button
             @click="removeNotification(notification.id)"
             class="notification-close"
           >
@@ -622,11 +633,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, computed, reactive, nextTick, watch } from "#imports";
+import { ref, onMounted, onUnmounted, computed, reactive, nextTick, watch, getDataFromServer } from "#imports";
 import { getCategoriesHierarchy, findItems } from "../api";
 import type { Category, Dish } from "../model/types";
 import { TimePicker } from "~/shared/basic/picker";
 import VirtualKeyboard from "~/shared/basic/keyboard/VirtualKeyboard.vue";
+import { printStikerGroceries } from "~/widgets/groceries/api";
 
 const allCategories = ref<Category[]>([]);
 const breadcrumbPath = ref<Category[]>([]);
@@ -658,13 +670,13 @@ const keyboardSuggestions = computed(() => {
   if (!searchQuery.value.trim()) {
     return [];
   }
-  
+
   const query = searchQuery.value.toLowerCase().trim();
-  
+
   // Выполняем локальный поиск
   const localResults = performLocalSearch(query);
   const suggestions: Array<{ name: string; type: 'dish' | 'category' }> = [];
-  
+
   // Добавляем категории
   for (const category of localResults.categoriesData) {
     if (suggestions.length >= 3) break;
@@ -673,7 +685,7 @@ const keyboardSuggestions = computed(() => {
       type: 'category'
     });
   }
-  
+
   // Добавляем блюда если есть место
   for (const dish of localResults.itemsData) {
     if (suggestions.length >= 3) break;
@@ -682,7 +694,7 @@ const keyboardSuggestions = computed(() => {
       type: 'dish'
     });
   }
-  
+
   return suggestions;
 });
 const searchResults = ref<{
@@ -743,13 +755,13 @@ const isSearchActive = computed(() => searchQuery.value.trim().length > 0);
 
 // Показывать Dynamic Island только когда:
 // - Поиск активен
-// - Поиск НЕ выполняется 
+// - Поиск НЕ выполняется
 // - Нет результатов
 // - И текущий запрос совпадает с последним завершенным (чтобы не показывать при вводе нового)
-const showDynamicIsland = computed(() => 
-  isSearchActive.value && 
-  !isSearching.value && 
-  searchResults.value.categoriesData.length === 0 && 
+const showDynamicIsland = computed(() =>
+  isSearchActive.value &&
+  !isSearching.value &&
+  searchResults.value.categoriesData.length === 0 &&
   searchResults.value.itemsData.length === 0 &&
   searchQuery.value.trim() === lastCompletedQuery.value.trim()
 );
@@ -778,8 +790,13 @@ const currentDishes = computed((): Dish[] => {
 // Вычисляем quantity из цифр
 const quantity = computed(() => {
   return (
-    quantityDigits.digit1 * 100000 +
-    quantityDigits.digit2 * 10000 +
+    quantityDigits.digit1 * 10 +
+    quantityDigits.digit2
+  );
+});
+
+const weight = computed(() => {
+  return (
     quantityDigits.digit3 * 1000 +
     quantityDigits.digit4 * 100 +
     quantityDigits.digit5 * 10 +
@@ -860,7 +877,7 @@ const toggleSearchModeMenu = () => {
 const selectSearchMode = (mode: string) => {
   searchMode.value = mode;
   isSearchModeMenuOpen.value = false;
-  
+
   // Если есть активный поиск, повторяем его с новым режимом
   if (searchQuery.value.trim().length > 0) {
     performSearch();
@@ -880,9 +897,9 @@ const showNotification = (message: string, type: 'info' | 'success' | 'warning' 
     type,
     duration,
   };
-  
+
   notifications.value.push(notification);
-  
+
   // Автоматически убираем уведомление через заданное время
   setTimeout(() => {
     removeNotification(notification.id);
@@ -918,7 +935,7 @@ const getNotificationIcon = (type: string) => {
     case 'success': return 'check_circle';
     case 'error': return 'error';
     case 'warning': return 'warning';
-    case 'info': 
+    case 'info':
     default: return 'info';
   }
 };
@@ -946,7 +963,7 @@ const performLocalSearch = (query: string): { categoriesData: Category[]; itemsD
       if (category.categoryName.toLowerCase().includes(query.toLowerCase())) {
         results.categoriesData.push(category);
       }
-      
+
       // Ищем блюда в текущей категории
       if (category.items) {
         for (const item of category.items) {
@@ -955,7 +972,7 @@ const performLocalSearch = (query: string): { categoriesData: Category[]; itemsD
           }
         }
       }
-      
+
       // Ищем в подкатегориях
       searchInSubcategories(category);
     }
@@ -967,7 +984,7 @@ const performLocalSearch = (query: string): { categoriesData: Category[]; itemsD
         if (child.categoryName.toLowerCase().includes(query.toLowerCase())) {
           results.categoriesData.push(child);
         }
-        
+
         // Ищем блюда в подкатегории
         if (child.items) {
           for (const item of child.items) {
@@ -976,7 +993,7 @@ const performLocalSearch = (query: string): { categoriesData: Category[]; itemsD
             }
           }
         }
-        
+
         // Рекурсивно ищем в подподкатегориях
         searchInSubcategories(child);
       }
@@ -1006,38 +1023,38 @@ const performSearch = async () => {
         // При полном поиске: сначала локально, потом глобально если ничего не найдено
         searchLoadingText.value = "Поиск в текущей категории...";
         const localResults = performLocalSearch(query);
-        
+
         if (localResults.categoriesData.length > 0 || localResults.itemsData.length > 0) {
           searchResults.value = localResults;
           showNotification(
-            `Найдено ${localResults.categoriesData.length + localResults.itemsData.length} результатов в текущей категории`, 
-            "success", 
+            `Найдено ${localResults.categoriesData.length + localResults.itemsData.length} результатов в текущей категории`,
+            "success",
             3000
           );
         } else {
           // Если локально ничего не найдено, ищем глобально
           showNotification("В текущей категории ничего не найдено. Выполняется глобальный поиск...", "info", 4000);
           searchLoadingText.value = "Глобальный поиск...";
-          
+
           // Небольшая задержка для показа уведомления
           await new Promise((resolve) => setTimeout(resolve, 500));
-          
+
           const response = await findItems(query);
           searchResults.value = {
             categoriesData: response.categoriesData || [],
             itemsData: response.itemsData || [],
           };
-          
+
           if ((response.categoriesData?.length || 0) + (response.itemsData?.length || 0) > 0) {
             showNotification(
-              `Найдено ${(response.categoriesData?.length || 0) + (response.itemsData?.length || 0)} результатов в глобальном поиске`, 
-              "success", 
+              `Найдено ${(response.categoriesData?.length || 0) + (response.itemsData?.length || 0)} результатов в глобальном поиске`,
+              "success",
               3000
             );
           }
         }
         break;
-        
+
       case "global":
         // Ищем только на сервере
         searchLoadingText.value = "Глобальный поиск...";
@@ -1046,31 +1063,31 @@ const performSearch = async () => {
           categoriesData: response.categoriesData || [],
           itemsData: response.itemsData || [],
         };
-        
+
         if ((response.categoriesData?.length || 0) + (response.itemsData?.length || 0) > 0) {
           showNotification(
-            `Найдено ${(response.categoriesData?.length || 0) + (response.itemsData?.length || 0)} результатов`, 
-            "success", 
+            `Найдено ${(response.categoriesData?.length || 0) + (response.itemsData?.length || 0)} результатов`,
+            "success",
             3000
           );
         }
         break;
-        
+
       case "local":
         // Ищем только локально
         searchLoadingText.value = "Поиск в текущей категории...";
         const localSearchResults = performLocalSearch(query);
         searchResults.value = localSearchResults;
-        
+
         if (localSearchResults.categoriesData.length + localSearchResults.itemsData.length > 0) {
           showNotification(
-            `Найдено ${localSearchResults.categoriesData.length + localSearchResults.itemsData.length} результатов в текущей категории`, 
-            "success", 
+            `Найдено ${localSearchResults.categoriesData.length + localSearchResults.itemsData.length} результатов в текущей категории`,
+            "success",
             3000
           );
         }
         break;
-        
+
       default:
         searchResults.value = {
           categoriesData: [],
@@ -1103,7 +1120,7 @@ const clearSearch = () => {
   isSearchModeMenuOpen.value = false;
   isKeyboardVisible.value = false; // Закрываем клавиатуру
   lastCompletedQuery.value = ""; // Сбрасываем последний запрос
-  
+
   // Очищаем таймер если он активен
   if (searchTimeout) {
     clearTimeout(searchTimeout);
@@ -1180,7 +1197,7 @@ const selectSearchCategory = (category: Category) => {
         console.error('Категория не найдена:', currentId);
         break;
       }
-      
+
       path.unshift(cat); // Добавляем в начало массива
       currentId = cat.categoryParentID; // Переходим к родителю
     }
@@ -1190,7 +1207,7 @@ const selectSearchCategory = (category: Category) => {
 
   // Строим полный путь от корня до выбранной категории
   const fullPath = buildPathToRoot(category.id);
-  
+
   if (fullPath.length > 0) {
     // Устанавливаем полный путь от корня до выбранной категории
     breadcrumbPath.value = fullPath;
@@ -1204,9 +1221,13 @@ const selectSearchCategory = (category: Category) => {
 };
 
 // Печать блюда без модального окна
-const printDish = (dish: Dish) => {
-  console.log(`Печать блюда: ${dish.itemName}`);
-  // Здесь будет логика печати
+const printDish = async (dish: Dish) => {
+  try {
+    await printStikerGroceries(dish.id, null, null);
+  } catch (error) {
+    console.error("Ошибка печати:", error);
+    showNotification("Ошибка при печати блюда", "error");
+  }
 };
 
 // Функция для правильного склонения слова "порция"
@@ -1308,14 +1329,16 @@ const setQuantityFromNumber = (num: number) => {
   quantityDigits.digit6 = parseInt(str[5]);
 };
 
-const addToCart = () => {
-  // Здесь будет логика добавления в корзину
-  console.log(
-    `Добавлено в корзину: ${selectedItem.value?.itemName}, количество: ${quantity.value}`,
-  );
-  closeModal();
+const addToCart = async () => {
+  try {
+    if (!selectedItem.value) return;
+    await printStikerGroceries(selectedItem.value.id, weight.value, quantity.value);
+    closeModal();
+  } catch (error) {
+    console.error("Ошибка печати:", error);
+    showNotification("Ошибка при печати блюда", "error");
+  }
 };
-
 const openRecipe = () => {
   showNotebook.value = true;
   createNotebookPages();
@@ -1333,30 +1356,30 @@ const backToDetails = () => {
 // Простая функция для конвертации markdown в HTML
 const markdownToHtml = (markdown: string): string => {
   if (!markdown) return '';
-  
+
   let html = markdown
     // Заголовки
     .replace(/^### (.*$)/gim, '<h3>$1</h3>')
     .replace(/^## (.*$)/gim, '<h2>$1</h2>')
     .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-    
+
     // Жирный текст
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/__(.*?)__/g, '<strong>$1</strong>')
-    
+
     // Курсив
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/_(.*?)_/g, '<em>$1</em>')
-    
+
     // Списки (нумерованные)
     .replace(/^\d+\.\s+(.*)$/gim, '<li class="numbered-item">$1</li>')
-    
+
     // Списки (маркированные)
     .replace(/^[\-\*\+]\s+(.*)$/gim, '<li class="bullet-item">$1</li>')
-    
+
     // Код (inline)
     .replace(/`([^`]+)`/g, '<code>$1</code>')
-    
+
     // Переносы строк
     .replace(/\n\n/g, '</p><p>')
     .replace(/\n/g, '<br>');
@@ -1383,52 +1406,52 @@ const markdownToHtml = (markdown: string): string => {
 // Улучшенная функция для конвертации markdown в HTML с поддержкой переносов
 const advancedMarkdownToHtml = (markdown: string): string => {
   if (!markdown) return '';
-  
+
   let html = markdown
     // Обрабатываем переносы строк
     .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
-    
+
     // Заголовки
     .replace(/^### (.*$)/gim, '<h3 class="notebook-h3">$1</h3>')
     .replace(/^## (.*$)/gim, '<h2 class="notebook-h2">$1</h2>')
     .replace(/^# (.*$)/gim, '<h1 class="notebook-h1">$1</h1>')
-    
+
     // Жирный текст
     .replace(/\*\*(.*?)\*\*/g, '<strong class="notebook-bold">$1</strong>')
     .replace(/__(.*?)__/g, '<strong class="notebook-bold">$1</strong>')
-    
+
     // Курсив
     .replace(/\*(.*?)\*/g, '<em class="notebook-italic">$1</em>')
     .replace(/_(.*?)_/g, '<em class="notebook-italic">$1</em>')
-    
+
     // Зачеркнутый текст
     .replace(/~~(.*?)~~/g, '<del class="notebook-strikethrough">$1</del>')
-    
+
     // Списки (нумерованные)
     .replace(/^\d+\.\s+(.*)$/gim, '<li class="notebook-numbered">$1</li>')
-    
+
     // Списки (маркированные)
     .replace(/^[\-\*\+]\s+(.*)$/gim, '<li class="notebook-bullet">$1</li>')
-    
+
     // Код (блочный)
     .replace(/```([\s\S]*?)```/g, '<pre class="notebook-code-block"><code>$1</code></pre>')
-    
+
     // Код (inline)
     .replace(/`([^`\n]+)`/g, '<code class="notebook-code">$1</code>')
-    
+
     // Цитаты
     .replace(/^>\s+(.*)$/gim, '<blockquote class="notebook-quote">$1</blockquote>')
-    
+
     // Горизонтальная линия
     .replace(/^---+$/gim, '<hr class="notebook-hr">')
-    
+
     // Ссылки
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="notebook-link">$1</a>')
-    
+
     // Двойной перенос = новый параграф
     .replace(/\n\n+/g, '</p><p class="notebook-paragraph">')
-    
+
     // Одинарный перенос = br
     .replace(/\n/g, '<br>');
 
@@ -1460,33 +1483,33 @@ const createNotebookPages = () => {
 
   const content = advancedMarkdownToHtml(selectedItem.value.itemRecipe);
   const maxCharsPerPage = 800; // Примерно 800 символов на страницу
-  
+
   // Разбиваем контент на страницы по размеру
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = content;
-  
+
   const pages: string[] = [];
   let currentPage = '';
   let currentLength = 0;
-  
+
   // Проходим по каждому элементу
   const walker = document.createTreeWalker(
     tempDiv,
     NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
     null
   );
-  
+
   let node;
   let pageContent = '';
-  
+
   // Простое разбиение по количеству символов
   const plainText = tempDiv.textContent || '';
   const chunks = [];
-  
+
   for (let i = 0; i < plainText.length; i += maxCharsPerPage) {
     chunks.push(plainText.slice(i, i + maxCharsPerPage));
   }
-  
+
   // Если контент слишком короткий, помещаем на одну страницу
   if (content.length <= maxCharsPerPage) {
     pages.push(content);
@@ -1495,11 +1518,11 @@ const createNotebookPages = () => {
     const paragraphs = content.split('</p>');
     let currentPageContent = '';
     let currentPageLength = 0;
-    
+
     for (let i = 0; i < paragraphs.length; i++) {
       const paragraph = paragraphs[i] + (i < paragraphs.length - 1 ? '</p>' : '');
       const paragraphLength = paragraph.replace(/<[^>]*>/g, '').length;
-      
+
       if (currentPageLength + paragraphLength > maxCharsPerPage && currentPageContent) {
         pages.push(currentPageContent);
         currentPageContent = paragraph;
@@ -1509,12 +1532,12 @@ const createNotebookPages = () => {
         currentPageLength += paragraphLength;
       }
     }
-    
+
     if (currentPageContent) {
       pages.push(currentPageContent);
     }
   }
-  
+
   notebookPages.value = pages.length > 0 ? pages : [content];
   currentNotebookPage.value = 0;
 };
@@ -1571,15 +1594,15 @@ const navigateToPath = (index: number | null) => {
 // Apple Navigation Functions
 const updateNavigationScrollability = () => {
   if (!navContainer.value || !navTrack.value) return;
-  
+
   const totalItems = breadcrumbPath.value.length + 1; // +1 для home
   const containerWidth = navContainer.value.offsetWidth;
   const trackWidth = navTrack.value.scrollWidth;
-  
+
   // Показываем стрелки если больше 3 элементов ИЛИ контент не помещается (с учетом padding)
   const hasOverflow = trackWidth > (containerWidth - 20); // -20px для padding
   const shouldShowArrows = totalItems > 3 || hasOverflow;
-  
+
   if (shouldShowArrows && hasOverflow) {
     const maxScrollLeft = trackWidth - containerWidth;
     canScrollRight.value = Math.abs(scrollOffset.value) < maxScrollLeft;
@@ -1592,7 +1615,7 @@ const updateNavigationScrollability = () => {
       scrollOffset.value = 0;
     }
   }
-  
+
   console.log(`Navigation: items=${totalItems}, container=${containerWidth}, track=${trackWidth}, showArrows=${shouldShowArrows}, hasOverflow=${hasOverflow}`);
 };
 
@@ -1604,11 +1627,11 @@ const scrollLeft = () => {
 
 const scrollRight = () => {
   if (!navContainer.value || !navTrack.value) return;
-  
+
   const containerWidth = navContainer.value.offsetWidth;
   const trackWidth = navTrack.value.scrollWidth;
   const maxScroll = -(trackWidth - containerWidth);
-  
+
   const newOffset = Math.max(scrollOffset.value - scrollStep, maxScroll);
   scrollOffset.value = newOffset;
   updateNavigationScrollability();
@@ -1629,22 +1652,22 @@ const handleResize = () => {
 
 onMounted(() => {
   fetchData();
-  
+
   // Добавляем обработчик клика вне меню
   document.addEventListener('click', (event) => {
     const target = event.target as HTMLElement;
     const searchModeSelector = document.querySelector('.search-mode-selector');
-    
+
     if (searchModeSelector && !searchModeSelector.contains(target)) {
       isSearchModeMenuOpen.value = false;
     }
   });
-  
+
   // Setup navigation
   nextTick(() => {
     updateNavigationScrollability();
   });
-  
+
   // Handle window resize
   window.addEventListener('resize', handleResize);
 });
@@ -1664,10 +1687,10 @@ watch(breadcrumbPath, () => {
 // Auto-scroll to the last (newest) element
 const scrollToLastElement = () => {
   if (!navContainer.value || !navTrack.value) return;
-  
+
   const containerWidth = navContainer.value.offsetWidth;
   const trackWidth = navTrack.value.scrollWidth;
-  
+
   if (trackWidth > containerWidth) {
     // Scroll to show the last element
     const maxScroll = trackWidth - containerWidth;
@@ -1719,13 +1742,13 @@ onUnmounted(() => {
   backdrop-filter: blur(30px) saturate(180%);
   --md-icon-button-icon-size: 20px;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 
+  box-shadow:
     0 2px 16px rgba(103, 80, 164, 0.15),
     0 1px 4px rgba(0, 0, 0, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     content: "";
     position: absolute;
@@ -1733,38 +1756,38 @@ onUnmounted(() => {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, 
-      rgba(255, 255, 255, 0.4) 0%, 
-      rgba(255, 255, 255, 0.1) 50%, 
+    background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
       rgba(255, 255, 255, 0.2) 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-  
+
   &:hover {
     transform: scale(1.08) translateY(-1px);
-    box-shadow: 
+    box-shadow:
       0 8px 24px rgba(103, 80, 164, 0.25),
       0 4px 8px rgba(0, 0, 0, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    
+
     &::before {
       opacity: 1;
     }
   }
-  
+
   &:active {
     transform: scale(0.96) translateY(0px);
   }
-  
+
   &.nav-arrow-left {
     border-radius: 22px 16px 16px 22px;
   }
-  
+
   &.nav-arrow-right {
     border-radius: 16px 22px 22px 16px;
   }
-  
+
   md-icon {
     color: var(--md-sys-color-primary, #6750a4);
     position: relative;
@@ -1781,12 +1804,12 @@ onUnmounted(() => {
   border: none;
   border-radius: 26px;
   backdrop-filter: blur(30px) saturate(180%);
-  box-shadow: 
+  box-shadow:
     0 2px 16px rgba(103, 80, 164, 0.12),
     0 1px 4px rgba(0, 0, 0, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.8),
     inset 0 -1px 0 rgba(0, 0, 0, 0.05);
-  
+
   &::before {
     content: "";
     position: absolute;
@@ -1794,9 +1817,9 @@ onUnmounted(() => {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, 
-      rgba(255, 255, 255, 0.3) 0%, 
-      rgba(255, 255, 255, 0.05) 50%, 
+    background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.05) 50%,
       rgba(255, 255, 255, 0.15) 100%);
     border-radius: 26px;
     pointer-events: none;
@@ -1808,18 +1831,18 @@ onUnmounted(() => {
   bottom: 2px;
   left: 12px;
   height: 3px;
-  background: linear-gradient(90deg, 
+  background: linear-gradient(90deg,
     rgba(103, 80, 164, 0.8) 0%,
     rgba(103, 80, 164, 0.4) 70%,
     transparent 100%);
   border-radius: 2px;
   transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 
+  box-shadow:
     0 1px 4px rgba(103, 80, 164, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(5px);
   z-index: 2;
-  
+
   &::before {
     content: "";
     position: absolute;
@@ -1827,7 +1850,7 @@ onUnmounted(() => {
     left: -1px;
     right: -1px;
     bottom: -1px;
-    background: linear-gradient(90deg, 
+    background: linear-gradient(90deg,
       rgba(255, 255, 255, 0.6) 0%,
       rgba(255, 255, 255, 0.2) 70%,
       transparent 100%);
@@ -1858,7 +1881,7 @@ onUnmounted(() => {
   position: relative;
   overflow: hidden;
   margin: 0 2px;
-  
+
   &::before {
     content: "";
     position: absolute;
@@ -1866,16 +1889,16 @@ onUnmounted(() => {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, 
-      rgba(103, 80, 164, 0.15) 0%, 
-      rgba(103, 80, 164, 0.08) 50%, 
+    background: linear-gradient(135deg,
+      rgba(103, 80, 164, 0.15) 0%,
+      rgba(103, 80, 164, 0.08) 50%,
       rgba(103, 80, 164, 0.12) 100%);
     opacity: 0;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border-radius: 20px;
     backdrop-filter: blur(10px);
   }
-  
+
   &::after {
     content: "";
     position: absolute;
@@ -1889,65 +1912,65 @@ onUnmounted(() => {
     border-radius: 19px;
     backdrop-filter: blur(20px);
   }
-  
+
   &:hover {
     transform: translateY(-2px) scale(1.02);
-    
+
     &::before {
       opacity: 1;
       transform: scale(1.05);
     }
-    
+
     &::after {
       opacity: 0.8;
     }
-    
+
     .nav-text {
       color: var(--md-sys-color-primary, #6750a4);
       font-weight: 600;
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
     }
-    
+
     .nav-icon {
       color: var(--md-sys-color-primary, #6750a4);
       transform: scale(1.15) rotate(5deg);
       filter: drop-shadow(0 2px 4px rgba(103, 80, 164, 0.3));
     }
   }
-  
+
   &:active {
     transform: scale(0.96);
-    
+
     &::before {
       opacity: 0.6;
       transform: scale(0.95);
     }
   }
-  
+
   &.nav-item-home {
     .nav-icon {
       color: var(--md-sys-color-primary, #6750a4);
       filter: drop-shadow(0 1px 2px rgba(103, 80, 164, 0.2));
     }
-    
+
     &::before {
-      background: linear-gradient(135deg, 
-        rgba(103, 80, 164, 0.2) 0%, 
-        rgba(103, 80, 164, 0.1) 50%, 
+      background: linear-gradient(135deg,
+        rgba(103, 80, 164, 0.2) 0%,
+        rgba(103, 80, 164, 0.1) 50%,
         rgba(103, 80, 164, 0.15) 100%);
     }
   }
-  
+
   &.nav-item-category {
     .nav-icon {
       color: var(--md-sys-color-secondary, #625b71);
       filter: drop-shadow(0 1px 2px rgba(98, 91, 113, 0.15));
     }
-    
+
     &::before {
-      background: linear-gradient(135deg, 
-        rgba(98, 91, 113, 0.12) 0%, 
-        rgba(98, 91, 113, 0.06) 50%, 
+      background: linear-gradient(135deg,
+        rgba(98, 91, 113, 0.12) 0%,
+        rgba(98, 91, 113, 0.06) 50%,
         rgba(98, 91, 113, 0.1) 100%);
     }
   }
@@ -1989,13 +2012,13 @@ onUnmounted(() => {
 .separator-line {
   width: 2px;
   height: 16px;
-  background: linear-gradient(180deg, 
+  background: linear-gradient(180deg,
     rgba(103, 80, 164, 0.3) 0%,
     rgba(103, 80, 164, 0.6) 50%,
     rgba(103, 80, 164, 0.3) 100%);
   border-radius: 1px;
   position: relative;
-  
+
   &::before {
     content: "";
     position: absolute;
@@ -2003,14 +2026,14 @@ onUnmounted(() => {
     left: -1px;
     width: 4px;
     height: 20px;
-    background: radial-gradient(ellipse at center, 
+    background: radial-gradient(ellipse at center,
       rgba(255, 255, 255, 0.8) 0%,
       rgba(255, 255, 255, 0.2) 50%,
       transparent 100%);
     border-radius: 2px;
     backdrop-filter: blur(2px);
   }
-  
+
   &::after {
     content: "";
     position: absolute;
@@ -2019,7 +2042,7 @@ onUnmounted(() => {
     transform: translate(-50%, -50%);
     width: 6px;
     height: 6px;
-    background: radial-gradient(circle, 
+    background: radial-gradient(circle,
       rgba(103, 80, 164, 0.4) 0%,
       transparent 70%);
     border-radius: 50%;
@@ -2029,36 +2052,36 @@ onUnmounted(() => {
 
 // Active Item Style
 .nav-item-active {
-  background: linear-gradient(135deg, 
+  background: linear-gradient(135deg,
     rgba(103, 80, 164, 0.15) 0%,
     rgba(103, 80, 164, 0.25) 50%,
     rgba(103, 80, 164, 0.15) 100%) !important;
-  box-shadow: 
+  box-shadow:
     0 2px 8px rgba(103, 80, 164, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.8),
     inset 0 -1px 0 rgba(103, 80, 164, 0.1);
-  
+
   &::before {
     opacity: 0.4 !important;
-    background: linear-gradient(135deg, 
-      rgba(103, 80, 164, 0.3) 0%, 
-      rgba(103, 80, 164, 0.2) 50%, 
+    background: linear-gradient(135deg,
+      rgba(103, 80, 164, 0.3) 0%,
+      rgba(103, 80, 164, 0.2) 50%,
       rgba(103, 80, 164, 0.25) 100%) !important;
   }
-  
+
   &::after {
     opacity: 1 !important;
     background: rgba(255, 255, 255, 0.9) !important;
   }
-  
+
   .nav-text {
     color: var(--md-sys-color-primary, #6750a4) !important;
     font-weight: 700 !important;
-    text-shadow: 
+    text-shadow:
       0 1px 2px rgba(255, 255, 255, 0.9),
       0 0 8px rgba(103, 80, 164, 0.3) !important;
   }
-  
+
   .nav-icon {
     color: var(--md-sys-color-primary, #6750a4) !important;
     transform: scale(1.1) !important;
@@ -2285,7 +2308,7 @@ md-chip {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  
+
   h4 {
     font-size: 18px;
     font-weight: 500;
@@ -2295,13 +2318,21 @@ md-chip {
 }
 
 // 6-значный пикер
-.six-digit-picker {
+.two-digit-picker {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 4px;
+  flex-grow: 1;
   border-radius: 24px;
   overflow: hidden;
+}
+
+.column-digits {
+  display: flex;
+  gap: 4px;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .recipe-button-container {
@@ -2422,6 +2453,7 @@ md-chip {
     .placeholder-icon {
       font-size: 72px;
       margin-bottom: 16px;
+      overflow: visible;
       opacity: 0.6;
     }
 
@@ -2570,15 +2602,15 @@ md-chip {
   width: 32px;
   height: 32px;
   --md-icon-button-icon-size: 20px;
-  
+
   &.active {
     background-color: var(--md-sys-color-primary-container, #eaddff);
-    
+
     md-icon {
       color: var(--md-sys-color-on-primary-container, #21005d);
     }
   }
-  
+
   md-icon {
     color: var(--md-sys-color-primary, #6750a4);
     transition: color 0.2s ease;
@@ -2596,7 +2628,7 @@ md-chip {
   box-shadow: var(--md-sys-elevation-level-3);
   overflow: hidden;
   z-index: 1000;
-  
+
   // Стрелка указывающая на кнопку
   &::before {
     content: "";
@@ -2620,24 +2652,24 @@ md-chip {
   cursor: pointer;
   transition: background-color 0.2s ease;
   border-bottom: 1px solid var(--md-sys-color-surface-variant, #e7e0ec);
-  
+
   &:last-child {
     border-bottom: none;
   }
-  
+
   &.selected {
     background-color: var(--md-sys-color-primary-container, #eaddff);
-    
+
     .mode-title {
       color: var(--md-sys-color-on-primary-container, #21005d);
       font-weight: 600;
     }
-    
+
     .mode-description {
       color: var(--md-sys-color-on-primary-container, #21005d);
       opacity: 0.8;
     }
-    
+
     .mode-icon {
       color: var(--md-sys-color-on-primary-container, #21005d);
     }
@@ -2828,6 +2860,7 @@ md-chip {
 
 .dish-icon {
   font-size: 72px;
+  overflow: visible;
   color: var(--md-sys-color-on-primary-container, #21005d);
   opacity: 0.8;
 }
@@ -2918,7 +2951,7 @@ md-chip {
   border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
   border-radius: 12px;
   margin: 16px 0;
-  
+
   md-circular-progress {
     --md-circular-progress-size: 32px;
     --md-circular-progress-active-indicator-color: var(--md-sys-color-primary, #6750a4);
@@ -2927,7 +2960,7 @@ md-chip {
 
 .loading-text {
   text-align: center;
-  
+
   p {
     font-size: 14px;
     font-weight: 400;
@@ -2950,9 +2983,9 @@ md-chip {
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
-  
+
   &:hover {
-    box-shadow: 
+    box-shadow:
       0 2px 4px rgba(103, 80, 164, 0.08),
       0 1px 2px rgba(103, 80, 164, 0.04);
   }
@@ -3005,36 +3038,36 @@ md-chip {
   border-radius: 14px;
   --md-icon-button-icon-size: 14px;
   transition: all 0.2s ease;
-  
+
   &.global-btn {
     background: var(--md-sys-color-primary-container, #eaddff);
     border: 1px solid var(--md-sys-color-primary, #6750a4);
-    
+
     md-icon {
       color: var(--md-sys-color-primary, #6750a4);
     }
-    
+
     &:hover {
       background: var(--md-sys-color-primary, #6750a4);
-      
+
       md-icon {
         color: var(--md-sys-color-on-primary, #ffffff);
       }
     }
   }
-  
+
   &.clear-btn {
     background: var(--md-sys-color-surface-container-highest, #e6e0e9);
     border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
-    
+
     md-icon {
       color: var(--md-sys-color-on-surface-variant, #49454f);
     }
-    
+
     &:hover {
       background: var(--md-sys-color-error, #b3261e);
       border-color: var(--md-sys-color-error, #b3261e);
-      
+
       md-icon {
         color: var(--md-sys-color-on-error, #ffffff);
       }
@@ -3073,54 +3106,54 @@ md-chip {
   border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
   animation: slideIn 0.3s ease-out;
   pointer-events: auto;
-  
+
   &.notification-success {
     background: var(--md-sys-color-primary-container, #eaddff);
     border-color: var(--md-sys-color-primary, #6750a4);
-    
+
     .notification-icon {
       color: var(--md-sys-color-primary, #6750a4);
     }
-    
+
     .notification-message {
       color: var(--md-sys-color-on-primary-container, #21005d);
     }
   }
-  
+
   &.notification-error {
     background: var(--md-sys-color-error-container, #f9dedc);
     border-color: var(--md-sys-color-error, #b3261e);
-    
+
     .notification-icon {
       color: var(--md-sys-color-error, #b3261e);
     }
-    
+
     .notification-message {
       color: var(--md-sys-color-on-error-container, #410e0b);
     }
   }
-  
+
   &.notification-warning {
     background: var(--md-sys-color-tertiary-container, #ffd8e4);
     border-color: var(--md-sys-color-tertiary, #7d5260);
-    
+
     .notification-icon {
       color: var(--md-sys-color-tertiary, #7d5260);
     }
-    
+
     .notification-message {
       color: var(--md-sys-color-on-tertiary-container, #31111d);
     }
   }
-  
+
   &.notification-info {
     background: var(--md-sys-color-secondary-container, #e8def8);
     border-color: var(--md-sys-color-secondary, #625b71);
-    
+
     .notification-icon {
       color: var(--md-sys-color-secondary, #625b71);
     }
-    
+
     .notification-message {
       color: var(--md-sys-color-on-secondary-container, #1d192b);
     }
@@ -3151,12 +3184,12 @@ md-chip {
   width: 32px;
   height: 32px;
   --md-icon-button-icon-size: 18px;
-  
+
   md-icon {
     color: currentColor;
     opacity: 0.6;
   }
-  
+
   &:hover md-icon {
     opacity: 1;
   }
@@ -3194,7 +3227,7 @@ md-chip {
 .back-btn {
   flex-shrink: 0;
   --md-icon-button-icon-size: 24px;
-  
+
   md-icon {
     color: var(--md-sys-color-primary, #6750a4);
   }
@@ -3206,12 +3239,12 @@ md-chip {
   align-items: center;
   gap: 12px;
   flex: 1;
-  
+
   .recipe-icon {
     font-size: 28px;
     color: var(--md-sys-color-primary, #6750a4);
   }
-  
+
   h2 {
     margin: 0;
     font-size: 24px;
@@ -3230,12 +3263,12 @@ md-chip {
   --md-primary-tab-icon-color: var(--md-sys-color-on-surface-variant, #49454f);
   --md-primary-tab-active-icon-color: var(--md-sys-color-primary, #6750a4);
   margin-bottom: 16px;
-  
+
   md-primary-tab {
     flex: 1;
     font-weight: 500;
     cursor: pointer;
-    
+
     md-icon {
       margin-right: 8px;
     }
@@ -3270,7 +3303,7 @@ md-chip {
     padding: 20px;
     border-radius: 12px;
     border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
-    box-shadow: 
+    box-shadow:
       0 1px 3px rgba(0, 0, 0, 0.05),
       0 1px 2px rgba(0, 0, 0, 0.1);
   }
@@ -3282,12 +3315,12 @@ md-chip {
     background: var(--md-sys-color-surface, #fef7ff);
     border-radius: 16px;
     border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
-    box-shadow: 
+    box-shadow:
       0 4px 16px rgba(0, 0, 0, 0.08),
       0 2px 8px rgba(0, 0, 0, 0.04);
     overflow: hidden;
     position: relative;
-    
+
     // Имитация бумажного листа
     &::before {
       content: "";
@@ -3296,17 +3329,17 @@ md-chip {
       left: 0;
       right: 0;
       bottom: 0;
-      background: 
-        linear-gradient(90deg, 
-          transparent 0%, 
-          rgba(255, 182, 193, 0.1) 48px, 
-          rgba(255, 182, 193, 0.2) 50px, 
-          rgba(255, 182, 193, 0.1) 52px, 
+      background:
+        linear-gradient(90deg,
+          transparent 0%,
+          rgba(255, 182, 193, 0.1) 48px,
+          rgba(255, 182, 193, 0.2) 50px,
+          rgba(255, 182, 193, 0.1) 52px,
           transparent 100%);
       pointer-events: none;
       z-index: 1;
     }
-    
+
     // Линии как на тетрадном листе
     &::after {
       content: "";
@@ -3333,19 +3366,19 @@ md-chip {
   z-index: 3;
   padding: 24px 24px 16px;
   background: linear-gradient(
-    135deg, 
+    135deg,
     var(--md-sys-color-primary-container, #eaddff) 0%,
     var(--md-sys-color-secondary-container, #e8def8) 100%
   );
   display: flex;
   align-items: center;
   gap: 12px;
-  
+
   .sheet-icon {
     font-size: 24px;
     color: var(--md-sys-color-primary, #6750a4);
   }
-  
+
   .sheet-title {
     flex: 1;
     margin: 0;
@@ -3354,7 +3387,7 @@ md-chip {
     color: var(--md-sys-color-on-primary-container, #21005d);
     text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
   }
-  
+
   .sheet-divider {
     width: 60px;
     height: 2px;
@@ -3372,13 +3405,13 @@ md-chip {
   z-index: 3;
   padding: 24px 24px 24px 76px; // Отступ слева для красной линии
   min-height: 300px;
-  
+
   .markdown-content {
     font-family: 'Georgia', 'Times New Roman', serif;
     font-size: 16px;
     line-height: 1.8;
     color: var(--md-sys-color-on-surface, #1d1b20);
-    
+
     h1, h2, h3 {
       color: var(--md-sys-color-primary, #6750a4);
       font-weight: 600;
@@ -3388,27 +3421,27 @@ md-chip {
       text-decoration-thickness: 2px;
       text-underline-offset: 4px;
     }
-    
+
     h1 { font-size: 22px; }
     h2 { font-size: 20px; }
     h3 { font-size: 18px; }
-    
+
     p {
       margin: 12px 0;
       text-align: justify;
       text-indent: 20px; // Отступ первой строки как в рукописи
     }
-    
+
     strong {
       color: var(--md-sys-color-primary, #6750a4);
       font-weight: 700;
     }
-    
+
     em {
       color: var(--md-sys-color-secondary, #625b71);
       font-style: italic;
     }
-    
+
     code {
       background: var(--md-sys-color-tertiary-container, #ffd8e4);
       color: var(--md-sys-color-on-tertiary-container, #31111d);
@@ -3417,27 +3450,27 @@ md-chip {
       font-family: 'Monaco', 'Consolas', monospace;
       font-size: 14px;
     }
-    
+
     .recipe-list {
       margin: 16px 0;
       padding-left: 24px;
-      
+
       li {
         margin: 8px 0;
         line-height: 1.6;
         position: relative;
-        
+
         &::marker {
           color: var(--md-sys-color-primary, #6750a4);
           font-weight: bold;
         }
       }
     }
-    
+
     ol.recipe-list {
       li {
         counter-increment: recipe-step;
-        
+
         &::before {
           content: counter(recipe-step) ".";
           position: absolute;
@@ -3456,10 +3489,10 @@ md-chip {
         }
       }
     }
-    
+
     ul.recipe-list {
       list-style: none;
-      
+
       li::before {
         content: "•";
         position: absolute;
@@ -3479,7 +3512,7 @@ md-chip {
   padding: 16px 24px 24px;
   border-top: 1px dashed var(--md-sys-color-outline-variant, #cac4d0);
   margin-top: 20px;
-  
+
   .sheet-signature {
     display: flex;
     align-items: center;
@@ -3488,7 +3521,7 @@ md-chip {
     color: var(--md-sys-color-on-surface-variant, #49454f);
     font-style: italic;
     font-size: 14px;
-    
+
     md-icon {
       font-size: 16px;
       opacity: 0.7;
@@ -3512,34 +3545,34 @@ md-chip {
   gap: 16px;
   padding: 16px 24px;
   background: linear-gradient(
-    135deg, 
+    135deg,
     var(--md-sys-color-primary-container, #eaddff) 0%,
     var(--md-sys-color-secondary-container, #e8def8) 100%
   );
   border-bottom: 2px solid var(--md-sys-color-outline-variant, #cac4d0);
   flex-shrink: 0;
-  
+
   .back-btn {
     flex-shrink: 0;
     --md-icon-button-icon-size: 24px;
-    
+
     md-icon {
       color: var(--md-sys-color-primary, #6750a4);
     }
 
   }
-  
+
   .notebook-title {
     display: flex;
     align-items: center;
     gap: 12px;
     flex: 1;
-    
+
     .notebook-icon {
       font-size: 28px;
       color: var(--md-sys-color-primary, #6750a4);
     }
-    
+
     h2 {
       margin: 0;
       font-size: 20px;
@@ -3547,7 +3580,7 @@ md-chip {
       color: var(--md-sys-color-on-primary-container, #21005d);
     }
   }
-  
+
   .notebook-page-indicator {
     font-size: 14px;
     color: var(--md-sys-color-on-primary-container, #21005d);
@@ -3562,22 +3595,22 @@ md-chip {
 .notebook {
   flex: 1;
   display: flex;
-  background: 
-    linear-gradient(to right, 
-      transparent 0%, 
-      transparent 49%, 
-      rgba(139, 69, 19, 0.3) 49.5%, 
-      rgba(139, 69, 19, 0.3) 50.5%, 
-      transparent 51%, 
+  background:
+    linear-gradient(to right,
+      transparent 0%,
+      transparent 49%,
+      rgba(139, 69, 19, 0.3) 49.5%,
+      rgba(139, 69, 19, 0.3) 50.5%,
+      transparent 51%,
       transparent 100%
     ),
     linear-gradient(135deg, #f8f5f0 0%, #fff8f0 100%);
-  box-shadow: 
+  box-shadow:
     inset 0 0 20px rgba(139, 69, 19, 0.1),
     0 4px 20px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
-  
+
   // Спиральная привязка слева
   &::before {
     content: "";
@@ -3602,7 +3635,7 @@ md-chip {
   flex: 1;
   position: relative;
   padding: 40px 30px 40px 50px;
-  background: 
+  background:
     // Линии тетради
     repeating-linear-gradient(
       transparent 0px,
@@ -3624,11 +3657,11 @@ md-chip {
     linear-gradient(135deg, #fffef8 0%, #fefcf0 100%);
   min-height: 500px;
   overflow-y: auto;
-  
+
   &.notebook-page-left {
     border-right: 1px solid rgba(139, 69, 19, 0.2);
   }
-  
+
   &.notebook-page-right {
     border-left: 1px solid rgba(139, 69, 19, 0.2);
   }
@@ -3651,7 +3684,7 @@ md-chip {
   color: #2c1810;
   position: relative;
   z-index: 2;
-  
+
   // Стили для markdown элементов в тетради
   .notebook-h1 {
     font-size: 24px;
@@ -3664,7 +3697,7 @@ md-chip {
     text-underline-offset: 6px;
     font-family: 'Georgia', serif;
   }
-  
+
   .notebook-h2 {
     font-size: 20px;
     color: var(--md-sys-color-secondary, #625b71);
@@ -3674,7 +3707,7 @@ md-chip {
     padding-bottom: 4px;
     font-family: 'Georgia', serif;
   }
-  
+
   .notebook-h3 {
     font-size: 18px;
     color: var(--md-sys-color-tertiary, #7d5260);
@@ -3682,29 +3715,29 @@ md-chip {
     margin: 12px 0 8px 0;
     font-family: 'Georgia', serif;
   }
-  
+
   .notebook-paragraph {
     margin: 12px 0;
     text-align: justify;
     text-indent: 30px;
     line-height: 1.8;
   }
-  
+
   .notebook-bold {
     color: var(--md-sys-color-primary, #6750a4);
     font-weight: 700;
   }
-  
+
   .notebook-italic {
     color: var(--md-sys-color-secondary, #625b71);
     font-style: italic;
   }
-  
+
   .notebook-strikethrough {
     text-decoration: line-through;
     opacity: 0.7;
   }
-  
+
   .notebook-code {
     background: rgba(255, 182, 193, 0.2);
     color: #8b4513;
@@ -3714,7 +3747,7 @@ md-chip {
     font-size: 14px;
     border: 1px solid rgba(255, 182, 193, 0.4);
   }
-  
+
   .notebook-code-block {
     background: rgba(255, 182, 193, 0.1);
     border: 1px solid rgba(255, 182, 193, 0.3);
@@ -3722,14 +3755,14 @@ md-chip {
     padding: 16px;
     margin: 16px 0;
     overflow-x: auto;
-    
+
     code {
       font-family: 'Monaco', 'Consolas', monospace;
       font-size: 14px;
       color: #8b4513;
     }
   }
-  
+
   .notebook-quote {
     border-left: 4px solid var(--md-sys-color-primary, #6750a4);
     margin: 16px 0;
@@ -3738,7 +3771,7 @@ md-chip {
     font-style: italic;
     color: var(--md-sys-color-primary, #6750a4);
   }
-  
+
   .notebook-hr {
     border: none;
     height: 2px;
@@ -3751,27 +3784,27 @@ md-chip {
     );
     margin: 24px 0;
   }
-  
+
   .notebook-link {
     color: var(--md-sys-color-primary, #6750a4);
     text-decoration: underline;
-    
+
     &:hover {
       color: var(--md-sys-color-secondary, #625b71);
     }
   }
-  
+
   .notebook-numbered-list {
     margin: 16px 0;
     padding-left: 30px;
     counter-reset: notebook-counter;
-    
+
     li {
       margin: 8px 0;
       line-height: 1.7;
       position: relative;
       counter-increment: notebook-counter;
-      
+
       &::before {
         content: counter(notebook-counter) ".";
         position: absolute;
@@ -3791,17 +3824,17 @@ md-chip {
       }
     }
   }
-  
+
   .notebook-bullet-list {
     margin: 16px 0;
     padding-left: 25px;
     list-style: none;
-    
+
     li {
       margin: 8px 0;
       line-height: 1.7;
       position: relative;
-      
+
       &::before {
         content: "●";
         position: absolute;
@@ -3813,7 +3846,7 @@ md-chip {
       }
     }
   }
-  
+
   .notebook-empty {
     text-align: center;
     color: rgba(139, 69, 19, 0.6);
@@ -3830,36 +3863,36 @@ md-chip {
   gap: 24px;
   padding: 16px 24px;
   background: linear-gradient(
-    135deg, 
+    135deg,
     var(--md-sys-color-surface-container, #f3edf7) 0%,
     var(--md-sys-color-surface-container-low, #f7f2fa) 100%
   );
   border-top: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
   flex-shrink: 0;
-  
+
   .nav-button {
     --md-icon-button-icon-size: 24px;
-    
+
     md-icon {
       color: var(--md-sys-color-primary, #6750a4);
     }
-    
+
     &:hover:not(:disabled) {
       background-color: var(--md-sys-color-primary-container, #eaddff);
     }
-    
+
     &:disabled {
       opacity: 0.3;
     }
   }
-  
+
   .page-dots {
     display: flex;
     gap: 8px;
     max-width: 200px;
     overflow-x: auto;
     padding: 4px;
-    
+
     .page-dot {
       width: 10px;
       height: 10px;
@@ -3868,12 +3901,12 @@ md-chip {
       cursor: pointer;
       transition: all 0.2s ease;
       flex-shrink: 0;
-      
+
       &:hover {
         background: var(--md-sys-color-primary, #6750a4);
         transform: scale(1.2);
       }
-      
+
       &.active {
         background: var(--md-sys-color-primary, #6750a4);
         transform: scale(1.3);

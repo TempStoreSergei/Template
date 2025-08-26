@@ -22,7 +22,6 @@ export const itemCreate = async (body: any) => {
   return await request({
     url: "items/create_item",
     method: "POST",
-    requestType: "form",
     data: body,
   });
 };

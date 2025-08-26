@@ -19,8 +19,9 @@ export const getLenthOfTable = async (options?: AxiosRequestConfig) => {
 
 export const getAllCategory = async (options?: AxiosRequestConfig) => {
   return await request({
-    url: "admin/dish/get_dishes_category/",
+    url: "categories/get_all_categories",
     method: "GET",
+    dataName: "categoriesData",
     params: options,
   });
 };

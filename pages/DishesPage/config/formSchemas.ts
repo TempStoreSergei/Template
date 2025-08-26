@@ -5,12 +5,12 @@ import { getAllCategory } from "~/pages/DishCategoryPage";
 
 export const categoriySchemas: FormSchema<any>[] = [
   {
-    field: "dish_img",
+    field: "itemImage",
     component: () => AvatarUpload,
     label: "Изображние",
   },
   {
-    field: "dish_name",
+    field: "itemName",
     component: "Input",
     label: "Название блюда",
     rules: [{ required: true, type: "string" }],
@@ -19,10 +19,10 @@ export const categoriySchemas: FormSchema<any>[] = [
     },
   },
   {
-    field: "category_id",
+    field: "categoryID",
     component: "Select",
     label: "Категория блюда",
-    rules: [{ required: true, type: "number" }],
+    rules: [{ required: true, type: "string" }],
     colProps: {
       span: 24,
     },
@@ -30,14 +30,14 @@ export const categoriySchemas: FormSchema<any>[] = [
       request: async () => {
         const items = await getAllCategory();
         return items.map((item) => ({
-          label: item.category_name,
+          label: item.categoryName,
           value: item.id,
         }));
       },
     },
   },
   {
-    field: "dish_life_time",
+    field: "itemExpirationDate",
     component: "Input",
     label: "Срок годности (в часах)",
     rules: [{ required: true, type: "string" }],
@@ -49,7 +49,7 @@ export const categoriySchemas: FormSchema<any>[] = [
     },
   },
   {
-    field: "groceries_list",
+    field: "itemIngridients",
     label: "Список ингредиентов",
     component: () => ListSelect,
     colProps: {
@@ -57,7 +57,7 @@ export const categoriySchemas: FormSchema<any>[] = [
     },
   },
   {
-    field: "dish_recipe",
+    field: "itemRecipe",
     component: "InputTextArea",
     label: "Рецепт блюда",
     componentProps: {
