@@ -1,59 +1,83 @@
 import type { AxiosRequestConfig } from "axios";
 import { request } from "~/shared/api/request";
 
-export const getItemsData = async (options?: AxiosRequestConfig) => {
-  return await request({
+/**
+ * Получение всех элементов (блюд и категорий)
+ */
+export const getItemsData = async (params?: AxiosRequestConfig['params']) => {
+  return request({
     url: "items/get_all_items",
     method: "GET",
-    params: options,
+    params: params,
     isReturnResult: false,
   });
 };
 
-
+/**
+ * Получение информации о конкретном блюде по ID
+ */
 export const getItem = async (id: string) => {
-  return await request({
+  return request({
     url: `items/get_item_by_id/${id}`,
     method: "GET",
   });
 };
 
-export const itemCreate = async (body: any) => {
-  return await request({
+/**
+ * Создание нового блюда
+ * @param body - FormData с данными нового блюда
+ */
+export const itemCreate = async (body: FormData) => {
+  return request({
     url: "items/create_item",
     method: "POST",
     data: body,
+    requestType: "form", // Указываем, что это multipart/form-data
   });
 };
 
-export const itemUpdate = async (id: string, body: any) => {
-  return await request({
+/**
+ * Обновление блюда по ID
+ * @param body - FormData с обновленными данными и itemID
+ */
+export const itemUpdate = async (body: FormData) => {
+  return request({
     url: `items/update_item_by_id`,
     method: "PUT",
     data: body,
+    requestType: "form",
   });
 };
 
+/**
+ * Удаление одного блюда по ID
+ */
 export const itemDelete = async (id: string) => {
-  return await request({
+  return request({
     url: `items/delete_item`,
-    data: { itemID: id },
     method: "DELETE",
+    data: { itemID: id }, // Для DELETE запросов тело обычно передается так
   });
 };
 
+/**
+ * Удаление рецепта по ID
+ */
 export const itemRecipeDelete = async (id: string) => {
-  return await request({
+  return request({
     url: `items/delete_recipe_by_id`,
-    data: { recipeID: id },
     method: "DELETE",
+    data: { recipeID: id },
   });
 };
 
+/**
+ * Массовое удаление блюд по массиву ID
+ */
 export const itemsDelete = async (ids: Array<string>) => {
-  return await request({
+  return request({
     url: `items/delete_items`,
-    data: ids,
     method: "DELETE",
+    data: { itemIDs: ids },
   });
 };

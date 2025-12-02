@@ -13,9 +13,9 @@
             :key="grocerie.key"
           >
             <li class="user">
-              {{ grocerie.grocery_name }} - {{ grocerie.grocery_amount }}
+              {{ grocerie.ingridientName }} - {{ grocerie.ingridientWeight }}
               <span class="user__unit">
-                {{ getUnitName(grocerie.grocery_unit_id ?? grocerie.unit_id) }}
+                {{ getUnitName(grocerie.unitID ?? grocerie.unitID) }}
               </span>
               <a style="margin-left: 10px" @click="onEdit(index)">Изменить</a>
               <a style="margin-left: 10px; color: red" @click="onDelete(index)"
@@ -58,7 +58,7 @@
       name="userForm"
     >
       <a-form-item
-        name="grocery_name"
+        name="ingridientName"
         label="Название ингредиента"
         :rules="[
           { required: true, message: 'Название обязательно' },
@@ -68,17 +68,17 @@
           },
         ]"
       >
-        <a-input v-model:value="modalFormState.grocery_name" />
+        <a-input v-model:value="modalFormState.ingridientName" />
       </a-form-item>
       <a-form-item
-        name="unit_id"
+        name="unitID"
         label="Единица измерения"
         :rules="[
           { required: true, message: 'Пожалуйста, выберите единицу измерения' },
         ]"
       >
         <a-select
-          v-model:value="modalFormState.unit_id"
+          v-model:value="modalFormState.unitID"
           placeholder="Выберите единицу измерения"
           :options="unitOptions"
           :loading="isFetchingUnits"
@@ -86,7 +86,7 @@
       </a-form-item>
 
       <a-form-item
-        name="grocery_amount"
+        name="ingridientWeight"
         label="Масса/Объем"
         :rules="[
           { required: true, message: 'Пожалуйста, выберите массу/объем' },
@@ -94,7 +94,7 @@
       >
         <a-input
           id="calculator"
-          v-model:value="modalFormState.grocery_amount"
+          v-model:value="modalFormState.ingridientWeight"
         />
       </a-form-item>
     </a-form>
@@ -108,9 +108,9 @@ import type { FormInstance } from "ant-design-vue";
 import { getUnitsData } from "~/pages/UnitPage";
 
 interface UserType {
-  grocery_name?: string;
-  grocery_amount?: number;
-  unit_id?: number; // Add this field
+  ingridientName?: string;
+  ingridientWeight?: number;
+  unitID?: number; // Add this field
   key?: number;
 }
 
@@ -137,15 +137,15 @@ const fetchUnits = async () => {
   try {
     const response = await getUnitsData(); // Replace with your endpoint
     unitOptions.value = response.unitsData.map(
-      (unit: { id: number; unitFullname: string }) => ({
+      (unit: { unitID: number; unitFullname: string }) => ({
         label: unit.unitFullname,
-        value: unit.id,
+        value: unit.unitID,
       }),
     );
     unitMap.value = new Map(
-      response.map((unit: { id: number; unit_fullname: string }) => [
-        unit.id,
-        unit.unit_fullname,
+      response.map((unit: { unitID: number; unitFullname: string }) => [
+        unit.unitID,
+        unit.unitFullname,
       ]),
     );
   } catch (error) {
@@ -215,7 +215,7 @@ const uniqueGroceryNameValidator = (_: any, value: string) => {
   if (
     formState.groceries.some(
       (grocery, index) =>
-        grocery.grocery_name === value && index !== editingIndex.value,
+        grocery.ingridientName === value && index !== editingIndex.value,
     )
   ) {
     return Promise.reject("Название должно быть уникальным");

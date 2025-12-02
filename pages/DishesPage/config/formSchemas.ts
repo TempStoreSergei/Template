@@ -1,19 +1,32 @@
+// ../config/formSchemas.ts
+
 import ListSelect from "../lib/List";
 import AvatarUpload from "../lib/Image";
 import type { FormSchema } from "~/shared/core/schema-form/";
-import { getAllCategory } from "~/pages/DishCategoryPage";
+import { getFinalCategoryData } from "~/pages/CategoryPage";
 
 export const categoriySchemas: FormSchema<any>[] = [
   {
     field: "itemImage",
     component: () => AvatarUpload,
-    label: "Изображние",
+    label: "Изображение",
   },
   {
     field: "itemName",
     component: "Input",
     label: "Название блюда",
-    rules: [{ required: true, type: "string" }],
+    rules: [{ required: true, message: "Пожалуйста, введите название" }],
+    colProps: {
+      span: 24,
+    },
+  },
+  {
+    field: "itemShortname",
+    component: "Input",
+    label: "Краткое название",
+    rules: [
+      { required: true, message: "Пожалуйста, введите краткое название" },
+    ],
     colProps: {
       span: 24,
     },
@@ -22,14 +35,14 @@ export const categoriySchemas: FormSchema<any>[] = [
     field: "categoryID",
     component: "Select",
     label: "Категория блюда",
-    rules: [{ required: true, type: "string" }],
+    rules: [{ required: true, message: 'Пожалуйста, выберите категорию' }],
     colProps: {
       span: 24,
     },
     componentProps: {
       request: async () => {
-        const items = await getAllCategory();
-        return items.map((item) => ({
+        const items = await getFinalCategoryData();
+        return items.categoriesData.map((item) => ({
           label: item.categoryName,
           value: item.id,
         }));
@@ -38,18 +51,25 @@ export const categoriySchemas: FormSchema<any>[] = [
   },
   {
     field: "itemExpirationDate",
-    component: "Input",
+    component: "InputNumber", // Рекомендуется использовать InputNumber для чисел
     label: "Срок годности (в часах)",
-    rules: [{ required: true, type: "string" }],
+    rules: [
+      {
+        required: true,
+        type: "number",
+        message: "Пожалуйста, укажите срок годности",
+      },
+    ],
     componentProps: {
-      id: "calculator",
+      min: 0,
+      style: { width: "100%" },
     },
     colProps: {
       span: 24,
     },
   },
   {
-    field: "itemIngridients",
+    field: "itemsIngridients",
     label: "Список ингредиентов",
     component: () => ListSelect,
     colProps: {

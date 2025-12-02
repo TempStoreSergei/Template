@@ -12,11 +12,11 @@
           <md-icon>chevron_left</md-icon>
         </md-icon-button>
 
-        <!-- Navigation Container -->
-        <div class="nav-container" ref="navContainer">
-          <!-- Depth Indicator -->
-          <div class="nav-depth-indicator" :style="{ width: `${Math.min((breadcrumbPath.length + 1) * 12, 80)}%` }"></div>
-          <div class="nav-track" ref="navTrack" :style="{ transform: `translateX(${scrollOffset}px)` }">
+                 <!-- Navigation Container -->
+         <div class="nav-container" ref="navContainer">
+           <!-- Depth Indicator -->
+           <div class="nav-depth-indicator" :style="{ width: `${Math.min((breadcrumbPath.length + 1) * 12, 80)}%` }"></div>
+           <div class="nav-track" ref="navTrack" :style="{ transform: `translateX(${scrollOffset}px)` }">
             <!-- Home Button -->
             <div class="nav-item nav-item-home" @click="navigateToPath(null)">
               <div class="nav-item-content">
@@ -25,24 +25,24 @@
               </div>
             </div>
 
-            <!-- Category Items -->
-            <template v-for="(part, index) in breadcrumbPath" :key="part.id">
-              <!-- Glass Separator -->
-              <div class="nav-glass-separator">
-                <div class="separator-line"></div>
-              </div>
+                         <!-- Category Items -->
+             <template v-for="(part, index) in breadcrumbPath" :key="part.id">
+               <!-- Glass Separator -->
+               <div class="nav-glass-separator">
+                 <div class="separator-line"></div>
+               </div>
 
-              <div
-                class="nav-item nav-item-category"
-                :class="{ 'nav-item-active': index === breadcrumbPath.length - 1 }"
-                @click="navigateToPath(index)"
-              >
-                <div class="nav-item-content">
-                  <md-icon class="nav-icon">folder</md-icon>
-                  <span class="nav-text">{{ part.categoryName }}</span>
-                </div>
-              </div>
-            </template>
+               <div
+                 class="nav-item nav-item-category"
+                 :class="{ 'nav-item-active': index === breadcrumbPath.length - 1 }"
+                 @click="navigateToPath(index)"
+               >
+                 <div class="nav-item-content">
+                   <md-icon class="nav-icon">folder</md-icon>
+                   <span class="nav-text">{{ part.categoryName }}</span>
+                 </div>
+               </div>
+             </template>
           </div>
         </div>
 
@@ -219,18 +219,8 @@
                   @click="selectItem(item)"
                 >
                   <div class="dish-card-content">
-                    <div class="dish-image-container">
-                      <img
-                        v-if="item?.itemImage"
-                        :src="getDataFromServer(item.itemImage)"
-                        :alt="item.itemName"
-                        class="dish-image"
-                        @error="onImageError"
-                      />
-                      <div v-else class="dish-image-placeholder">
-                        <md-icon class="placeholder-icon">restaurant_menu</md-icon>
-                        <span class="placeholder-text">Нет изображения</span>
-                      </div>
+                    <div class="dish-icon-container">
+                      <md-icon class="dish-icon">restaurant_menu</md-icon>
                     </div>
                     <div class="dish-info-overlay">
                       <h3 class="dish-name">{{ item.itemName }}</h3>
@@ -271,10 +261,10 @@
                   @dblclick="openCategory(item)"
                 >
                   <span class="material-icons grid-item-icon">{{
-                      item.children && item.children.length > 0
-                        ? "folder"
-                        : "topic"
-                    }}</span>
+                    item.children && item.children.length > 0
+                      ? "folder"
+                      : "topic"
+                  }}</span>
                   <span class="grid-item-name">{{ item.categoryName }}</span>
                 </div>
               </div>
@@ -409,43 +399,74 @@
           <div class="dish-info">
             <div class="dish-properties">
               <!-- Счетчик количества с iOS пикерами -->
-              <!-- Счетчик количества с модальными вводами -->
               <div class="quantity-section">
-                <div class="quantity-inputs-grid">
-                  <!-- Кнопка количества порций -->
-                  <div class="quantity-input-wrapper">
-                    <button
-                      @click="openQuantityModal('portions')"
-                      class="quantity-button"
-                      :class="{ 'has-value': quantity > 0 }"
-                    >
-        <span class="quantity-label" :class="{ 'small': quantity > 0 }">
-          Кол-во порций
-        </span>
-                      <span v-if="quantity > 0" class="quantity-value">
-          {{ quantity }}
-        </span>
-                    </button>
+                <div style="display: flex; width: 100%; gap: 12px">
+                  <div class="column-digits">
+                    <md-filled-button>Кол-во порций</md-filled-button>
+                    <div class="two-digit-picker">
+                      <TimePicker
+                        :data="{
+                      source: generateDigits(),
+                      count: 10,
+                      value: quantityDigits.digit1,
+                      sensitivity: 0.8,
+                    }"
+                        @onChange="setDigit1($event)"
+                      />
+                      <TimePicker
+                        :data="{
+                      source: generateDigits(),
+                      count: 10,
+                      value: quantityDigits.digit2,
+                      sensitivity: 0.8,
+                    }"
+                        @onChange="setDigit2($event)"
+                      />
+                    </div>
                   </div>
-
-                  <!-- Кнопка массы -->
-                  <div class="quantity-input-wrapper">
-                    <button
-                      @click="openQuantityModal('weight')"
-                      class="quantity-button"
-                      :class="{ 'has-value': weight > 0 }"
-                    >
-        <span class="quantity-label" :class="{ 'small': weight > 0 }">
-          Масса
-        </span>
-                      <span v-if="weight > 0" class="quantity-value">
-          {{ weight }}
-        </span>
-                    </button>
+                  <div class="column-digits" style="flex-grow: 4">
+                    <md-filled-button>Масса (г)</md-filled-button>
+                    <div class="two-digit-picker">
+                      <TimePicker
+                        :data="{
+        source: generateDigits(),
+        count: 10,
+        value: quantityDigits.digit3,
+        sensitivity: 0.8,
+      }"
+                        @onChange="setDigit3($event)"
+                      />
+                      <TimePicker
+                        :data="{
+        source: generateDigits(),
+        count: 10,
+        value: quantityDigits.digit4,
+        sensitivity: 0.8,
+      }"
+                        @onChange="setDigit4($event)"
+                      />
+                      <TimePicker
+                        :data="{
+        source: generateDigits(),
+        count: 10,
+        value: quantityDigits.digit5,
+        sensitivity: 0.8,
+      }"
+                        @onChange="setDigit5($event)"
+                      />
+                      <TimePicker
+                        :data="{
+        source: generateDigits(),
+        count: 10,
+        value: quantityDigits.digit6,
+        sensitivity: 0.8,
+      }"
+                        @onChange="setDigit6($event)"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <!-- Кнопка рецепта остается без изменений -->
                 <div class="recipe-button-container">
                   <md-filled-button
                     class="recipe-button"
@@ -586,61 +607,6 @@
       </div>
     </md-dialog>
 
-    <!-- Модальное окно для ввода количества -->
-    <md-dialog
-      :open="quantityModalOpen"
-      @close="closeQuantityModal"
-      class="quantity-modal"
-    >
-      <div class="modal-header" slot="headline">
-        <span>{{ quantityModalType === 'portions' ? 'Количество порций' : 'Масса (граммы)' }}</span>
-        <md-icon-button @click="closeQuantityModal">
-          <md-icon>close</md-icon>
-        </md-icon-button>
-      </div>
-
-      <div class="modal-content quantity-modal-content" slot="content">
-        <!-- Дисплей с введенным значением -->
-        <div class="quantity-display">
-          <div class="quantity-display-value">
-            {{ tempQuantityValue || '0' }}
-            <span v-if="quantityModalType === 'weight'" class="quantity-unit">г</span>
-          </div>
-          <div class="quantity-display-label">
-            {{ quantityModalType === 'portions' ? 'порций' : 'граммов' }}
-          </div>
-        </div>
-
-        <!-- Цифровая клавиатура -->
-        <div class="number-keypad">
-          <div class="keypad-row">
-            <button @click="appendDigit('1')" class="keypad-button">1</button>
-            <button @click="appendDigit('2')" class="keypad-button">2</button>
-            <button @click="appendDigit('3')" class="keypad-button">3</button>
-          </div>
-          <div class="keypad-row">
-            <button @click="appendDigit('4')" class="keypad-button">4</button>
-            <button @click="appendDigit('5')" class="keypad-button">5</button>
-            <button @click="appendDigit('6')" class="keypad-button">6</button>
-          </div>
-          <div class="keypad-row">
-            <button @click="appendDigit('7')" class="keypad-button">7</button>
-            <button @click="appendDigit('8')" class="keypad-button">8</button>
-            <button @click="appendDigit('9')" class="keypad-button">9</button>
-          </div>
-          <div class="keypad-row">
-            <button @click="clearQuantity" class="keypad-button keypad-clear">
-              <md-icon>backspace</md-icon>
-            </button>
-            <button @click="appendDigit('0')" class="keypad-button">0</button>
-            <button @click="confirmQuantity" class="keypad-button keypad-confirm">
-              <md-icon>check</md-icon>
-            </button>
-          </div>
-        </div>
-      </div>
-    </md-dialog>
-
     <!-- Система уведомлений -->
     <div class="notifications-container">
       <div
@@ -667,66 +633,93 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, nextTick, watch, onMounted, onUnmounted } from "#imports";
+import { ref, onMounted, onUnmounted, computed, reactive, nextTick, watch, getDataFromServer } from "#imports";
 import { getCategoriesHierarchy, findItems } from "../api";
-import { printStikerGroceries } from "~/widgets/groceries/api";
-import VirtualKeyboard from "~/shared/basic/keyboard/VirtualKeyboard.vue";
 import type { Category, Dish } from "../model/types";
+import { TimePicker } from "~/shared/basic/picker";
+import VirtualKeyboard from "~/shared/basic/keyboard/VirtualKeyboard.vue";
+import { printStikerGroceries } from "~/widgets/groceries/api";
 
-// Core state
 const allCategories = ref<Category[]>([]);
 const breadcrumbPath = ref<Category[]>([]);
-const selectedItem = ref<Dish | null>(null);
 const isLoading = ref(true);
 const error = ref<any>(null);
+const selectedItem = ref<Dish | null>(null);
+const showRecipe = ref(false); // Состояние для показа рецепта
+const showNotebook = ref(false); // Состояние для показа тетради
+const activeRecipeTab = ref(0); // Активный таб рецепта (0 - обычный, 1 - лист)
+const currentNotebookPage = ref(0); // Текущая страница тетради
+const notebookPages = ref<string[]>([]); // Массив страниц тетради
 
-// Recipe state
-const showRecipe = ref(false);
-const showNotebook = ref(false);
-const activeRecipeTab = ref(0);
-const currentNotebookPage = ref(0);
-const notebookPages = ref<string[]>([]);
-
-// Navigation state
+// Apple Navigation State
 const navContainer = ref<HTMLElement | null>(null);
 const navTrack = ref<HTMLElement | null>(null);
 const scrollOffset = ref(0);
 const canScrollLeft = ref(false);
 const canScrollRight = ref(false);
-const SCROLL_STEP = 200;
+const scrollStep = 200;
 
-// Search state
+// Состояние поиска
 const searchQuery = ref("");
-const searchMode = ref<"auto" | "global" | "local">("auto");
+const searchMode = ref("auto"); // auto, global, local
 const isSearchModeMenuOpen = ref(false);
+
+// Состояние виртуальной клавиатуры
 const isKeyboardVisible = ref(false);
-const isSearching = ref(false);
-const isSearchFocused = ref(false);
-const searchLoadingText = ref("Поиск...");
-const lastCompletedQuery = ref("");
-const searchResults = ref<{ categoriesData: Category[]; itemsData: Dish[] }>({
+const keyboardSuggestions = computed(() => {
+  if (!searchQuery.value.trim()) {
+    return [];
+  }
+
+  const query = searchQuery.value.toLowerCase().trim();
+
+  // Выполняем локальный поиск
+  const localResults = performLocalSearch(query);
+  const suggestions: Array<{ name: string; type: 'dish' | 'category' }> = [];
+
+  // Добавляем категории
+  for (const category of localResults.categoriesData) {
+    if (suggestions.length >= 3) break;
+    suggestions.push({
+      name: category.categoryName,
+      type: 'category'
+    });
+  }
+
+  // Добавляем блюда если есть место
+  for (const dish of localResults.itemsData) {
+    if (suggestions.length >= 3) break;
+    suggestions.push({
+      name: dish.itemName,
+      type: 'dish'
+    });
+  }
+
+  return suggestions;
+});
+const searchResults = ref<{
+  categoriesData: Category[];
+  itemsData: Dish[];
+}>({
   categoriesData: [],
   itemsData: [],
 });
+const isSearching = ref(false);
+const isSearchFocused = ref(false);
+const searchLoadingText = ref("Поиск...");
+const lastCompletedQuery = ref(""); // Последний завершенный поисковый запрос
 let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
-// Quantity modal state
-const quantityModalOpen = ref(false);
-const quantityModalType = ref<"portions" | "weight">("portions");
-const tempQuantityValue = ref("");
-const portionsValue = ref(1);
-const weightValue = ref(1);
-
-// Notifications state
+// Состояние уведомлений
 const notifications = ref<Array<{
   id: number;
   message: string;
-  type: "info" | "success" | "warning" | "error";
+  type: 'info' | 'success' | 'warning' | 'error';
   duration?: number;
 }>>([]);
 let notificationId = 0;
 
-// Search modes configuration
+// Конфигурация режимов поиска
 const searchModes = [
   {
     value: "auto",
@@ -748,12 +741,23 @@ const searchModes = [
   },
 ];
 
-// Computed properties
-const quantity = computed(() => portionsValue.value);
-const weight = computed(() => weightValue.value);
+// Состояние для 6-значного пикера
+const quantityDigits = reactive({
+  digit1: 0,
+  digit2: 0,
+  digit3: 0,
+  digit4: 0,
+  digit5: 0,
+  digit6: 1, // По умолчанию 000001
+});
 
 const isSearchActive = computed(() => searchQuery.value.trim().length > 0);
 
+// Показывать Dynamic Island только когда:
+// - Поиск активен
+// - Поиск НЕ выполняется
+// - Нет результатов
+// - И текущий запрос совпадает с последним завершенным (чтобы не показывать при вводе нового)
 const showDynamicIsland = computed(() =>
   isSearchActive.value &&
   !isSearching.value &&
@@ -763,21 +767,56 @@ const showDynamicIsland = computed(() =>
 );
 
 const currentFolder = computed((): Category | null => {
-  return breadcrumbPath.value.length === 0
-    ? null
-    : breadcrumbPath.value[breadcrumbPath.value.length - 1];
+  if (breadcrumbPath.value.length === 0) {
+    return null;
+  }
+  return breadcrumbPath.value[breadcrumbPath.value.length - 1];
 });
 
 const currentCategories = computed((): Category[] => {
-  return currentFolder.value?.children || allCategories.value;
+  if (!currentFolder.value) {
+    return allCategories.value;
+  }
+  return currentFolder.value.children || [];
 });
 
 const currentDishes = computed((): Dish[] => {
-  return currentFolder.value?.items || [];
+  if (!currentFolder.value) {
+    return []; // No dishes at root level
+  }
+  return currentFolder.value.items || [];
 });
 
+// Вычисляем quantity из цифр
+const quantity = computed(() => {
+  return (
+    quantityDigits.digit1 * 10 +
+    quantityDigits.digit2
+  );
+});
+
+const weight = computed(() => {
+  return (
+    quantityDigits.digit3 * 1000 +
+    quantityDigits.digit4 * 100 +
+    quantityDigits.digit5 * 10 +
+    quantityDigits.digit6
+  );
+});
+
+const totalPrice = computed(() => {
+  if (!selectedItem.value?.itemPrice) return 0;
+  return selectedItem.value.itemPrice * quantity.value;
+});
+
+
+
+// Масштабированные ингредиенты на основе количества порций
 const scaledIngredients = computed(() => {
-  if (!selectedItem.value?.ingridients?.length) {
+  if (
+    !selectedItem.value?.ingridients ||
+    selectedItem.value.ingridients.length === 0
+  ) {
     return [];
   }
 
@@ -787,72 +826,71 @@ const scaledIngredients = computed(() => {
   }));
 });
 
-const keyboardSuggestions = computed(() => {
-  if (!searchQuery.value.trim()) return [];
-
-  const query = searchQuery.value.toLowerCase().trim();
-  const localResults = performLocalSearch(query);
-  const suggestions: Array<{ name: string; type: "dish" | "category" }> = [];
-
-  for (const category of localResults.categoriesData) {
-    if (suggestions.length >= 3) break;
-    suggestions.push({ name: category.categoryName, type: "category" });
+// Debounce функция только для обновления suggestions (во время набора)
+const debouncedSearch = () => {
+  if (searchTimeout) {
+    clearTimeout(searchTimeout);
   }
 
-  for (const dish of localResults.itemsData) {
-    if (suggestions.length >= 3) break;
-    suggestions.push({ name: dish.itemName, type: "dish" });
-  }
-
-  return suggestions;
-});
-
-// Quantity modal functions
-const openQuantityModal = (type: "portions" | "weight") => {
-  quantityModalType.value = type;
-  const currentValue = type === "portions" ? portionsValue.value : weightValue.value;
-  tempQuantityValue.value = currentValue > 0 ? currentValue.toString() : "";
-  quantityModalOpen.value = true;
+  searchTimeout = setTimeout(() => {
+    // Во время набора НЕ выполняем поиск результатов
+    // Только очищаем результаты если поле пустое
+    if (searchQuery.value.trim().length === 0) {
+      searchResults.value = {
+        categoriesData: [],
+        itemsData: [],
+      };
+      lastCompletedQuery.value = "";
+    }
+    // suggestions обновляются автоматически через computed keyboardSuggestions
+  }, 300); // Уменьшили задержку поскольку не делаем поиск
 };
 
-const closeQuantityModal = () => {
-  quantityModalOpen.value = false;
-  tempQuantityValue.value = "";
-};
 
-const appendDigit = (digit: string) => {
-  const maxLength = quantityModalType.value === "portions" ? 2 : 4;
 
-  if (tempQuantityValue.value.length >= maxLength) return;
-  if (tempQuantityValue.value === "" && digit === "0") return;
-
-  tempQuantityValue.value += digit;
-};
-
-const clearQuantity = () => {
-  if (tempQuantityValue.value.length > 0) {
-    tempQuantityValue.value = tempQuantityValue.value.slice(0, -1);
+// Функция для получения placeholder в зависимости от режима поиска
+const getSearchPlaceholder = () => {
+  switch (searchMode.value) {
+    case "auto":
+      return "Поиск (при наборе - локальный, при Enter - глобальный)...";
+    case "global":
+      return "Поиск по всем блюдам и категориям...";
+    case "local":
+      return "Поиск в текущей категории и подкатегориях...";
+    default:
+      return "Поиск блюд и категорий...";
   }
 };
 
-const confirmQuantity = () => {
-  const value = parseInt(tempQuantityValue.value) || 0;
-
-  if (quantityModalType.value === "portions") {
-    portionsValue.value = Math.min(Math.max(value, 1), 99);
-  } else {
-    weightValue.value = Math.min(Math.max(value, 1), 9999);
-  }
-
-  closeQuantityModal();
+// Функция для получения иконки текущего режима поиска
+const getSearchModeIcon = () => {
+  const currentMode = searchModes.find(mode => mode.value === searchMode.value);
+  return currentMode?.icon || "search";
 };
 
-// Notifications
-const showNotification = (
-  message: string,
-  type: "info" | "success" | "warning" | "error" = "info",
-  duration: number = 4000
-) => {
+// Переключение меню выбора режима поиска
+const toggleSearchModeMenu = () => {
+  isSearchModeMenuOpen.value = !isSearchModeMenuOpen.value;
+};
+
+// Выбор режима поиска
+const selectSearchMode = (mode: string) => {
+  searchMode.value = mode;
+  isSearchModeMenuOpen.value = false;
+
+  // Если есть активный поиск, повторяем его с новым режимом
+  if (searchQuery.value.trim().length > 0) {
+    performSearch();
+  }
+};
+
+// Закрытие меню при клике вне его
+const closeSearchModeMenu = () => {
+  isSearchModeMenuOpen.value = false;
+};
+
+// Функции для уведомлений
+const showNotification = (message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info', duration: number = 4000) => {
   const notification = {
     id: ++notificationId,
     message,
@@ -861,7 +899,11 @@ const showNotification = (
   };
 
   notifications.value.push(notification);
-  setTimeout(() => removeNotification(notification.id), duration);
+
+  // Автоматически убираем уведомление через заданное время
+  setTimeout(() => {
+    removeNotification(notification.id);
+  }, duration);
 };
 
 const removeNotification = (id: number) => {
@@ -871,54 +913,34 @@ const removeNotification = (id: number) => {
   }
 };
 
-const getNotificationIcon = (type: string) => {
-  const icons: Record<string, string> = {
-    success: "check_circle",
-    error: "error",
-    warning: "warning",
-    info: "info",
-  };
-  return icons[type] || "info";
+// Получить название текущего режима поиска
+const getCurrentModeTitle = () => {
+  const currentMode = searchModes.find(mode => mode.value === searchMode.value);
+  return currentMode?.title || "Неизвестный";
 };
 
-// Search functions
-const getSearchPlaceholder = () => {
-  const placeholders: Record<string, string> = {
-    auto: "Поиск (при наборе - локальный, при Enter - глобальный)...",
-    global: "Поиск по всем блюдам и категориям...",
-    local: "Поиск в текущей категории и подкатегориях...",
-  };
-  return placeholders[searchMode.value] || "Поиск блюд и категорий...";
-};
-
-const getSearchModeIcon = () => {
-  return searchModes.find(mode => mode.value === searchMode.value)?.icon || "search";
-};
-
-const toggleSearchModeMenu = () => {
-  isSearchModeMenuOpen.value = !isSearchModeMenuOpen.value;
-};
-
-const selectSearchMode = (mode: string) => {
-  searchMode.value = mode as typeof searchMode.value;
-  isSearchModeMenuOpen.value = false;
-
+// Переключиться на глобальный поиск и выполнить полный поиск
+const switchToGlobalSearch = () => {
+  const previousMode = searchMode.value;
+  searchMode.value = "global";
   if (searchQuery.value.trim().length > 0) {
-    performSearch();
+    showNotification("Переключились на глобальный поиск и выполняется полный поиск", "info", 3000);
+    performSearch(); // Выполняем полный поиск сразу
   }
 };
 
-const debouncedSearch = () => {
-  if (searchTimeout) clearTimeout(searchTimeout);
-
-  searchTimeout = setTimeout(() => {
-    if (searchQuery.value.trim().length === 0) {
-      searchResults.value = { categoriesData: [], itemsData: [] };
-      lastCompletedQuery.value = "";
-    }
-  }, 300);
+// Получить иконку для уведомления
+const getNotificationIcon = (type: string) => {
+  switch (type) {
+    case 'success': return 'check_circle';
+    case 'error': return 'error';
+    case 'warning': return 'warning';
+    case 'info':
+    default: return 'info';
+  }
 };
 
+// Локальный поиск в текущей категории и подкатегориях
 const performLocalSearch = (query: string): { categoriesData: Category[]; itemsData: Dish[] } => {
   const results = {
     categoriesData: [] as Category[],
@@ -926,18 +948,23 @@ const performLocalSearch = (query: string): { categoriesData: Category[]; itemsD
   };
 
   const searchInCategory = (category: Category | null) => {
+    // Если мы в корне и нет текущей категории
     if (!category) {
+      // Ищем в корневых категориях
       for (const cat of allCategories.value) {
         if (cat.categoryName.toLowerCase().includes(query.toLowerCase())) {
           results.categoriesData.push(cat);
         }
+        // Рекурсивно ищем в подкатегориях
         searchInSubcategories(cat);
       }
     } else {
+      // Ищем в текущей категории
       if (category.categoryName.toLowerCase().includes(query.toLowerCase())) {
         results.categoriesData.push(category);
       }
 
+      // Ищем блюда в текущей категории
       if (category.items) {
         for (const item of category.items) {
           if (item.itemName.toLowerCase().includes(query.toLowerCase())) {
@@ -946,27 +973,30 @@ const performLocalSearch = (query: string): { categoriesData: Category[]; itemsD
         }
       }
 
+      // Ищем в подкатегориях
       searchInSubcategories(category);
     }
   };
 
   const searchInSubcategories = (parentCategory: Category) => {
-    if (!parentCategory.children) return;
+    if (parentCategory.children) {
+      for (const child of parentCategory.children) {
+        if (child.categoryName.toLowerCase().includes(query.toLowerCase())) {
+          results.categoriesData.push(child);
+        }
 
-    for (const child of parentCategory.children) {
-      if (child.categoryName.toLowerCase().includes(query.toLowerCase())) {
-        results.categoriesData.push(child);
-      }
-
-      if (child.items) {
-        for (const item of child.items) {
-          if (item.itemName.toLowerCase().includes(query.toLowerCase())) {
-            results.itemsData.push(item);
+        // Ищем блюда в подкатегории
+        if (child.items) {
+          for (const item of child.items) {
+            if (item.itemName.toLowerCase().includes(query.toLowerCase())) {
+              results.itemsData.push(item);
+            }
           }
         }
-      }
 
-      searchInSubcategories(child);
+        // Рекурсивно ищем в подподкатегориях
+        searchInSubcategories(child);
+      }
     }
   };
 
@@ -974,49 +1004,103 @@ const performLocalSearch = (query: string): { categoriesData: Category[]; itemsD
   return results;
 };
 
+// Выполнение полного поиска (при нажатии Enter/Найти)
 const performSearch = async () => {
-  const query = searchQuery.value.trim();
-  if (!query) {
-    searchResults.value = { categoriesData: [], itemsData: [] };
+  if (searchQuery.value.trim().length === 0) {
+    searchResults.value = {
+      categoriesData: [],
+      itemsData: [],
+    };
     return;
   }
 
   isSearching.value = true;
+  const query = searchQuery.value.trim();
 
   try {
-    if (searchMode.value === "auto") {
-      searchLoadingText.value = "Поиск в текущей категории...";
-      const localResults = performLocalSearch(query);
+    switch (searchMode.value) {
+      case "auto":
+        // При полном поиске: сначала локально, потом глобально если ничего не найдено
+        searchLoadingText.value = "Поиск в текущей категории...";
+        const localResults = performLocalSearch(query);
 
-      if (localResults.categoriesData.length > 0 || localResults.itemsData.length > 0) {
-        searchResults.value = localResults;
-        showNotification(
-          `Найдено ${localResults.categoriesData.length + localResults.itemsData.length} результатов`,
-          "success"
-        );
-      } else {
+        if (localResults.categoriesData.length > 0 || localResults.itemsData.length > 0) {
+          searchResults.value = localResults;
+          showNotification(
+            `Найдено ${localResults.categoriesData.length + localResults.itemsData.length} результатов в текущей категории`,
+            "success",
+            3000
+          );
+        } else {
+          // Если локально ничего не найдено, ищем глобально
+          showNotification("В текущей категории ничего не найдено. Выполняется глобальный поиск...", "info", 4000);
+          searchLoadingText.value = "Глобальный поиск...";
+
+          // Небольшая задержка для показа уведомления
+          await new Promise((resolve) => setTimeout(resolve, 500));
+
+          const response = await findItems(query);
+          searchResults.value = {
+            categoriesData: response.categoriesData || [],
+            itemsData: response.itemsData || [],
+          };
+
+          if ((response.categoriesData?.length || 0) + (response.itemsData?.length || 0) > 0) {
+            showNotification(
+              `Найдено ${(response.categoriesData?.length || 0) + (response.itemsData?.length || 0)} результатов в глобальном поиске`,
+              "success",
+              3000
+            );
+          }
+        }
+        break;
+
+      case "global":
+        // Ищем только на сервере
         searchLoadingText.value = "Глобальный поиск...";
-        await performGlobalSearch(query);
-      }
-    } else if (searchMode.value === "global") {
-      searchLoadingText.value = "Глобальный поиск...";
-      await performGlobalSearch(query);
-    } else {
-      searchLoadingText.value = "Поиск в текущей категории...";
-      const localResults = performLocalSearch(query);
-      searchResults.value = localResults;
+        const response = await findItems(query);
+        searchResults.value = {
+          categoriesData: response.categoriesData || [],
+          itemsData: response.itemsData || [],
+        };
 
-      if (localResults.categoriesData.length + localResults.itemsData.length > 0) {
-        showNotification(
-          `Найдено ${localResults.categoriesData.length + localResults.itemsData.length} результатов`,
-          "success"
-        );
-      }
+        if ((response.categoriesData?.length || 0) + (response.itemsData?.length || 0) > 0) {
+          showNotification(
+            `Найдено ${(response.categoriesData?.length || 0) + (response.itemsData?.length || 0)} результатов`,
+            "success",
+            3000
+          );
+        }
+        break;
+
+      case "local":
+        // Ищем только локально
+        searchLoadingText.value = "Поиск в текущей категории...";
+        const localSearchResults = performLocalSearch(query);
+        searchResults.value = localSearchResults;
+
+        if (localSearchResults.categoriesData.length + localSearchResults.itemsData.length > 0) {
+          showNotification(
+            `Найдено ${localSearchResults.categoriesData.length + localSearchResults.itemsData.length} результатов в текущей категории`,
+            "success",
+            3000
+          );
+        }
+        break;
+
+      default:
+        searchResults.value = {
+          categoriesData: [],
+          itemsData: [],
+        };
     }
   } catch (e) {
     console.error("Search error:", e);
-    showNotification("Ошибка при выполнении поиска", "error");
-    searchResults.value = { categoriesData: [], itemsData: [] };
+    showNotification("Ошибка при выполнении поиска", "error", 5000);
+    searchResults.value = {
+      categoriesData: [],
+      itemsData: [],
+    };
   } finally {
     isSearching.value = false;
     searchLoadingText.value = "Поиск...";
@@ -1024,72 +1108,27 @@ const performSearch = async () => {
   }
 };
 
-const performGlobalSearch = async (query: string) => {
-  const response = await findItems(query);
-  const fullItemsData: Dish[] = [];
-
-  if (response.itemsData?.length) {
-    for (const basicItem of response.itemsData) {
-      const fullItem = findDishInCategories(allCategories.value, basicItem.id);
-      if (fullItem) fullItemsData.push(fullItem);
-    }
-  }
-
-  searchResults.value = {
-    categoriesData: response.categoriesData || [],
-    itemsData: fullItemsData,
-  };
-
-  const totalResults = (response.categoriesData?.length || 0) + fullItemsData.length;
-  if (totalResults > 0) {
-    showNotification(`Найдено ${totalResults} результатов`, "success");
-  }
-};
-
-const findDishInCategories = (categories: Category[], dishId: string): Dish | null => {
-  for (const category of categories) {
-    if (category.items) {
-      const dish = category.items.find(item => item.id === dishId);
-      if (dish) return dish;
-    }
-
-    if (category.children) {
-      const foundDish = findDishInCategories(category.children, dishId);
-      if (foundDish) return foundDish;
-    }
-  }
-  return null;
-};
-
+// Очистка поиска
 const clearSearch = () => {
   searchQuery.value = "";
-  searchResults.value = { categoriesData: [], itemsData: [] };
+  searchResults.value = {
+    categoriesData: [],
+    itemsData: [],
+  };
   isSearchFocused.value = false;
   isSearching.value = false;
   isSearchModeMenuOpen.value = false;
-  isKeyboardVisible.value = false;
-  lastCompletedQuery.value = "";
+  isKeyboardVisible.value = false; // Закрываем клавиатуру
+  lastCompletedQuery.value = ""; // Сбрасываем последний запрос
 
+  // Очищаем таймер если он активен
   if (searchTimeout) {
     clearTimeout(searchTimeout);
     searchTimeout = null;
   }
 };
 
-const switchToGlobalSearch = () => {
-  searchMode.value = "global";
-  if (searchQuery.value.trim()) {
-    showNotification("Переключились на глобальный поиск", "info");
-    performSearch();
-  }
-};
-
-// Search event handlers
-const onSearchFocus = () => {
-  isSearchFocused.value = true;
-  isKeyboardVisible.value = true;
-};
-
+// Обработка потери фокуса поиска
 const onSearchBlur = () => {
   setTimeout(() => {
     if (!isKeyboardVisible.value) {
@@ -1098,6 +1137,13 @@ const onSearchBlur = () => {
   }, 200);
 };
 
+// Обработка фокуса поиска для показа клавиатуры
+const onSearchFocus = () => {
+  isSearchFocused.value = true;
+  isKeyboardVisible.value = true;
+};
+
+// Обработчики виртуальной клавиатуры
 const handleKeyboardInput = (value: string) => {
   searchQuery.value = value;
   debouncedSearch();
@@ -1115,51 +1161,103 @@ const handleKeyboardClose = () => {
   isSearchFocused.value = false;
 };
 
-// Category navigation
+// Выбор результата поиска - блюдо
+const selectSearchResult = (item: Dish) => {
+  selectedItem.value = item;
+  isSearchFocused.value = false;
+  setQuantityFromNumber(1);
+};
+
+// Выбор результата поиска - категория
 const selectSearchCategory = (category: Category) => {
+  // Функция для поиска категории по ID в плоской структуре
   const findCategoryById = (categories: Category[], targetId: string): Category | null => {
     for (const cat of categories) {
-      if (cat.id === targetId) return cat;
-      if (cat.children) {
+      if (cat.id === targetId) {
+        return cat;
+      }
+      if (cat.children && cat.children.length > 0) {
         const found = findCategoryById(cat.children, targetId);
-        if (found) return found;
+        if (found) {
+          return found;
+        }
       }
     }
     return null;
   };
 
+  // Функция для построения пути от категории к корню используя categoryParentID
   const buildPathToRoot = (categoryId: string): Category[] => {
     const path: Category[] = [];
     let currentId: string | null = categoryId;
 
     while (currentId) {
       const cat = findCategoryById(allCategories.value, currentId);
-      if (!cat) break;
-      path.unshift(cat);
-      currentId = cat.categoryParentID;
+      if (!cat) {
+        console.error('Категория не найдена:', currentId);
+        break;
+      }
+
+      path.unshift(cat); // Добавляем в начало массива
+      currentId = cat.categoryParentID; // Переходим к родителю
     }
 
     return path;
   };
 
+  // Строим полный путь от корня до выбранной категории
   const fullPath = buildPathToRoot(category.id);
+
   if (fullPath.length > 0) {
+    // Устанавливаем полный путь от корня до выбранной категории
     breadcrumbPath.value = fullPath;
+    console.log('Построен путь к категории:', fullPath.map(c => c.categoryName).join(' -> '));
+  } else {
+    console.error('Не удалось найти путь к категории:', category);
   }
 
   isSearchFocused.value = false;
   clearSearch();
 };
 
-// Data operations
+// Печать блюда без модального окна
+const printDish = async (dish: Dish) => {
+  try {
+    await printStikerGroceries(dish.id, null, null);
+  } catch (error) {
+    console.error("Ошибка печати:", error);
+    showNotification("Ошибка при печати блюда", "error");
+  }
+};
+
+// Функция для правильного склонения слова "порция"
+const getPortionText = (count: number): string => {
+  const lastDigit = count % 10;
+  const lastTwoDigits = count % 100;
+
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+    return "порций";
+  }
+
+  if (lastDigit === 1) {
+    return "порцию";
+  }
+
+  if (lastDigit >= 2 && lastDigit <= 4) {
+    return "порции";
+  }
+
+  return "порций";
+};
+
 const fetchData = async () => {
   isLoading.value = true;
   error.value = null;
-
   try {
-    allCategories.value = await getCategoriesHierarchy();
+    const categoriesData = await getCategoriesHierarchy();
+    allCategories.value = categoriesData;
   } catch (e) {
-    console.error("Failed to fetch categories:", e);
+    console.error("Failed to fetch category hierarchy:", e);
     error.value = e;
   } finally {
     isLoading.value = false;
@@ -1168,110 +1266,215 @@ const fetchData = async () => {
 
 const openCategory = (category: Category) => {
   breadcrumbPath.value.push(category);
+  // Очищаем поиск при навигации
   clearSearch();
 };
 
 const selectItem = (item: Dish) => {
   selectedItem.value = item;
-  portionsValue.value = 1;
-  weightValue.value = 1;
+  setQuantityFromNumber(1); // Сброс количества при выборе нового блюда
 };
 
 const closeModal = () => {
   selectedItem.value = null;
-  showRecipe.value = false;
-  showNotebook.value = false;
-  activeRecipeTab.value = 0;
-  currentNotebookPage.value = 0;
-  notebookPages.value = [];
-  portionsValue.value = 1;
-  weightValue.value = 1;
+  showRecipe.value = false; // Сбрасываем состояние рецепта
+  showNotebook.value = false; // Сбрасываем состояние тетради
+  activeRecipeTab.value = 0; // Сбрасываем активный таб
+  currentNotebookPage.value = 0; // Сбрасываем страницу тетради
+  notebookPages.value = []; // Очищаем страницы
+  setQuantityFromNumber(1);
 };
 
-const printDish = async (dish: Dish) => {
-  try {
-    await printStikerGroceries(dish.id, null, null);
-  } catch (error) {
-    console.error("Print error:", error);
-    showNotification("Ошибка при печати блюда", "error");
-  }
+// Функция для генерации цифр 0-9
+const generateDigits = () => {
+  return Array.from({ length: 10 }, (_, i) => ({
+    text: i.toString(),
+    value: i,
+  }));
+};
+
+// Обработчики изменения каждой цифры
+const setDigit1 = (value: number) => {
+  quantityDigits.digit1 = value;
+};
+
+const setDigit2 = (value: number) => {
+  quantityDigits.digit2 = value;
+};
+
+const setDigit3 = (value: number) => {
+  quantityDigits.digit3 = value;
+};
+
+const setDigit4 = (value: number) => {
+  quantityDigits.digit4 = value;
+};
+
+const setDigit5 = (value: number) => {
+  quantityDigits.digit5 = value;
+};
+
+const setDigit6 = (value: number) => {
+  quantityDigits.digit6 = value;
+};
+
+// Функция для установки количества из числа
+const setQuantityFromNumber = (num: number) => {
+  const str = num.toString().padStart(6, "0");
+  quantityDigits.digit1 = parseInt(str[0]);
+  quantityDigits.digit2 = parseInt(str[1]);
+  quantityDigits.digit3 = parseInt(str[2]);
+  quantityDigits.digit4 = parseInt(str[3]);
+  quantityDigits.digit5 = parseInt(str[4]);
+  quantityDigits.digit6 = parseInt(str[5]);
 };
 
 const addToCart = async () => {
-  if (!selectedItem.value) return;
-
   try {
+    if (!selectedItem.value) return;
     await printStikerGroceries(selectedItem.value.id, weight.value, quantity.value);
     closeModal();
   } catch (error) {
-    console.error("Print error:", error);
+    console.error("Ошибка печати:", error);
     showNotification("Ошибка при печати блюда", "error");
   }
 };
-
-// Recipe functions
 const openRecipe = () => {
   showNotebook.value = true;
   createNotebookPages();
 };
 
+// Функция для возврата к основному содержимому модального окна
 const backToDetails = () => {
   showRecipe.value = false;
   showNotebook.value = false;
-  activeRecipeTab.value = 0;
+  activeRecipeTab.value = 0; // Сбрасываем активный таб
   currentNotebookPage.value = 0;
   notebookPages.value = [];
 };
 
+// Простая функция для конвертации markdown в HTML
 const markdownToHtml = (markdown: string): string => {
-  if (!markdown) return "";
-
-  return markdown
-    .replace(/^### (.*$)/gim, "<h3>$1</h3>")
-    .replace(/^## (.*$)/gim, "<h2>$1</h2>")
-    .replace(/^# (.*$)/gim, "<h1>$1</h1>")
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-    .replace(/__(.*?)__/g, "<strong>$1</strong>")
-    .replace(/\*(.*?)\*/g, "<em>$1</em>")
-    .replace(/_(.*?)_/g, "<em>$1</em>")
-    .replace(/^\d+\.\s+(.*)$/gim, '<li class="numbered-item">$1</li>')
-    .replace(/^[\-\*\+]\s+(.*)$/gim, '<li class="bullet-item">$1</li>')
-    .replace(/`([^`]+)`/g, "<code>$1</code>")
-    .replace(/\n\n/g, "</p><p>")
-    .replace(/\n/g, "<br>");
-};
-
-const advancedMarkdownToHtml = (markdown: string): string => {
-  if (!markdown) return "";
+  if (!markdown) return '';
 
   let html = markdown
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .replace(/^### (.*$)/gim, '<h3 class="notebook-h3">$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2 class="notebook-h2">$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1 class="notebook-h1">$1</h1>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong class="notebook-bold">$1</strong>')
-    .replace(/__(.*?)__/g, '<strong class="notebook-bold">$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em class="notebook-italic">$1</em>')
-    .replace(/_(.*?)_/g, '<em class="notebook-italic">$1</em>')
-    .replace(/~~(.*?)~~/g, '<del class="notebook-strikethrough">$1</del>')
-    .replace(/^\d+\.\s+(.*)$/gim, '<li class="notebook-numbered">$1</li>')
-    .replace(/^[\-\*\+]\s+(.*)$/gim, '<li class="notebook-bullet">$1</li>')
-    .replace(/```([\s\S]*?)```/g, '<pre class="notebook-code-block"><code>$1</code></pre>')
-    .replace(/`([^`\n]+)`/g, '<code class="notebook-code">$1</code>')
-    .replace(/^>\s+(.*)$/gim, '<blockquote class="notebook-quote">$1</blockquote>')
-    .replace(/^---+$/gim, '<hr class="notebook-hr">')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="notebook-link">$1</a>')
-    .replace(/\n\n+/g, '</p><p class="notebook-paragraph">')
-    .replace(/\n/g, "<br>");
+    // Заголовки
+    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
 
-  if (!html.includes("<h1>") && !html.includes("<h2>") && !html.includes("<h3>")) {
-    html = `<p class="notebook-paragraph">${html}</p>`;
+    // Жирный текст
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.*?)__/g, '<strong>$1</strong>')
+
+    // Курсив
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/_(.*?)_/g, '<em>$1</em>')
+
+    // Списки (нумерованные)
+    .replace(/^\d+\.\s+(.*)$/gim, '<li class="numbered-item">$1</li>')
+
+    // Списки (маркированные)
+    .replace(/^[\-\*\+]\s+(.*)$/gim, '<li class="bullet-item">$1</li>')
+
+    // Код (inline)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+
+    // Переносы строк
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  // Оборачиваем в параграфы если есть контент
+  if (html && !html.includes('<h1>') && !html.includes('<h2>') && !html.includes('<h3>')) {
+    html = `<p>${html}</p>`;
   }
+
+  // Группируем списки
+  html = html
+    .replace(/(<li class="numbered-item">.*?<\/li>)/gs, (match) => {
+      const items = match.replace(/<li class="numbered-item">/g, '<li>').replace(/<\/li>/g, '</li>');
+      return `<ol class="recipe-list">${items}</ol>`;
+    })
+    .replace(/(<li class="bullet-item">.*?<\/li>)/gs, (match) => {
+      const items = match.replace(/<li class="bullet-item">/g, '<li>').replace(/<\/li>/g, '</li>');
+      return `<ul class="recipe-list">${items}</ul>`;
+    });
 
   return html;
 };
 
+// Улучшенная функция для конвертации markdown в HTML с поддержкой переносов
+const advancedMarkdownToHtml = (markdown: string): string => {
+  if (!markdown) return '';
+
+  let html = markdown
+    // Обрабатываем переносы строк
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+
+    // Заголовки
+    .replace(/^### (.*$)/gim, '<h3 class="notebook-h3">$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2 class="notebook-h2">$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1 class="notebook-h1">$1</h1>')
+
+    // Жирный текст
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="notebook-bold">$1</strong>')
+    .replace(/__(.*?)__/g, '<strong class="notebook-bold">$1</strong>')
+
+    // Курсив
+    .replace(/\*(.*?)\*/g, '<em class="notebook-italic">$1</em>')
+    .replace(/_(.*?)_/g, '<em class="notebook-italic">$1</em>')
+
+    // Зачеркнутый текст
+    .replace(/~~(.*?)~~/g, '<del class="notebook-strikethrough">$1</del>')
+
+    // Списки (нумерованные)
+    .replace(/^\d+\.\s+(.*)$/gim, '<li class="notebook-numbered">$1</li>')
+
+    // Списки (маркированные)
+    .replace(/^[\-\*\+]\s+(.*)$/gim, '<li class="notebook-bullet">$1</li>')
+
+    // Код (блочный)
+    .replace(/```([\s\S]*?)```/g, '<pre class="notebook-code-block"><code>$1</code></pre>')
+
+    // Код (inline)
+    .replace(/`([^`\n]+)`/g, '<code class="notebook-code">$1</code>')
+
+    // Цитаты
+    .replace(/^>\s+(.*)$/gim, '<blockquote class="notebook-quote">$1</blockquote>')
+
+    // Горизонтальная линия
+    .replace(/^---+$/gim, '<hr class="notebook-hr">')
+
+    // Ссылки
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="notebook-link">$1</a>')
+
+    // Двойной перенос = новый параграф
+    .replace(/\n\n+/g, '</p><p class="notebook-paragraph">')
+
+    // Одинарный перенос = br
+    .replace(/\n/g, '<br>');
+
+  // Оборачиваем в параграфы если есть контент
+  if (html && !html.includes('<h1>') && !html.includes('<h2>') && !html.includes('<h3>')) {
+    html = `<p class="notebook-paragraph">${html}</p>`;
+  }
+
+  // Группируем списки
+  html = html
+    .replace(/(<li class="notebook-numbered">.*?<\/li>)/gs, (match) => {
+      const items = match.replace(/<li class="notebook-numbered">/g, '<li>').replace(/<\/li>/g, '</li>');
+      return `<ol class="notebook-numbered-list">${items}</ol>`;
+    })
+    .replace(/(<li class="notebook-bullet">.*?<\/li>)/gs, (match) => {
+      const items = match.replace(/<li class="notebook-bullet">/g, '<li>').replace(/<\/li>/g, '</li>');
+      return `<ul class="notebook-bullet-list">${items}</ul>`;
+    });
+
+  return html;
+};
+
+// Создание страниц тетради
 const createNotebookPages = () => {
   if (!selectedItem.value?.itemRecipe) {
     notebookPages.value = ['<p class="notebook-empty">Рецепт не указан</p>'];
@@ -1279,19 +1482,46 @@ const createNotebookPages = () => {
   }
 
   const content = advancedMarkdownToHtml(selectedItem.value.itemRecipe);
-  const maxCharsPerPage = 800;
+  const maxCharsPerPage = 800; // Примерно 800 символов на страницу
 
+  // Разбиваем контент на страницы по размеру
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = content;
+
+  const pages: string[] = [];
+  let currentPage = '';
+  let currentLength = 0;
+
+  // Проходим по каждому элементу
+  const walker = document.createTreeWalker(
+    tempDiv,
+    NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
+    null
+  );
+
+  let node;
+  let pageContent = '';
+
+  // Простое разбиение по количеству символов
+  const plainText = tempDiv.textContent || '';
+  const chunks = [];
+
+  for (let i = 0; i < plainText.length; i += maxCharsPerPage) {
+    chunks.push(plainText.slice(i, i + maxCharsPerPage));
+  }
+
+  // Если контент слишком короткий, помещаем на одну страницу
   if (content.length <= maxCharsPerPage) {
-    notebookPages.value = [content];
+    pages.push(content);
   } else {
-    const pages: string[] = [];
-    const paragraphs = content.split("</p>");
-    let currentPageContent = "";
+    // Разбиваем по абзацам для лучшего форматирования
+    const paragraphs = content.split('</p>');
+    let currentPageContent = '';
     let currentPageLength = 0;
 
     for (let i = 0; i < paragraphs.length; i++) {
-      const paragraph = paragraphs[i] + (i < paragraphs.length - 1 ? "</p>" : "");
-      const paragraphLength = paragraph.replace(/<[^>]*>/g, "").length;
+      const paragraph = paragraphs[i] + (i < paragraphs.length - 1 ? '</p>' : '');
+      const paragraphLength = paragraph.replace(/<[^>]*>/g, '').length;
 
       if (currentPageLength + paragraphLength > maxCharsPerPage && currentPageContent) {
         pages.push(currentPageContent);
@@ -1306,13 +1536,13 @@ const createNotebookPages = () => {
     if (currentPageContent) {
       pages.push(currentPageContent);
     }
-
-    notebookPages.value = pages.length > 0 ? pages : [content];
   }
 
+  notebookPages.value = pages.length > 0 ? pages : [content];
   currentNotebookPage.value = 0;
 };
 
+// Навигация по страницам тетради
 const nextPage = () => {
   if (currentNotebookPage.value < notebookPages.value.length - 1) {
     currentNotebookPage.value++;
@@ -1331,28 +1561,46 @@ const goToPage = (pageIndex: number) => {
   }
 };
 
+// Обработчик смены табов рецепта
 const handleTabChange = (event: Event) => {
   const target = event.target as any;
-  if (target?.activeTabIndex !== undefined) {
+  if (target && typeof target.activeTabIndex === 'number') {
     activeRecipeTab.value = target.activeTabIndex;
   }
 };
 
-// Navigation functions
-const navigateToPath = (index: number | null) => {
-  breadcrumbPath.value = index === null ? [] : breadcrumbPath.value.slice(0, index + 1);
-  selectedItem.value = null;
-  clearSearch();
-  isKeyboardVisible.value = false;
+const formatDate = (timestamp: number) => {
+  return new Date(timestamp).toLocaleDateString("ru-RU");
 };
 
+const onImageError = (event: Event) => {
+  // Скрываем изображение при ошибке загрузки
+  const target = event.target as HTMLImageElement;
+  target.style.display = "none";
+};
+
+const navigateToPath = (index: number | null) => {
+  if (index === null) {
+    breadcrumbPath.value = [];
+  } else {
+    breadcrumbPath.value = breadcrumbPath.value.slice(0, index + 1);
+  }
+  selectedItem.value = null;
+  clearSearch();
+  isKeyboardVisible.value = false; // Закрываем клавиатуру при навигации
+  // Navigation updates automatically via watcher
+};
+
+// Apple Navigation Functions
 const updateNavigationScrollability = () => {
   if (!navContainer.value || !navTrack.value) return;
 
-  const totalItems = breadcrumbPath.value.length + 1;
+  const totalItems = breadcrumbPath.value.length + 1; // +1 для home
   const containerWidth = navContainer.value.offsetWidth;
   const trackWidth = navTrack.value.scrollWidth;
-  const hasOverflow = trackWidth > containerWidth - 20;
+
+  // Показываем стрелки если больше 3 элементов ИЛИ контент не помещается (с учетом padding)
+  const hasOverflow = trackWidth > (containerWidth - 20); // -20px для padding
   const shouldShowArrows = totalItems > 3 || hasOverflow;
 
   if (shouldShowArrows && hasOverflow) {
@@ -1362,12 +1610,18 @@ const updateNavigationScrollability = () => {
   } else {
     canScrollRight.value = false;
     canScrollLeft.value = false;
-    if (!hasOverflow) scrollOffset.value = 0;
+    // Если не нужны стрелки, сбрасываем offset
+    if (!hasOverflow) {
+      scrollOffset.value = 0;
+    }
   }
+
+  console.log(`Navigation: items=${totalItems}, container=${containerWidth}, track=${trackWidth}, showArrows=${shouldShowArrows}, hasOverflow=${hasOverflow}`);
 };
 
 const scrollLeft = () => {
-  scrollOffset.value = Math.min(scrollOffset.value + SCROLL_STEP, 0);
+  const newOffset = Math.min(scrollOffset.value + scrollStep, 0);
+  scrollOffset.value = newOffset;
   updateNavigationScrollability();
 };
 
@@ -1378,26 +1632,17 @@ const scrollRight = () => {
   const trackWidth = navTrack.value.scrollWidth;
   const maxScroll = -(trackWidth - containerWidth);
 
-  scrollOffset.value = Math.max(scrollOffset.value - SCROLL_STEP, maxScroll);
+  const newOffset = Math.max(scrollOffset.value - scrollStep, maxScroll);
+  scrollOffset.value = newOffset;
   updateNavigationScrollability();
 };
 
-const scrollToLastElement = () => {
-  if (!navContainer.value || !navTrack.value) return;
-
-  const containerWidth = navContainer.value.offsetWidth;
-  const trackWidth = navTrack.value.scrollWidth;
-
-  if (trackWidth > containerWidth) {
-    scrollOffset.value = -(trackWidth - containerWidth);
-    updateNavigationScrollability();
-  }
-};
-
 const handleResize = () => {
+  // При изменении размера сохраняем позицию или скроллим к последнему элементу
   nextTick(() => {
     setTimeout(() => {
       updateNavigationScrollability();
+      // Если был скролл, скроллим к последнему элементу
       if (breadcrumbPath.value.length > 2) {
         scrollToLastElement();
       }
@@ -1405,55 +1650,59 @@ const handleResize = () => {
   });
 };
 
-// Utility functions
-const onImageError = (event: Event) => {
-  const target = event.target as HTMLImageElement;
-  target.style.display = "none";
-};
-
-const getPortionText = (count: number): string => {
-  const lastDigit = count % 10;
-  const lastTwoDigits = count % 100;
-
-  if (lastTwoDigits >= 11 && lastTwoDigits <= 19) return "порций";
-  if (lastDigit === 1) return "порцию";
-  if (lastDigit >= 2 && lastDigit <= 4) return "порции";
-  return "порций";
-};
-
-// Lifecycle hooks
 onMounted(() => {
   fetchData();
 
-  document.addEventListener("click", (event) => {
+  // Добавляем обработчик клика вне меню
+  document.addEventListener('click', (event) => {
     const target = event.target as HTMLElement;
-    const searchModeSelector = document.querySelector(".search-mode-selector");
+    const searchModeSelector = document.querySelector('.search-mode-selector');
+
     if (searchModeSelector && !searchModeSelector.contains(target)) {
       isSearchModeMenuOpen.value = false;
     }
   });
 
+  // Setup navigation
   nextTick(() => {
     updateNavigationScrollability();
   });
 
-  window.addEventListener("resize", handleResize);
+  // Handle window resize
+  window.addEventListener('resize', handleResize);
 });
 
-onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
-  if (searchTimeout) clearTimeout(searchTimeout);
-});
-
-// Watchers
+// Watch breadcrumbPath changes for dynamic updates
 watch(breadcrumbPath, () => {
   nextTick(() => {
+    // Добавляем небольшую задержку для корректного обновления DOM
     setTimeout(() => {
       updateNavigationScrollability();
+      // Auto-scroll to last element when path changes
       scrollToLastElement();
     }, 50);
   });
 }, { deep: true });
+
+// Auto-scroll to the last (newest) element
+const scrollToLastElement = () => {
+  if (!navContainer.value || !navTrack.value) return;
+
+  const containerWidth = navContainer.value.offsetWidth;
+  const trackWidth = navTrack.value.scrollWidth;
+
+  if (trackWidth > containerWidth) {
+    // Scroll to show the last element
+    const maxScroll = trackWidth - containerWidth;
+    scrollOffset.value = -maxScroll;
+    updateNavigationScrollability();
+  }
+};
+
+onUnmounted(() => {
+  // Clean up event listeners
+  window.removeEventListener('resize', handleResize);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -1473,157 +1722,6 @@ watch(breadcrumbPath, () => {
   border-bottom: 1px solid var(--md-sys-color-surface-variant, #e7e0ec);
   flex-shrink: 0;
   position: relative;
-}
-
-/* Кнопки количества */
-.quantity-inputs-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.quantity-button {
-  width: 100%;
-  height: 120px;
-  border: 2px solid var(--md-sys-color-outline);
-  border-radius: 16px;
-  background: var(--md-sys-color-surface);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  position: relative;
-  padding: 16px;
-
-  &:hover {
-    background: var(--md-sys-color-surface-variant);
-    transform: scale(1.02);
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-
-  &.has-value {
-    .quantity-label {
-      position: absolute;
-      top: 12px;
-      left: 16px;
-      font-size: 12px;
-      color: var(--md-sys-color-on-surface-variant);
-    }
-
-    .quantity-value {
-      font-size: 48px;
-      font-weight: 700;
-      color: var(--md-sys-color-primary);
-    }
-  }
-}
-
-.quantity-label {
-  font-size: 18px;
-  color: var(--md-sys-color-on-surface);
-  transition: all 0.3s ease;
-
-  &.small {
-    font-size: 12px;
-  }
-}
-
-/* Модальное окно ввода количества */
-.quantity-modal {
-  .quantity-modal-content {
-    padding: 24px;
-    min-width: 360px;
-  }
-
-  .quantity-display {
-    text-align: center;
-    margin-bottom: 16px;
-    padding: 24px;
-    background: var(--md-sys-color-surface-variant);
-    border-radius: 16px;
-
-    .quantity-display-value {
-      font-size: 56px;
-      font-weight: 700;
-      color: var(--md-sys-color-primary);
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      .quantity-unit {
-        font-size: 32px;
-        margin-left: 8px;
-        color: var(--md-sys-color-on-surface-variant);
-      }
-    }
-
-    .quantity-display-label {
-      font-size: 14px;
-      color: var(--md-sys-color-on-surface-variant);
-      margin-top: 8px;
-    }
-  }
-
-  .number-keypad {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-
-    .keypad-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
-    .keypad-button {
-      height: 64px;
-      font-size: 24px;
-      font-weight: 500;
-      border: 2px solid var(--md-sys-color-outline);
-      border-radius: 12px;
-      background: var(--md-sys-color-surface);
-      color: var(--md-sys-color-on-surface);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      &:hover {
-        background: var(--md-sys-color-surface-variant);
-        transform: scale(1.05);
-      }
-
-      &:active {
-        transform: scale(0.95);
-      }
-
-      &.keypad-clear {
-        background: var(--md-sys-color-error-container);
-        color: var(--md-sys-color-on-error-container);
-
-        md-icon {
-          font-size: 28px;
-        }
-      }
-
-      &.keypad-confirm {
-        background: var(--md-sys-color-primary);
-        color: var(--md-sys-color-on-primary);
-
-        md-icon {
-          font-size: 32px;
-        }
-      }
-    }
-  }
 }
 
 // Liquid Glass Navigation - iOS 26 Style
@@ -2194,7 +2292,7 @@ md-chip {
   &.in-stock {
     --md-elevated-chip-container-color: var(--md-sys-color-primary-container);
     --md-elevated-chip-label-text-color: var(
-        --md-sys-color-on-primary-container
+      --md-sys-color-on-primary-container
     );
   }
 
@@ -2414,9 +2512,9 @@ md-chip {
   width: 32px;
   height: 32px;
   background: linear-gradient(
-      135deg,
-      var(--md-sys-color-primary, #6750a4),
-      var(--md-sys-color-secondary, #625b71)
+    135deg,
+    var(--md-sys-color-primary, #6750a4),
+    var(--md-sys-color-secondary, #625b71)
   );
   color: white;
   border-radius: 50%;
@@ -2753,9 +2851,9 @@ md-chip {
   align-items: center;
   justify-content: center;
   background: linear-gradient(
-      135deg,
-      var(--md-sys-color-primary-container, #eaddff),
-      var(--md-sys-color-secondary-container, #e8def8)
+    135deg,
+    var(--md-sys-color-primary-container, #eaddff),
+    var(--md-sys-color-secondary-container, #e8def8)
   );
   position: relative;
 }
@@ -2773,10 +2871,10 @@ md-chip {
   left: 0;
   right: 0;
   background: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.8),
-      rgba(0, 0, 0, 0.6),
-      transparent
+    to top,
+    rgba(0, 0, 0, 0.8),
+    rgba(0, 0, 0, 0.6),
+    transparent
   );
   color: white;
   padding: 16px;
@@ -3251,11 +3349,11 @@ md-chip {
       right: 0;
       bottom: 0;
       background-image: repeating-linear-gradient(
-          transparent 0px,
-          transparent 23px,
-          rgba(173, 216, 230, 0.3) 24px,
-          rgba(173, 216, 230, 0.3) 25px,
-          transparent 26px
+        transparent 0px,
+        transparent 23px,
+        rgba(173, 216, 230, 0.3) 24px,
+        rgba(173, 216, 230, 0.3) 25px,
+        transparent 26px
       );
       pointer-events: none;
       z-index: 2;
@@ -3268,9 +3366,9 @@ md-chip {
   z-index: 3;
   padding: 24px 24px 16px;
   background: linear-gradient(
-      135deg,
-      var(--md-sys-color-primary-container, #eaddff) 0%,
-      var(--md-sys-color-secondary-container, #e8def8) 100%
+    135deg,
+    var(--md-sys-color-primary-container, #eaddff) 0%,
+    var(--md-sys-color-secondary-container, #e8def8) 100%
   );
   display: flex;
   align-items: center;
@@ -3294,9 +3392,9 @@ md-chip {
     width: 60px;
     height: 2px;
     background: linear-gradient(
-        90deg,
-        var(--md-sys-color-primary, #6750a4) 0%,
-        var(--md-sys-color-secondary, #625b71) 100%
+      90deg,
+      var(--md-sys-color-primary, #6750a4) 0%,
+      var(--md-sys-color-secondary, #625b71) 100%
     );
     border-radius: 1px;
   }
@@ -3447,9 +3545,9 @@ md-chip {
   gap: 16px;
   padding: 16px 24px;
   background: linear-gradient(
-      135deg,
-      var(--md-sys-color-primary-container, #eaddff) 0%,
-      var(--md-sys-color-secondary-container, #e8def8) 100%
+    135deg,
+    var(--md-sys-color-primary-container, #eaddff) 0%,
+    var(--md-sys-color-secondary-container, #e8def8) 100%
   );
   border-bottom: 2px solid var(--md-sys-color-outline-variant, #cac4d0);
   flex-shrink: 0;
@@ -3522,12 +3620,12 @@ md-chip {
     bottom: 0;
     width: 10px;
     background: repeating-linear-gradient(
-        to bottom,
-        transparent 0px,
-        transparent 20px,
-        rgba(139, 69, 19, 0.4) 22px,
-        rgba(139, 69, 19, 0.4) 28px,
-        transparent 30px
+      to bottom,
+      transparent 0px,
+      transparent 20px,
+      rgba(139, 69, 19, 0.4) 22px,
+      rgba(139, 69, 19, 0.4) 28px,
+      transparent 30px
     );
     z-index: 1;
   }
@@ -3540,22 +3638,22 @@ md-chip {
   background:
     // Линии тетради
     repeating-linear-gradient(
-        transparent 0px,
-        transparent 27px,
-        rgba(173, 216, 230, 0.4) 28px,
-        rgba(173, 216, 230, 0.4) 29px,
-        transparent 30px
+      transparent 0px,
+      transparent 27px,
+      rgba(173, 216, 230, 0.4) 28px,
+      rgba(173, 216, 230, 0.4) 29px,
+      transparent 30px
     ),
-      // Красная линия поля
+    // Красная линия поля
     linear-gradient(
-        to right,
-        transparent 0px,
-        transparent 48px,
-        rgba(255, 0, 0, 0.2) 49px,
-        rgba(255, 0, 0, 0.2) 50px,
-        transparent 51px
+      to right,
+      transparent 0px,
+      transparent 48px,
+      rgba(255, 0, 0, 0.2) 49px,
+      rgba(255, 0, 0, 0.2) 50px,
+      transparent 51px
     ),
-      // Фон страницы
+    // Фон страницы
     linear-gradient(135deg, #fffef8 0%, #fefcf0 100%);
   min-height: 500px;
   overflow-y: auto;
@@ -3678,11 +3776,11 @@ md-chip {
     border: none;
     height: 2px;
     background: linear-gradient(
-        to right,
-        transparent 0%,
-        var(--md-sys-color-outline, #79747e) 20%,
-        var(--md-sys-color-outline, #79747e) 80%,
-        transparent 100%
+      to right,
+      transparent 0%,
+      var(--md-sys-color-outline, #79747e) 20%,
+      var(--md-sys-color-outline, #79747e) 80%,
+      transparent 100%
     );
     margin: 24px 0;
   }
@@ -3765,9 +3863,9 @@ md-chip {
   gap: 24px;
   padding: 16px 24px;
   background: linear-gradient(
-      135deg,
-      var(--md-sys-color-surface-container, #f3edf7) 0%,
-      var(--md-sys-color-surface-container-low, #f7f2fa) 100%
+    135deg,
+    var(--md-sys-color-surface-container, #f3edf7) 0%,
+    var(--md-sys-color-surface-container-low, #f7f2fa) 100%
   );
   border-top: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
   flex-shrink: 0;

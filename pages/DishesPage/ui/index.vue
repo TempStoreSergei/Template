@@ -15,7 +15,7 @@
         <template #message>
           Выбрано {{ isCheckRows }} элементов
           <a-button type="link" @click="rowSelection.selectedRowKeys = []"
-            >Отменить выбор</a-button
+          >Отменить выбор</a-button
           >
         </template>
       </Alert>
@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="tsx">
-import { ref, computed } from "vue";
+import { ref, computed, createVNode } from "vue";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 import { Modal, Alert, Tag } from "ant-design-vue";
 import { categoriySchemas } from "../config/formSchemas";
@@ -125,13 +125,14 @@ interface CategoryItem {
 interface DishItem {
   itemID: string;
   itemName: string;
+  itemShortname: string; // --- ДОБАВЛЕНО ---
   categoryID: string;
   itemInStock: boolean;
   itemExpirationDate: number | null;
   itemImage: string;
   unitID: string | null;
-  itemRecipe: boolean;
-  itemIngridients: number;
+  itemRecipe: string;
+  itemsIngridients: any;
   key: string;
   type: "dish";
   category_id_name?: string;
@@ -214,7 +215,7 @@ const fetchTreeData = async (params: any) => {
     const { categoriesData: categories } = await getCategoryData();
 
     // Получаем товары
-    const { itemsData: dishes, lenItemsData } = await getItemsData(params);
+    const { itemsData: dishes } = await getItemsData(params);
 
     // Строим дерево категорий
     let categoryTree = buildCategoryTree(categories);
@@ -228,7 +229,6 @@ const fetchTreeData = async (params: any) => {
     }
 
     // Подсчитываем общее количество элементов
-    let totalElements = 0;
     const countElements = (items: TreeItem[]): number => {
       let count = 0;
       items.forEach((item) => {
@@ -239,9 +239,7 @@ const fetchTreeData = async (params: any) => {
       });
       return count;
     };
-    totalElements = countElements(treeWithDishes);
-
-    countOfElements.value = totalElements;
+    countOfElements.value = countElements(treeWithDishes);
 
     return treeWithDishes;
   } catch (error) {
@@ -256,57 +254,44 @@ const filterTreeData = (treeData: TreeItem[], params: any): TreeItem[] => {
 
   const filterRecursive = (items: TreeItem[]): TreeItem[] => {
     return items
+      .map((item) => {
+        const newItem = { ...item };
+        if (newItem.type === "category" && newItem.children) {
+          newItem.children = filterRecursive(newItem.children);
+        }
+        return newItem;
+      })
       .filter((item) => {
-        let shouldInclude = true;
-
-        // Фильтр по названию
+        let isMatch = true;
+        if (type) {
+          isMatch = isMatch && item.type === type;
+        }
         if (name) {
+          const lowerCaseName = name.toLowerCase();
           const itemName =
             item.type === "category"
               ? (item as CategoryItem).categoryName.toLowerCase()
               : (item as DishItem).itemName.toLowerCase();
-          shouldInclude =
-            shouldInclude && itemName.includes(name.toLowerCase());
+          let nameMatch = itemName.includes(lowerCaseName);
+          if (item.type === 'category' && !nameMatch && item.children && item.children.length > 0) {
+            return true;
+          }
+          isMatch = isMatch && nameMatch;
         }
-
-        // Фильтр по типу
-        if (type) {
-          shouldInclude = shouldInclude && item.type === type;
-        }
-
-        // Фильтр по категории
         if (category_id) {
-          if (item.type === "category") {
-            shouldInclude =
-              shouldInclude && (item as CategoryItem).id === category_id;
-          } else {
-            shouldInclude =
-              shouldInclude && (item as DishItem).categoryID === category_id;
+          if (item.type === "dish") {
+            isMatch = isMatch && (item as DishItem).categoryID === category_id;
+          } else if (item.type === "category") {
+            if ((item as CategoryItem).id === category_id || (item.children && item.children.length > 0)) {
+              return true;
+            }
+            isMatch = false;
           }
         }
-
-        // Для категорий также фильтруем детей
-        if (item.type === "category" && item.children) {
-          const filteredChildren = filterRecursive(item.children);
-          (item as CategoryItem).children = filteredChildren;
-
-          // Если у категории есть подходящие дети, включаем саму категорию
-          if (filteredChildren.length > 0 && !shouldInclude) {
-            shouldInclude = true;
-          }
-        }
-
-        return shouldInclude;
-      })
-      .map((item) => {
-        // Глубокое копирование для предотвращения мутации оригинальных данных
         if (item.type === "category") {
-          return {
-            ...item,
-            children: item.children ? filterRecursive(item.children) : [],
-          };
+          return isMatch || (item.children && item.children.length > 0);
         }
-        return item;
+        return isMatch;
       });
   };
 
@@ -315,12 +300,11 @@ const filterTreeData = (treeData: TreeItem[], params: any): TreeItem[] => {
 
 const rowSelection = ref({
   selectedRowKeys: [] as string[],
-  onChange: (selectedRowKeys: string[], selectedRows: TreeItem[]) => {
+  onChange: (selectedRowKeys: string[]) => {
     rowSelection.value.selectedRowKeys = selectedRowKeys;
   },
 });
 
-// Проверка выбора строк в таблице
 const isCheckRows = computed(() => rowSelection.value.selectedRowKeys.length);
 
 /**
@@ -334,40 +318,36 @@ const openUserModal = async (record: Partial<DishItem> = {}) => {
       title: `${isUpdate ? "Редактировать" : "Добавить"} блюдо`,
       width: 700,
       onFinish: async (values: any) => {
-        values.id = record.itemID;
         const formData = new FormData();
 
-        formData.append("dish_name", values.dish_name);
-        formData.append("category_id", values.category_id);
-        formData.append("dish_life_time", values.dish_life_time);
-        formData.append("dish_recipe", values.dish_recipe);
-        if (values.dish_img && !isHttpUrl(values.dish_img)) {
-          formData.append("dish_img", values.dish_img);
+        // --- ИСПРАВЛЕНО: Используем корректные имена полей из схемы ---
+        if (values.itemName) formData.append("itemName", values.itemName);
+        if (values.itemShortname) formData.append("itemShortname", values.itemShortname); // --- ДОБАВЛЕНО ---
+        if (values.categoryID) formData.append("categoryID", values.categoryID);
+        if (values.itemExpirationDate) formData.append("itemExpirationDate", values.itemExpirationDate.toString());
+
+        formData.append("itemRecipe", values.itemRecipe || "");
+
+        if (values.itemImage && !isHttpUrl(values.itemImage)) {
+          formData.append("itemImage", values.itemImage);
         }
 
-        if (values.groceries_list && Array.isArray(values.groceries_list)) {
-          values.groceries_list.forEach((item: any) => {
-            formData.append(
-              "groceries_list",
-              JSON.stringify({
-                grocery_name: item.grocery_name,
-                grocery_amount: item.grocery_amount,
-                unit_id: item.unit_id,
-              }),
-            );
-          });
+        if (values.itemsIngridients && Array.isArray(values.itemsIngridients)) {
+          formData.append("itemsIngridients", JSON.stringify(values.itemsIngridients));
         }
 
-        if (record.itemID) {
-          await itemUpdate(record.itemID, values);
+        if (isUpdate) {
+          formData.append("itemID", record.itemID!);
+          await itemUpdate(formData);
         } else {
-          await itemCreate({ item_data: values });
+          await itemCreate(formData);
         }
+
         dynamicTableInstance?.reload();
       },
     },
     formProps: {
-      labelWidth: 100,
+      labelWidth: 150,
       schemas: categoriySchemas,
       autoSubmitOnEnter: true,
     },
@@ -375,74 +355,63 @@ const openUserModal = async (record: Partial<DishItem> = {}) => {
 
   if (isUpdate) {
     const infoAboutDish = await getItem(record.itemID!);
+
+    // --- ИСПРАВЛЕНО: Устанавливаем значения в форму с правильными именами ---
     formRef?.setFieldsValue({
-      dish_name: infoAboutDish.itemName,
-      category_id: infoAboutDish.categoryID,
-      dish_life_time: infoAboutDish.itemLifeTime,
-      dish_recipe: infoAboutDish.itemRecipe,
-      dish_img: infoAboutDish.dish_img
-        ? getDataFromServer(infoAboutDish.dish_img)
-        : null,
-      groceries_list: infoAboutDish.dish_groceries_list?.map(
-        (grocery: any) => ({
-          ...grocery,
-          unit_id: grocery.grocery_unit_id,
-        }),
-      ),
+      itemName: infoAboutDish.itemName,
+      itemShortname: infoAboutDish.itemShortname, // --- ДОБАВЛЕНО ---
+      categoryID: infoAboutDish.categoryID,
+      itemExpirationDate: infoAboutDish.itemExpirationDate,
+      itemRecipe: infoAboutDish.itemRecipe,
+      itemImage: infoAboutDish.itemImage ? getDataFromServer(infoAboutDish.itemImage) : null,
+      itemsIngridients: typeof infoAboutDish.itemsIngridients === 'string'
+        ? JSON.parse(infoAboutDish.itemsIngridients)
+        : infoAboutDish.itemsIngridients,
     });
   }
 };
 
 const countOfElements = ref(0);
 
-/**
- * @description Удаление строки из таблицы
- */
 const delRowConfirm = async (itemKeys: string | string[]) => {
   const keys = Array.isArray(itemKeys) ? itemKeys : [itemKeys];
-
-  // Фильтруем только товары (исключаем категории)
   const dishKeys = keys.filter((key) => key.startsWith("dish-"));
   const dishIds = dishKeys.map((key) => key.replace("dish-", ""));
 
   if (dishIds.length === 0) {
     Modal.warning({
       title: "Предупреждение",
-      content: "Можно удалять только товары, категории удалить нельзя",
+      content: "Можно удалять только блюда, категории удалить нельзя.",
     });
     return;
   }
 
-  if (dishIds.length > 1) {
-    Modal.confirm({
-      title: "Вы уверены, что хотите удалить выбранные блюда?",
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      onOk: async () => {
+  Modal.confirm({
+    title: `Вы уверены, что хотите удалить ${dishIds.length} ${dishIds.length > 1 ? 'блюд' : 'блюдо'}?`,
+    icon: createVNode(ExclamationCircleOutlined),
+    centered: true,
+    onOk: async () => {
+      if (dishIds.length > 1) {
         await itemsDelete(dishIds);
-        dynamicTableInstance?.reload();
-      },
-    });
-  } else {
-    await itemDelete(dishIds[0]).finally(() => dynamicTableInstance?.reload());
-  }
+      } else {
+        await itemDelete(dishIds[0]);
+      }
+      rowSelection.value.selectedRowKeys = [];
+      dynamicTableInstance?.reload();
+    },
+  });
 };
 
-// Обновленные колонки для работы с деревом
 const columns: TableColumnItem[] = [
   {
     title: "Название",
     dataIndex: "name",
     width: 250,
-    customRender: ({ record }: any) => {
+    customRender: ({ record }: { record: TreeItem }) => {
       if (record.type === "category") {
-        return (
-          <strong style="color: #1890ff;">
-            {(record as CategoryItem).categoryName}
-          </strong>
-        );
+        return <strong style="color: #1890ff;">{record.categoryName}</strong>;
       } else {
-        return <span>{(record as DishItem).itemName}</span>;
+        return <span>{record.itemName}</span>;
       }
     },
   },
@@ -450,7 +419,7 @@ const columns: TableColumnItem[] = [
     title: "Тип",
     dataIndex: "type",
     width: 100,
-    customRender: ({ record }: any) => {
+    customRender: ({ record }: { record: TreeItem }) => {
       return record.type === "category" ? (
         <Tag color="blue">Категория</Tag>
       ) : (
@@ -463,22 +432,13 @@ const columns: TableColumnItem[] = [
     hideInSearch: true,
     dataIndex: "expiration",
     width: 200,
-    customRender: ({ record }: any) => {
-      if (record.type === "category") {
-        const category = record as CategoryItem;
-        return category.categoryExpirationDate ? (
-          <Tag>{category.categoryExpirationDate} часов</Tag>
-        ) : (
-          <Tag color="gray">Не указан</Tag>
-        );
-      } else {
-        const dish = record as DishItem;
-        return dish.itemExpirationDate ? (
-          <Tag>{dish.itemExpirationDate} часов</Tag>
-        ) : (
-          <Tag color="gray">Не указан</Tag>
-        );
-      }
+    customRender: ({ record }: { record: TreeItem }) => {
+      const expirationDate = record.type === 'category' ? record.categoryExpirationDate : record.itemExpirationDate;
+      return expirationDate ? (
+        <Tag>{expirationDate} часов</Tag>
+      ) : (
+        <Tag color="gray">Не указан</Tag>
+      );
     },
   },
   {
@@ -486,17 +446,9 @@ const columns: TableColumnItem[] = [
     hideInSearch: true,
     dataIndex: "inStock",
     width: 120,
-    customRender: ({ record }: any) => {
-      if (record.type === "category") {
-        return <span>-</span>;
-      } else {
-        const dish = record as DishItem;
-        return dish.itemInStock ? (
-          <Tag color="green">Да</Tag>
-        ) : (
-          <Tag color="red">Нет</Tag>
-        );
-      }
+    customRender: ({ record }: { record: TreeItem }) => {
+      if (record.type === "category") return <span>-</span>;
+      return record.itemInStock ? <Tag color="green">Да</Tag> : <Tag color="red">Нет</Tag>;
     },
   },
   {
@@ -504,17 +456,10 @@ const columns: TableColumnItem[] = [
     hideInSearch: true,
     dataIndex: "hasRecipe",
     width: 120,
-    customRender: ({ record }: any) => {
-      if (record.type === "category") {
-        return <span>-</span>;
-      } else {
-        const dish = record as DishItem;
-        return dish.itemRecipe ? (
-          <Tag color="green">Да</Tag>
-        ) : (
-          <Tag color="orange">Нет</Tag>
-        );
-      }
+    customRender: ({ record }: { record: TreeItem }) => {
+      if (record.type === "category") return <span>-</span>;
+      // Проверяем, что рецепт не пустая строка
+      return record.itemRecipe ? <Tag color="green">Да</Tag> : <Tag color="orange">Нет</Tag>;
     },
   },
   {
@@ -522,13 +467,10 @@ const columns: TableColumnItem[] = [
     hideInSearch: true,
     dataIndex: "ingredients",
     width: 150,
-    customRender: ({ record }: any) => {
-      if (record.type === "category") {
-        return <span>-</span>;
-      } else {
-        const dish = record as DishItem;
-        return <Tag>{dish.itemIngridients} ингр.</Tag>;
-      }
+    customRender: ({ record }: { record: TreeItem }) => {
+      if (record.type === "category") return <span>-</span>;
+      const count = Array.isArray(record.itemsIngridients) ? record.itemsIngridients.length : 0;
+      return <Tag>{count} ингр.</Tag>;
     },
   },
   {
@@ -536,25 +478,19 @@ const columns: TableColumnItem[] = [
     dataIndex: "image",
     hideInSearch: true,
     width: 150,
-    customRender: ({ record }: any) => {
-      if (record.type === "category") {
-        return <span>-</span>;
-      } else {
-        const dish = record as DishItem;
-        if (!dish.itemImage) return <span>Нет изображения</span>;
-
-        const imageUrl = getDataFromServer(dish.itemImage);
-        return (
-          <img
-            src={imageUrl}
-            width="60"
-            height="60"
-            alt="Dish Image"
-            class="dish-image"
-            style="object-fit: cover; border-radius: 4px;"
-          />
-        );
-      }
+    customRender: ({ record }: { record: TreeItem }) => {
+      if (record.type === "category" || !record.itemImage) return <span>-</span>;
+      const imageUrl = getDataFromServer(record.itemImage);
+      return (
+        <img
+          src={imageUrl}
+          width="60"
+          height="60"
+          alt="Dish Image"
+          class="dish-image"
+          style="object-fit: cover; border-radius: 4px;"
+        />
+      );
     },
   },
   {
@@ -562,11 +498,8 @@ const columns: TableColumnItem[] = [
     width: 120,
     dataIndex: "ACTION",
     fixed: "right",
-    actions: ({ record }: any) => {
-      if (record.type === "category") {
-        return []; // Для категорий не показываем действия
-      }
-
+    actions: ({ record }: { record: TreeItem }) => {
+      if (record.type === "category") return [];
       return [
         {
           icon: "EditOutlined",
@@ -578,8 +511,7 @@ const columns: TableColumnItem[] = [
           popConfirm: {
             title: "Вы уверены, что хотите удалить?",
             placement: "left",
-            onConfirm: () =>
-              delRowConfirm(`dish-${(record as DishItem).itemID}`),
+            onConfirm: () => delRowConfirm(`dish-${(record as DishItem).itemID}`),
           },
         },
       ];
@@ -590,95 +522,15 @@ const columns: TableColumnItem[] = [
 
 <style scoped>
 :deep(.ant-table-tbody .ant-table-row) {
-  transition: background-color 2s ease;
+  transition: background-color 0.3s ease;
 }
-
-:deep(.ant-table-tbody .ant-table-row:hover) {
-  background-color: #f5f5f5;
-}
-
-/* Стили для категорий */
-:deep(.ant-table-tbody .ant-table-row[data-row-type="category"]) {
-  background-color: #fafafa;
-  font-weight: 500;
-}
-
-:deep(.ant-table-tbody .ant-table-row[data-row-type="category"]:hover) {
-  background-color: #e6f7ff;
-}
-
-/* Стили для блюд */
-:deep(.ant-table-tbody .ant-table-row[data-row-type="dish"]) {
-  background-color: #ffffff;
-}
-
-/* Иконки разворачивания */
-:deep(.ant-table-row-expand-icon) {
-  color: #1890ff;
-  font-size: 16px;
-}
-
-:deep(.ant-table-row-expanded .ant-table-row-expand-icon) {
-  color: #52c41a;
-}
-
-/* Отступы для элементов дерева */
-:deep(.ant-table-row-level-1 .ant-table-cell:first-child) {
-  padding-left: 32px;
-}
-
-:deep(.ant-table-row-level-2 .ant-table-cell:first-child) {
-  padding-left: 64px;
-}
-
-/* Разделители между группами */
-:deep(
-    .ant-table-tbody
-      .ant-table-row[data-row-type="category"]
-      + .ant-table-row[data-row-type="category"]
-  ) {
-  border-top: 2px solid #e8e8e8;
-}
-
 /* Стили для изображений */
 :deep(.dish-image) {
   border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 1);
-  transition: transform 2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
 }
-
 :deep(.dish-image:hover) {
-  transform: scale(05);
-}
-
-/* Стили для тегов */
-:deep(.ant-tag) {
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-/* Улучшение читаемости заголовков таблицы */
-:deep(.ant-table-thead .ant-table-cell) {
-  background-color: #fafafa;
-  font-weight: 600;
-  border-bottom: 2px solid #e8e8e8;
-}
-
-/* Анимация для expandable rows */
-:deep(.ant-table-expanded-row > .ant-table-cell) {
-  border-bottom: 1px solid #e8e8e8;
-}
-
-/* Responsive стили */
-@media (max-width: 768px) {
-  :deep(.ant-table-scroll .ant-table-body) {
-    overflow-x: auto;
-  }
-
-  :deep(.dish-image) {
-    width: 40px !important;
-    height: 40px !important;
-  }
+  transform: scale(1.1);
 }
 </style>

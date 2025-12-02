@@ -10,6 +10,20 @@ export const getCategoryData = async (options?: AxiosRequestConfig) => {
   });
 };
 
+export const getFinalCategoryData = async (options?: AxiosRequestConfig) => {
+  return await request({
+    url: "categories/get_final_categories",
+    method: "GET",
+    params: options,
+    isReturnResult: false,
+  });
+};
+
+export const getCategory = async ($event: any) => {
+  const result = await getCategoryData($event);
+  return result.categoriesData;
+};
+
 
 
 export const categoryCreate = async (body: any) => {
